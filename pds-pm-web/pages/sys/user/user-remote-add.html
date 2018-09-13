@@ -1,0 +1,186 @@
+
+<namespace id="user-remote-add">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">导入用户</span>
+        </div>
+        <section class="content" id="remoteUserAddSection">
+			<div class="">
+				<form class="form-horizontal" id="remoteUserAddForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">用户名称</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								 <input type="text" name="name" class="ipt-txt" id="name" placeholder="用户名称">
+							</div>
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">用户账号</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								  <input type="text" name="userAccount" id="code" class="ipt-txt"  placeholder="用户账号">
+							</div>
+						</div>
+					</div>
+
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+						</div>
+					</div>
+
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">确定</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="btnCancel">返回</a>	
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+							<table id="userRemoteList" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>用户账号</th>
+										<th>用户名称</th>
+										<th>部门名称</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+    	var btnFlag = true;
+        var page = {
+            namespace : $('#user-remote-add').namespace(),
+            doAdd : function() {	
+            	
+
+            		var selectRows = $('#userRemoteList').getSelectedRow();
+					if(selectRows.length == 0) {
+						alertTool.warning("请选择要新增的用户!");
+						return;
+					}
+	                if(selectRows.length > 10) {
+	                    alertTool.warning("最多批量新增10位用户!");
+	                    return;
+	                }
+					var userAccounts="";
+					for(var i=0;i<selectRows.length;i++){
+						if(i!=selectRows.length-1){
+							userAccounts=userAccounts+selectRows[i]+",";
+						}else{
+							userAccounts=userAccounts+selectRows[i];
+						}
+						
+					}
+					// page.doRemoteUser(selectRows[0]);
+					page.doSaveList(userAccounts);
+            		
+                
+			},
+			doReset : function() {
+                $('#remoteUserAddForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/sys/user/sysuser-list.html");
+			},
+			doSaveList : function(userAccounts) {
+				if(btnFlag==true){
+					btnFlag=false;
+	                // $("#addBtn").hide();
+	                $("#addBtn").css("background","#91b1ed");
+					var HtmlMenuOpt = { 
+						endpoint : "/sysuser/saveListUser",
+						data : {"userAccounts":userAccounts},
+						success : function(data) {
+							alertTool.success("操作成功!");
+							page.doCancel();
+						},
+						failure : function(data) {
+							alertTool.error(data);
+						}
+					};
+
+					page.namespace.postRequest(HtmlMenuOpt);
+				}
+			},
+			doRemoteUser :function(remoteid){
+				page.namespace.getRequest({
+					endpoint : "/sysuser/getRemoteUserById",
+					data : {"id":remoteid},
+					success : function(data) {
+						submitHandler(data);
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}	
+
+        };
+
+        page.listTable = $('#userRemoteList').initDataTable({
+			url : "/sysuser/getRemoteUser",
+			paging: true,
+			urlDataFn : function() {
+				return $("#remoteUserAddForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+				columns : [ {
+				"data" : "userAccount",
+				"orderable" : false,
+				"width" : "15%",
+				"class" : "content-center"
+			}, {
+				"data" : "name",
+				"width" : "10%",
+				"class" : "content-center"
+			}, {
+				"data" : "depName",
+				"width" : "15%",
+				"class" : "content-center"
+			}]
+		});
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+
+		var	submitHandler  = function (data) {
+			var HtmlMenuOpt = {
+				endpoint: "/sysuser/saveSysUser",
+				data: {
+					'name': data.user.name,
+					'userAccount':data.user.userAccount,
+					'email':data.user.email,
+					'depId':data.user.depId,
+					'depName':data.user.depName,
+					'depIdOther':data.user.depIdOther,
+					'disabled':1
+				},
+				success: function (data) {
+					alertTool.success("操作成功!");
+					page.doCancel();
+				}
+			};
+			httpservice.ajaxEnt.doPost(HtmlMenuOpt);
+		}
+    });
+</script>

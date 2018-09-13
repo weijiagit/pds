@@ -1,0 +1,118 @@
+<namespace id="sysuser-edit">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改用户</span>
+		</div>
+		<section class="content" id="editSysUserSection" ms-controller="sysuser_edit">
+			<form role="form" id="editSysUserForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>用户名称：</label>
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@data.user.name}">
+					</div>
+					<label for="userAccount" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>用户账号：</label>
+					<div class="col-sm-4">
+						  <span id="userAccount" class="form-control input-sm label-form-control" ms-text="@data.user.userAccount"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="email" class="col-sm-2 control-label requiredMask input-sm">用户邮箱：</label>
+					<div class="col-sm-4">
+						<input name="email" type="email" class="form-control input-sm" placeholder="" ms-attr="{value:@data.user.email}">
+					</div>
+					<label for="disabled" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>用户状态：</label>
+					<div class="col-sm-4">
+						<select name="disabled" class="form-control input-sm select2" ms-duplex="@data.user.disabled">
+							<option selected="selected" value="-1">请选择</option>
+							<option ms-for="el in @options" ms-attr="{value:el.value}" ms-text="el.name"></option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">用户描述：</label>
+					<div class="col-sm-4">
+						<textarea name="description" rows="3" class="form-control input-sm" placeholder="" ms-text="@data.user.description"></textarea>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id" ms-attr="{value:@data.user.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+$(function() {
+
+	var page = {
+		namespace : $('#sysuser-edit').namespace(),
+		model:{
+			vm:avalon.define({
+		        $id: "sysuser_edit",
+		        options: { },
+		        data: {}
+		    })
+		},
+		init : function() {
+			$("#editSysUserForm").validate({
+				rules : {
+					'name' : {
+						required : true,
+						maxlength : 255
+					},
+					'disabled' : {
+						required : true,
+						valueNotEquals : '-1'
+					},
+					'description' : {
+						required : false,
+						maxlength : 255
+					}
+				},submitHandler : function(form) {
+					page.doEdit();
+				}
+			});
+		},
+		doCancel : function() {
+			page.namespace.skiphtml("/pages/sys/user/sysuser-list.html");
+		},
+		initView:function(){
+			page.namespace.getRequest({
+				endpoint : "/sysuser/toUserEdit",
+				data : {"id":page.namespace.getParam("id")},
+				success : function(data) {
+					 page.model.vm.data=data;
+					 page.model.vm.options=data.disableds ;
+				},
+				failure : function(data) {
+					alertTool.error(data);
+				}
+			});
+		},
+		doEdit : function() {
+			var submitSysUserForm = {
+				endpoint : "/sysuser/editSysUser",
+				formObj : $("#editSysUserForm"),
+				success : function(data) {
+					alertTool.success("操作成功!");
+					page.doCancel();
+				},
+				failure:function(data) {
+					alertTool.error(data);
+				}
+			};
+
+			page.namespace.submitForm(submitSysUserForm);
+		}
+	}
+	avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+	page.initView() ;
+	page.init();
+
+	page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+});
+</script>

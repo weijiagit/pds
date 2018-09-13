@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>数据录入系统</title>
+		<meta
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+			name="viewport">
+		<link rel="stylesheet" href="../ui/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../ui/dist/css/AdminLTE.min.css">
+		<link rel="stylesheet" href="../ui/plugins/iCheck/square/blue.css">
+		<script type="text/javascript" src="../ui/dist/self/js/config.js"></script>
+		<script type="text/javascript" src="../ui/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="../ui/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../ui/plugins/iCheck/icheck.min.js"></script>
+		<script type="text/javascript" src="../ui/dist/self/js/httpservice.js"></script>
+		<script type="text/javascript" src="../ui/plugins/jquery-validation/jquery.validate.js"></script>
+		<script type="text/javascript" src="../ui/plugins/jquery-validation/additional-methods.js"></script>
+		<script type="text/javascript" src="../ui/plugins/toast/alertTool.js"></script>
+	</head>
+	<body class="hold-transition login-page">
+		<div class="login-box">
+			<div class="login-logo">
+				<b>项目管理系统</b>
+			</div>
+
+			<div class="login-box-body">
+				<!--<p class="login-box-msg">Sign in to start your session</p>-->
+
+				<form id="loginForm" method="post" role="form">
+					<div class="form-group has-feedback">
+						<input type="text" name="userAccount"  class="form-control" placeholder="用户名"
+							style="font-size: 20px;"> <span
+							class="glyphicon glyphicon-user form-control-feedback"></span>
+					</div>
+					<div class="form-group has-feedback" id="passDiv">
+						<input type="password" name="password" class="form-control" placeholder="密码"
+							style="font-size: 20px;"> <span
+							class="glyphicon glyphicon-lock form-control-feedback"></span>
+					</div>
+					
+					<!--
+					<div class="form-group has-feedback" >
+						<a href="sysuser/toRetrievePassword">忘记密码</a>
+					</div>
+				   -->
+				   
+					<div class="form-group" style="margin-left:-15px; ">
+						<div class="col-sm-6" >
+							<img id="captcha" style="cursor:pointer;" onclick="refreshCaptcha();">
+						</div>
+						<div class="col-sm-6">
+							<input type="text" name="captcha" style="width:80%; float:right;margin-right:-15px;" class="form-control input-sm" placeholder="请输入验证码" />
+						</div>
+					</div>
+					<div class="row" style="margin-top:60px;">
+						<div class="col-xs-12">
+							<button type="submit" class="btn btn-primary btn-block btn-flat">登陆</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+	</body>
+
+</html>
+
+<script type="text/javascript">
+	var loginForm = $("#loginForm");
+
+	$(function() {
+		$('input').iCheck({
+			checkboxClass : 'icheckbox_square-blue',
+			radioClass : 'iradio_square-blue',
+			increaseArea : '20%' // optional
+		});
+
+		function resetError(){
+			$('#loginError').remove();
+		}
+
+		loginForm.validate({
+			rules : {
+				'userAccount' : {
+					required : true
+				},
+				'password' : {
+					required : true
+				}
+			},
+			submitHandler : function(form) {
+				resetError();
+				var kaptcha=$("#captcha").data('kaptcha');
+				var userLoginForm = {
+					endpoint : "/login/userLogin",
+					formObj : loginForm,
+					headers : {
+						_kaptcha_key : kaptcha.key,
+						_kaptcha_value : $('[name="captcha"]').val()
+					},
+					success : function(data) {
+						httpservice.token.set(data);
+						window.location.href ="index.html";
+					},
+					stay : true,
+					failure : function(data) {
+	          $('#passDiv').append(
+	              '<label id="loginError" style="color: red;font-size: 12px;">'+data+'</label>'
+	          );
+	          refreshCaptcha();
+					}
+				};
+
+				httpservice.ajaxEnt.submitForm(userLoginForm);
+			}
+		});
+	});
+
+	function refreshCaptcha() {
+		var opt = {
+				success : function(msg) {
+					$("#captcha").attr("src", "data:image/jpg;base64,"+msg.base64);
+					$("#captcha").data('kaptcha',msg);
+				},
+				data : {},
+				endpoint : "/kaptcha/one"
+			};
+		httpservice.ajaxEnt.getRequest(opt);
+	}
+	refreshCaptcha();
+</script>

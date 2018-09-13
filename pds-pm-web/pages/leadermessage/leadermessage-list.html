@@ -1,0 +1,260 @@
+<namespace id="leaderMessage-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">领导指示管理</span>
+        </div>
+        <section class="content" id="searchLeaderMessageSection" ms-controller="leaderMessage-list">
+            <div class="">
+                <form class="form-horizontal" id="searchLeaderMessageForm">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">领导</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="userName" id="userName" placeholder="请输入所需要查询的领导" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">指示内容</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="content" id="content" placeholder="请输入所需要查询的领导指示" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fl clearfix">
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl mr20" id="reset">重置</a> -->
+                            <a href="javascript:;" class="pds-btn fl pds-add" id="addBtn" func="task-add">新增</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label" id="taskList">领导留言</div>
+                        </div> -->
+                        <div class="" id="leaderMessageList">
+                            <table id="leaderMessageListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0" width="100%">
+                                <thead>
+                                <tr>
+                                    <th class="content-center">序号</th>
+                                    <th>领导</th>
+                                    <th>指示内容</th>
+                                    <th>指示时间</th>
+                                    <th>待办部门</th>
+                                    <th>完成情况</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    var viewFlag =false;
+    var editFlag =false;
+    var delFlag =false;
+    $(function() {
+        var page = {
+            namespace : $('#leaderMessage-list').namespace(),
+            init:function () {
+                // 查询
+                var query = sessionStorage.getItem("lead-query");
+                if(query !=null){
+                    $("#queryBtn").show();
+                }else{
+                    $("#queryBtn").hide();
+                }
+                // 新增
+                var add = sessionStorage.getItem("lead-add");
+                if(add !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+                // 详情
+                var view = sessionStorage.getItem("lead-view");
+                if(view != null){
+                    viewFlag = true;
+                }
+                // 修改
+                var edit = sessionStorage.getItem("lead-edit");
+                if(edit !=null){
+                    editFlag = true;
+                }
+                // 删除
+                var del= sessionStorage.getItem("lead-delete");
+                if(del !=null){
+                    delFlag =true;
+                }
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchLeaderMessageForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+            doAdd : function() {
+                page.namespace.modal.open(page,{
+                    id:"addLeaderMessageModal",
+                    title:"新增领导指示",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchLeaderMessageForm')[0].reset();
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/leadermessage/leadermessage-add-pop.html','','550px;');
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/leadermessage/leadermessage-view.html?id=" + id);
+            },
+            doEdit : function(id) {
+                page.namespace.modal.open(page,{
+                    id:"editLeaderMessageModal",
+                    title:"修改领导指示",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchLeaderMessageForm')[0].reset();
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/leadermessage/leadermessage-edit-pop.html',{id:id},'550px;');
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/leaderMessage/deleteLeaderMessage",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            }
+        };
+        page.init();
+
+        page.listTable = $('#leaderMessageListTable').initDataTable({
+            url : "/leaderMessage/getLeaderMessagePage",
+            urlDataFn : function() {
+                var searchForm = $("#searchLeaderMessageForm").serializeJson();
+                return searchForm;
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : viewFlag,
+            editFlag : editFlag,
+            delFlag : delFlag,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                },
+                edit : function(id, rowData) {
+                    page.doEdit(id);
+                }
+            },
+            columns : [
+                {
+                    "data" : "userName",
+                    "width" : "4%",
+                    "class" : "content-center"
+                },{
+                    "data" : "content",
+                    "width" : "20%",
+                    "render" :function (val) {
+                        var newContent = avalon.filters.truncate(val, 60, '...');
+                        return newContent;
+                    }
+                }, {
+                    "data" : "createDateFormat",
+                    "class" : "content-center",
+                    "width" : "5%"
+                }, {
+                    "data" : "deptName",
+                    "class" : "content-center",
+                    "width" : "5%",
+                    "render" :function (data, type, row) {
+                        if(data != null){
+                            return data;
+                        }else{
+                            return '/';
+                        }
+                    }
+                }, {
+                    "data" : "finishState",
+                    "class" : "content-center",
+                    "width" : "5%",
+                    "render" :function (data, type, row) {
+                        var html = "";
+                        //var leadCompletion = sessionStorage.getItem("lead-completion");
+                            if(row.deptName != null){
+                                if (data == 0) {
+                                    html = "<input type='checkbox' value='" + row.id + "' readonly disabled onchange='updateStateOn(this)'>";
+                                } else {
+                                    html = "<input type='checkbox' value='" + row.id + "' readonly disabled checked='checked' onchange='updateStateOff(this)'>";
+                                }
+                            }else{
+                                html ="/"
+                            }
+
+                        return html;
+                    }
+                }
+            ]
+        });
+
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+    });
+
+    function  publicURL(id,url) {
+        var namespace = $('#leaderMessage-list').namespace();
+
+        var HtmlMenuOpt = {
+            endpoint : url,
+            data : {
+                'id' : id
+            },
+            success : function(data) {
+            },
+            failure:function(data) {
+                alertTool.error(data);
+            }
+        };
+        namespace.postRequest(HtmlMenuOpt);
+    }
+
+    function updateStateOn(obj) {
+
+        publicURL(obj.value,'/leaderMessage/updateFinishStateByIdOn');
+    }
+
+    function updateStateOff(obj) {
+
+        publicURL(obj.value,'/leaderMessage/updateFinishStateByIdOff');
+    }
+
+</script>

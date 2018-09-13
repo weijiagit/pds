@@ -1,0 +1,74 @@
+<namespace id="dictionaryData-view" ms-controller="dictionaryData_view">
+	 <div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">查看字典明细</span>
+		</div>
+		<section class="content" id="viewDictionaryDataSection" ms-controller="dictionaryData_view">
+			<form role="form" id="viewDictionaryDataForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">字典名称：</label>
+					<div class="col-sm-4">
+						<span id="name" class="form-control input-sm label-form-control" 
+						>{{@data.dictName}}</span>
+					</div>
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">描述：</label>
+					<div class="col-sm-4">
+						<span id="name" class="form-control input-sm label-form-control" 
+						>{{@data.name}}</span>
+					</div>
+				</div>
+                <div class="form-group">
+					<label for="code" class="col-sm-2 control-label requiredMask input-sm">键值：</label>
+					<div class="col-sm-4">
+						<span id="code"  class="form-control label-form-control input-sm" 
+	   			 			>{{@data.value}}</span>
+					</div>
+					<label for="code" class="col-sm-2 control-label requiredMask input-sm">排序：</label>
+					<div class="col-sm-4">
+						<span id="code"  class="form-control label-form-control input-sm" 
+	   			 			>{{@data.sequence}}</span>
+					</div>
+				</div>
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+	
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#dictionaryData-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "dictionaryData_view",
+    		        dicNames:{},
+    		        data: {}
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/dictionary/dictionaryData-list.html");
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/dictionary/getDictionaryDataById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+	});
+</script>

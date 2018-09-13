@@ -1,0 +1,122 @@
+<namespace id="sysparam-edit"  ms-controller="sysparam_edit">
+<ol class="breadcrumb">
+    <li><a href="#">系统参数</a></li>
+    <li><a href="#">编辑</a></li>
+</ol>
+<section class="content" id="editSysParamSection">
+    <div class="box box-info">
+	    <form role="form" id="editSysParamForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 提交
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+				<div class="form-group">
+					<label for="code" class="col-sm-1 control-label input-sm">
+						编码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+					<div class="col-sm-5">
+						<span id="code" class="form-control label-form-control input-sm"  >
+						{{@data.code}}</span>
+					</div>
+				</div>
+            <div class="form-group">
+                <label for="value" class="col-sm-1 control-label requiredMask input-sm">
+                	参数值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <div class="col-sm-5">
+                    <input name="value" type="text" class="form-control input-sm" placeholder=""   
+                    ms-attr="{value:@data.value}">
+                </div>
+            </div>
+				<div class="form-group">
+					<label for="desc" class="col-sm-1 control-label requiredMask input-sm">
+						详情描述</label>
+					<div class="col-sm-5">
+						<textarea name="desc" class="form-control input-sm" rows="3" 
+							placeholder=" ..."  >{{@data.desc}}</textarea>
+					</div>
+				</div>
+			</div>
+		<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+	</form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysparam-edit').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "sysparam_edit",
+    		        data: {}
+    		    })
+    		},
+			init : function() {
+				$('#editSysParamForm').validate({
+					rules : {
+						'code' : {
+							required : true,
+							maxlength : 64
+						},
+						'value' : {
+							required : true,
+							maxlength : 128
+						},
+						'desc' : {
+							required : true,
+							maxlength : 2000
+						}
+					},
+					submitHandler : function(form) {
+						page.doEdit();
+					}
+				});
+			},
+			doEdit : function() {
+				var submitSysUserForm = {
+					endpoint : "/sysparam/updateSysParam",
+					formObj : $("#editSysParamForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sysparam/sysparam-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sysparam/getSysParamById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+		
+	});
+</script>

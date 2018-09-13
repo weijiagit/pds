@@ -1,0 +1,313 @@
+<namespace id="project-flow-approve">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">审批进展情况</span>
+        </div>
+        <section class="content" id="searchProjectSection" ms-controller="project_flow_approve">
+            <div class="">
+                <!-- form start -->
+                <form class="form-horizontal" id="searchProjectsFlowApproveForm">
+                    <!-- 基础项目 -->
+                    <div class="basic-pro-wrap">
+                        <div class="pro-table" id="projectsFlowApproveList" style="overflow-x: auto;">
+                            <table id="projectsFlowApproveListTable" class="table dataTable row-border cell-border pds-index-works-tab pds-flow-approve-tab" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>项目名称</th>
+                                    <th>工商注册</th>
+                                    <th>立项</th>
+                                    <th>建设用地规划许可证</th>
+                                    <th>国有土地使用证</th>
+                                    <th>建设工程规划许可证</th>
+                                    <th>选址意见书</th>
+                                    <th>建设工程施工许可证</th>
+                                    <th>节能审批</th>
+                                    <th>抗震设防审批</th>
+                                    <th>环评审批</th>
+                                    <th>文物勘探</th>
+                                    <th>人防</th>
+                                    <th>气象</th>
+                                    <th>消防</th>
+                                    <th>园林绿化</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+	</div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-approve').namespace(),
+
+            model: {
+                vm: avalon.define({
+                    $id: "project_flow_approve",
+                    attract_project_list: {},
+                })
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+
+        page.listTable = $('#projectsFlowApproveListTable').initDataTable({
+            url : "/project/getProjectFlowApproveList",
+            urlDataFn : function() {
+                return $("#searchProjectsFlowApproveForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            index : true,
+            columns : [{
+                "data" : "projectName",
+                "width" : "5%"
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.gszc == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.gszc == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.gszc == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.gszc == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.gszc == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.lx == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.lx == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.lx == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.lx == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.lx == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.jsydghxkz == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.jsydghxkz == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.jsydghxkz == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.jsydghxkz == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.jsydghxkz == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.gytdsyz == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.gytdsyz == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.gytdsyz == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.gytdsyz == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.gytdsyz == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.jsgcghxkz == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.jsgcghxkz == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.jsgcghxkz == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.jsgcghxkz == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.jsgcghxkz == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.xzyjs == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.xzyjs == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.xzyjs == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.xzyjs == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.xzyjs == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.jsgcsgxkz == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.jsgcsgxkz == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.jsgcsgxkz == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.jsgcsgxkz == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.jsgcsgxkz == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.jnsp == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.jnsp == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.jnsp == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.jnsp == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.jnsp == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.kzsfsp == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.kzsfsp == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.kzsfsp == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.kzsfsp == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.kzsfsp == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.hpsp == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.hpsp == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.hpsp == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.hpsp == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.hpsp == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.wwkt == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.wwkt == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.wwkt == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.wwkt == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.wwkt == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.rf == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.rf == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.rf == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.rf == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.rf == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.qx == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.qx == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.qx == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.qx == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.qx == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.xf == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.xf == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.xf == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.xf == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.xf == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    if(data.yllh == '1'){
+                        return "<span class=\"icon icon1\">无需办理</span>";;
+                    }else if(data.yllh == '2'){
+                        return "<span class=\"icon icon2\">未开始</span>";
+                    }else if(data.yllh == '3'){
+                        return "<span class=\"icon icon3\">受理中</span>";
+                    }else if(data.yllh == '4'){
+                        return "<span class=\"icon icon4\">存在问题</span>";
+                    }else if(data.yllh == '5'){
+                        return "<span class=\"icon icon5\">完结</span>";
+                    }
+                }
+            }]
+        });
+    });
+</script>

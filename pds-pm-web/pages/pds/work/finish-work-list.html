@@ -1,0 +1,122 @@
+<namespace id="finish-work-list" ms-controller="finish-work-list">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">我的工作-已办工作</span>
+        </div>
+		<form class="form-horizontal" id="searchHaveDoneWorkForm" onkeydown="if(event.keyCode==13)return false;">
+			<div class="pending-work-wrap">
+				<div class="pro-table">
+					<table id="haveDoneListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>项目代码</th>
+								<th>项目名称</th>
+								<th>被催办任务</th>
+								<th>被分配任务</th>
+								<th>创建时间</th>
+								<th>工作类型</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</form>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var page = {
+            namespace : $('#finish-work-list').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "finish-work-list"
+                })
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/pds/work/finish-work-view.html?id=" + id);
+            },
+        };
+
+        page.listTable = $('#haveDoneListTable').initDataTable({
+            url : "/backlogWork/getHaveDonePage",
+            urlDataFn : function() {
+                return $("#searchHaveDoneWorkForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : true,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                }
+            },
+            columns : [ {
+                "data" : "projectCode",
+                "width" : "10%",
+                "class" : "content-center",
+            },
+                {
+                    "data" : "projectName",
+                    "width" : "10%",
+                    "render" :function (data, type, row) {
+                        if(data != "/"){
+                            return data;
+                        }else{
+                            return "<p style='text-align: center;'>"+data+"</p>";
+                        }
+                    }
+                },
+                {
+                    "data" : "hastenTask",
+                    "width" : "10%",
+                    "render" :function (data, type, row) {
+                        if(data != "/"){
+                            return data;
+                        }else{
+                            return "<p style='text-align: center;'>"+data+"</p>";
+                        }
+                    }
+                },
+                {
+                    "data" : "assignmentTask",
+                    "width" : "10%",
+                    "render" :function (data, type, row) {
+                        if(data != "/"){
+                            return data;
+                        }else{
+                            return "<p style='text-align: center;'>"+data+"</p>";
+                        }
+                    }
+                },
+                {
+                    "data" : "projectCreateTimeFormat",
+                    "width" : "6%",
+                    "class" : "content-center",
+                    "render" :function (data, type, row) {
+                        if(data != null){
+                            return data;
+                        }else{
+                            return "/" ;
+                        }
+                    }
+                },{
+                    "data" : "operationType",
+                    "width" : "7%",
+                    "class" : "content-center",
+                    "render" :function (data, type, row) {
+                        if(data =="0"){
+                            return "重点项目";
+                        }else if(data == "1"){
+                            return "项目推进" ;
+                        }else if (data == "2"){
+                            return "领导指示" ;
+                        }
+                    }
+                }
+			]
+        });
+    });
+</script>

@@ -1,0 +1,73 @@
+<namespace id="sysrole-add">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">添加角色</span>
+		</div>
+		<section class="content" id="addSysRoleSection" ms-controller="sysrole_add">
+			<form role="form" id="addSysRoleForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>角色名称：</label>
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">角色描述：</label>
+					<div class="col-sm-4">
+						<textarea name="description" rows="3" class="form-control input-sm" placeholder=""></textarea>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysrole-add').namespace(),
+			init : function() {
+				$('#addSysRoleForm').validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'description' : {
+							maxlength : 255
+						}
+					},
+					submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+			},
+			doAdd : function() {
+				var submitSysRoleForm = {
+					endpoint : "/sysrole/saveSysRole",
+					formObj : $('#addSysRoleForm'),
+					success : function(data) {
+						alertTool.success('操作成功');
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				}
+				
+				page.namespace.submitForm(submitSysRoleForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-list.html');
+			}
+		};
+		
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+	});
+</script>

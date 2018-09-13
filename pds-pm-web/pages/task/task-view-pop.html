@@ -1,0 +1,45 @@
+<namespace id="task-view-pop" ms-controller="task_view_pop">
+    <div class="pro-add-wrap" style="padding-bottom:0;">
+        <section class="content" id="viewTaskPopSection" style="min-height:235px;">
+            <form role="form"  id="viewTaskPopForm" class="form-horizontal">
+                <div class="form-group" style="margin:0 0 5px 0;">
+                    <div class="col-sm-12">
+                            <textarea name="workContent" id="workContent" class="form-textarea" readonly="true" ms-html="@data.workContent">
+                            </textarea>
+                    </div>
+                </div>
+
+                <div class="btn-wrap" style="padding-top:10px;height:45px;">
+                    <button type="button" class="btn pds-btn" data-dismiss="modal">关闭</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#task-view-pop').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "task_view_pop",
+                    data: {}
+                })
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/task/detailTask",
+                    data : {"id":page.namespace.modal.param(page,"id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

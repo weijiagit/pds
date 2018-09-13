@@ -1,0 +1,189 @@
+<namespace id="element-add">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">新增元素</span>
+		</div>
+		<section class="content" id="addElementSection" ms-controller="element_add">
+			<form role="form" id="addElementForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>元素名称：</label>
+					<div class="col-sm-4">
+						<input name="name" id="name" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+					<label for="funcId" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>元素标识：</label>
+					<div class="col-sm-4">
+						<input name="funcId" id="funcId" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">元素描述：</label>
+					<div class="col-sm-10">
+						<textarea contenteditable="false" name="description" id="description" rows="3" class="form-textarea" placeholder=""></textarea>
+					</div>
+				</div>
+                <div class="form-group">
+					<label for="menuName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>所属菜单：</label>
+					<div class="col-sm-4 pro-search-wrap">
+						 <div id="menu" class="department" style="width:100%;position:relative;">
+                            <input id="menuName" name="menuName" type="text" class="form-control input-sm" placeholder="请选择" readonly />
+                            <input id="menuId" name="menuId" type="hidden" class="form-control input-sm" placeholder="" >
+                            <span class="input-group-addon" style="left:68%;"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                        </div>
+					</div>
+				</div>
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#element-add').namespace(),
+			init : function() {
+			    $.validator.addMethod("alphaCheck",function (value,element,params) {
+                    var reg = /^[\w-]+$/;
+                    return this.optional(element) || reg.test(value);
+                },"限定字母、数字、短横线或下划线的组合");
+
+			    $.validator.addMethod("checkFuncIdExist",function (value, element, params) {
+                    return this.optional(element) || page.checkFuncExist(value);
+                },"元素标识已经存在");
+
+				$("#addElementForm").validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'funcId' : {
+							required : true,
+							maxlength : 255,
+                            alphaCheck : true,
+                            checkFuncIdExist : true
+						},
+						'menuName' : {
+							required : true
+						},
+						'menuId' : {
+							required : true,
+							maxlength : 36
+						},
+						'description' : {
+							required : false,
+							maxlength : 255
+						}
+					},submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+			},
+			doSelect : function() {
+				if(!!page.namespace.root.find('#menuTree')) {
+					page.namespace.root.find('#menuTree').remove();
+				}
+				
+				var html = "<div id='menuTree' style='z-index:999;height:300px; border:1px solid #d2d6de; overflow:auto;'></div>";
+				page.namespace.root.find('#menu').after(html);
+
+				page.namespace.root.find('#menuTree').parent(".pro-search-wrap").on('mouseleave', function(){
+                    page.namespace.root.find('#menuTree').remove();
+                });
+				
+				var labelTree = $('#menuTree').jstree({
+					core : {
+						'multiple':false,
+						"animation" : 0,
+						"check_callback" : true,
+						"themes" : {
+							"stripes" : false,
+							"responsive" : false
+						},
+						data : function(obj, callback) {
+							var opt = {};
+							opt = {
+								success : function(msg) {
+									callback.call(this, msg);
+								},
+								data : {},
+								endpoint : "/sysmenu/loadMenuTree"
+							};
+							
+							page.namespace.getRequest(opt);
+						}
+					},
+					"types" : {
+						"default" : {
+							"draggable" : false,
+							"icon" : "fa fa-folder icon-state-warning icon-lg"
+						}
+					},
+					"plugins" : [ "types", "dnd" ]
+				}).on("load_node.jstree", function() {
+					$('#menuTree').jstree("open_all");
+				}).on("select_node.jstree", function() {
+					var node = $('#menuTree').jstree(true).get_selected(true);
+					
+					if(node.length > 1) {
+						alertTool.warning("只能选择一个菜单叶子节点");
+						return;
+					}
+					
+					if(node[0].children.length > 0) {
+						alertTool.warning("只能选择一个菜单叶子节点");
+						return;
+					}
+					
+					$('#menuName').val(node[0].text);
+					$('#menuId').val(node[0].id);
+					
+					$('#menuTree').remove();
+				});
+			},
+			doAdd : function() {
+				var submitSysUserForm = {
+					endpoint : "/element/saveElement",
+					formObj : $("#addElementForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure:function(data) {
+						alertTool.error(data);
+					}
+				};
+				
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/element/element-list.html");
+			},
+            checkFuncExist : function (funcId) {
+                var flag = false;
+                //var funcId = $("input[name='funcId']:text").val();
+                var checkFuncIdOpt = {
+                    endpoint : "/element/getElementByFuncId",
+                    data : {"funcId" : funcId},
+                    async : false,
+                    success : function (data) {
+                        if (data == null){
+
+                            flag = true;
+                        }
+                    }
+                };
+                page.namespace.postRequest(checkFuncIdOpt);
+                return flag;
+            }
+		}
+		
+		page.init();
+		
+		page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+		page.namespace.root.find('#btnSelect').on('click', page.doSelect);
+	});
+</script>

@@ -1,0 +1,327 @@
+<namespace id="sysproject-add">
+<ol class="breadcrumb">
+	<li><a href="#">项目</a></li>
+	<li><a href="#">新增</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addProjectMenuUserSection">
+	<div class="box box-info">
+		<form role="form" class="form-horizontal" id="addProjectMenuUser">
+			<div class="row ">
+				<div class="col-sm-12">
+					<!-- 右对齐的 btn-group -->
+					<div class="btn-group pull-left"
+						style="margin-top: 20px; margin-left: 28px;">
+						<a class="btn btn-sm btn-default" id="addP"> <i
+							class="fa fa-align-justify"> 提交</i>
+						</a>
+						<a class="btn btn-sm btn-default" id="btnCancel"> <i
+							class="fa fa-align-justify"> 返回</i>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="box-body">
+				<div class="form-group">
+					<label for="projectName"
+						class="col-sm-1 control-label requiredMask input-sm">项目名称</label>
+					<div class="col-sm-3">
+						<input name="projectName" id="projectName" type="text"
+							class="form-control input-sm" placeholder="">
+					</div>
+
+					<label for="projectCode"
+						class="col-sm-1 control-label requiredMask input-sm">项目代码</label>
+					<div class="col-sm-3">
+						<input name="projectCode" id="projectCode" type="text"
+							class="form-control input-sm" placeholder="">
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-5">
+					<label for="projectName"
+						class="col-sm-5 control-label requiredMask input-sm">项目菜单</label>
+					<div id="menuTree"></div>
+				</div>
+				<div class="col-sm-5">
+					<label for="projectName"
+						class="col-sm-5 control-label requiredMask input-sm">用户菜单</label>
+					<div id="userTree"></div>
+				</div>
+			</div>
+		</form>
+</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+
+			namespace : $('#sysproject-add').namespace(),//当前页面的命名空间
+			
+		
+
+			init : function() {
+				
+				$('#addProjectMenuUser').validate({
+					ignore : '',
+					rules : {
+						 'projectCode' : {
+							required : true,
+							maxlength : 36,
+							alnum : true
+						},
+						'projectName' : {
+							required : true,
+							maxlength : 36,
+							chinese : true
+						}
+					}
+				});
+				
+				var projectId = page.namespace.getParam("id");
+				/*如果没有取到值，就需要设定一个空值，否则会查询到所有的项目*/
+				if (projectId == undefined) {
+					projectId = '###########';
+				};
+
+				var HtmlMenuOpt = {
+					endpoint : "/project/getAssignPorjectMenu",
+					data : {
+						"projectId" : projectId
+					},
+					success : function(data) {
+						page.initTree(data);
+					}
+				};
+
+				page.namespace.getRequest(HtmlMenuOpt);
+			},
+
+			initTree : function(selectNodes) {
+				var labelTree = $('#menuTree').jstree({
+					core : {
+						"animation" : 0,
+						"check_callback" : true,
+						"themes" : {
+							"stripes" : true,
+							"responsive" : false
+						},
+						data : function(obj, callback) {
+							var opt = {};
+							opt = {
+								success : function(msg) {
+									callback.call(this, msg);
+								},
+								data : {},
+								endpoint : "/sysmenu/loadMenuTreeOfProject"
+							};
+
+							page.namespace.getRequest(opt);
+						}
+					},
+					"types" : {
+						"default" : {
+							"draggable" : false,
+							"icon" : "fa fa-folder icon-state-warning icon-lg"
+						}
+					},
+					"plugins" : [ "types", "wholerow", "dnd", "checkbox" ]
+				}).on("load_node.jstree", function() {
+					$('#menuTree').jstree("open_all");
+
+					var arr = [];
+					$.each(selectNodes, function(i, node) {
+						/* if (node.checkState == "SELECTED") {
+							arr.push(node.menuId);
+						} */
+
+						arr.push(node.menuId);
+
+					});
+
+					$('#menuTree').jstree(true).check_node(arr);
+				}).bind("contextmenu.jstree", function(event) {
+					event.preventDefault();
+					var $subject = $(event.target).parent();
+					if ($subject.find('ul').length > 0) {
+						//alertTool.error("请点击一个叶子节点！");
+					} else {
+						//选择的id值
+						page.menuId = $(event.target).parents('li').attr('id');
+						page.elementTable.ajax.reload();
+					}
+				});
+			},
+
+			init1 : function() {
+				var projectId = page.namespace.getParam("id");
+				/*如果没有取到值，就需要设定一个空值，否则会查询到所有的项目*/
+				if (projectId == undefined) {
+					projectId = '###########';
+				};
+
+				var HtmlMenuOpt = {
+					endpoint : "/project/getAssignPorjectUser",
+					data : {
+						"projectId" : projectId
+					},
+					success : function(data) {
+						page.initTree1(data);
+					}
+				};
+
+				page.namespace.getRequest(HtmlMenuOpt);
+			},
+			initTree1 : function(selectNodes) {
+				var labelTree = $('#userTree').jstree({
+					core : {
+						"animation" : 0,
+						"check_callback" : true,
+						"themes" : {
+							"stripes" : true,
+							"responsive" : false
+						},
+						data : function(obj, callback) {
+							var opt = {};
+							opt = {
+								success : function(msg) {
+									callback.call(this, msg);
+								},
+								data : {},
+								endpoint : "/project/loadUserTreeOfProject"
+							};
+
+							page.namespace.getRequest(opt);
+						}
+					},
+					"types" : {
+						"default" : {
+							"draggable" : false,
+							"icon" : "fa fa-folder icon-state-warning icon-lg"
+						}
+					},
+					"plugins" : [ "types", "wholerow", "dnd", "checkbox" ]
+				}).on("load_node.jstree", function() {
+					$('#userTree').jstree("open_all");
+
+					var arr = [];
+					$.each(selectNodes, function(i, node) {
+						/* if (node.checkState == "SELECTED") {
+							arr.push(node.menuId);
+						} */
+
+						arr.push(node.userId);
+
+					});
+
+					$('#userTree').jstree(true).check_node(arr);
+				}).bind("contextmenu.jstree", function(event) {
+					event.preventDefault();
+					var $subject = $(event.target).parent();
+					if ($subject.find('ul').length > 0) {
+						//alertTool.error("请点击一个叶子节点！");
+					} else {
+						//选择的id值
+						page.menuId = $(event.target).parents('li').attr('id');
+						page.elementTable.ajax.reload();
+					}
+				});
+			},
+
+			/* doAdd : function() {	
+				page.namespace.skiphtml('/pages/project/sysproject-list.html');
+			},
+            */
+   
+        	doAdd : function() {
+
+				var $root = page.namespace.root;
+				
+				var $jstree = $('#menuTree').jstree(true);
+				var selected = $jstree.get_checked(true);
+
+				var $jstree1 = $('#userTree').jstree(true);
+				var selected1 = $jstree1.get_checked(true);
+				var data = [];
+				var data1 = [];
+
+				$.each(selected, function(j, node) {
+					if(node.children.length==0){
+						var menuTreeInVO = {
+							id : node.id,
+							pid : node.parent
+						}
+						data.push(menuTreeInVO);
+
+					}
+					
+				});
+
+				$.each(selected1, function(j, node) {
+					if(node.children.length==0){
+						var userTreeInVO = {
+							id : node.id,
+							pid : node.parent
+						}
+						data1.push(userTreeInVO);
+					}
+				});
+
+				var list = data;
+				var list1 = data1;		
+				var formJson = {
+					'projectName' : $('#addProjectMenuUser').find("#projectName")
+							.val(),
+					'projectCode' : $('#addProjectMenuUser').find("#projectCode")
+							.val()
+				};
+				formJson["projectMenuInVOs"] = JSON.stringify(list);
+				formJson["projectUserInVOs"] = JSON.stringify(list1);
+				
+				var HtmlMenuOpt = {
+					endpoint : "/project/addProject",
+					data : formJson,
+					success : function(data) {
+						//console.info("888888");
+						alertTool.success("操作成功");
+						page.namespace.skiphtml('/pages/project/sysproject-list.html');
+					},
+					failure:function(data){
+						alertTool.error(data);
+						return;
+					}
+					
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+            
+			doCancel : function() {
+		
+				page.namespace.skiphtml('/pages/project/sysproject-list.html');
+			}
+		};
+
+		page.init();
+		page.init1();
+		/* page.namespace.root.find('#save').on('click', function() {
+			page.doAdd();
+		}); */
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		/* page.namespace.root.find('#addP').on('click', page.doAdd); */
+		page.namespace.root.find('#addP').on('click',function(){
+			if(!page.namespace.root.find('#projectName').valid() || !page.namespace.root.find('#projectCode').valid()){
+				return;
+			}else{
+				page.doAdd();
+			}
+			
+		});
+
+	});
+</script>

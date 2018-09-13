@@ -1,0 +1,638 @@
+<namespace id="project-view">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">项目明细</span>
+        </div>
+        <section class="content" id="addProjectSection" ms-controller="project_view">
+            <form role="form" id="addProjectForm" class="form-horizontal">
+                <!-- 基础信息 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">基础信息</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="form-group">
+                            <label for="projectName" class="col-sm-2 control-label requiredMask input-sm">项目名称：</label>
+                            <div class="col-sm-4">
+                                <span id="projectName" class="form-control label-form-control input-sm"  ms-html="@data.projectName"></span>
+                            </div>
+                            <label for="projectNumber" class="col-sm-2 control-label requiredMask input-sm">项目代码：</label>
+                            <div class="col-sm-4">
+                                <span id="projectNumber" class="form-control label-form-control input-sm"  ms-html="@data.projectNumber"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName" class="col-sm-2 control-label requiredMask input-sm">建设单位：</label>
+                            <div class="col-sm-4">
+                                <span id="companyName" class="form-control label-form-control input-sm"  ms-html="@data.companyName"></span>
+                            </div>
+                            <label for="organizationCode" class="col-sm-2 control-label requiredMask input-sm">组织机构代码：</label>
+                            <div class="col-sm-4">
+                                <span id="organizationCode" class="form-control label-form-control input-sm"  ms-html="@data.organizationCode"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectAttributeStr" class="col-sm-2 control-label requiredMask input-sm">项目属地：</label>
+                            <div class="col-sm-4">
+                                <span id="projectAttributeStr" class="form-control label-form-control input-sm"  >{{@data.projectAttributeStr}}</span>
+                            </div>
+                            <label for="constructionNatureStr" class="col-sm-2 control-label requiredMask input-sm">建设性质：</label>
+                            <div class="col-sm-4">
+                                <span id="constructionNatureStr" class="form-control label-form-control input-sm"  >{{@data.constructionNatureStr}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="industryClassificationStr" class="col-sm-2 control-label requiredMask input-sm">行业分类：</label>
+                            <div class="col-sm-4">
+                                <span id="industryClassificationStr" class="form-control label-form-control input-sm"  >{{@data.industryClassificationStr}}</span>
+                            </div>
+                            <label for="implementScheduleStr" class="col-sm-2 control-label input-sm">实施进度分类：</label>
+                            <div class="col-sm-4">
+                                <span id="implementScheduleStr" class="form-control label-form-control input-sm"  >{{@data.implementScheduleStr}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="planBeginDate" class="col-sm-2 control-label input-sm requiredMask">计划开工日期：</label>
+                            <div class="col-sm-4">
+                                <span id=planBeginDate class="form-control label-form-control input-sm"  >{{@data.planBeginDateStr}}</span>
+                            </div>
+                            <label for="planEndDateStr" class="col-sm-2 control-label requiredMask input-sm">计划竣工日期：</label>
+                            <div class="col-sm-4">
+                                <span id="planEndDateStr" class="form-control label-form-control input-sm"  >{{@data.planEndDateStr}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="actualBeginDateStr" class="col-sm-2 control-label input-sm">实际开工日期：</label>
+                            <div class="col-sm-4">
+                                <span id="actualBeginDateStr" class="form-control label-form-control input-sm"  >{{@data.actualBeginDateStr}}</span>
+                            </div>
+                            <label for="actualEndDateStr" class="col-sm-2 control-label input-sm">实际竣工日期：</label>
+                            <div class="col-sm-4">
+                                <span id="actualEndDateStr" class="form-control label-form-control input-sm"  >{{@data.actualEndDateStr}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalInvestment" class="col-sm-2 control-label requiredMask input-sm">总投资(元)：</label>
+                            <div class="col-sm-4">
+                                <span id="totalInvestment" class="form-control label-form-control input-sm"  >{{@data.totalInvestment}}</span>
+                            </div>
+                            <label for="enterpriseLegalPerson" class="col-sm-2 control-label requiredMask input-sm">企业法人：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseLegalPerson" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseLegalPerson"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="enterpriseContactPerson" class="col-sm-2 control-label requiredMask input-sm">企业联系人：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseContactPerson" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseContactPerson"></span>
+                            </div>
+                            <label for="enterpriseContactPhone" class="col-sm-2 control-label requiredMask input-sm">企业联系人联系方式：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseContactPhone" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseContactPhone"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="enterpriseChargePerson" class="col-sm-2 control-label requiredMask input-sm">企业负责人：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseChargePerson" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseChargePerson"></span>
+                            </div>
+                            <label for="enterpriseChargePhone" class="col-sm-2 control-label requiredMask input-sm">企业负责人联系方式：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseChargePhone" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseChargePhone"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="constructionContentScale" class="col-sm-2 control-label requiredMask input-sm">建设内容和规模：</label>
+                            <div class="col-sm-10">
+                                <textarea name="constructionContentScale" id="constructionContentScale" class="form-textarea" readonly="true" ms-html="@data.constructionContentScale"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">行业分类是否PPP项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ispppProject" ms-duplex-boolean="@data.ispppProject" id="ispppProject1" value="1" disabled>
+                                    是
+                                </label>
+                                <label>
+                                    <input type="radio" name="ispppProject" ms-duplex-boolean="@data.ispppProject" id="ispppProject2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否省重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isprovinceimp" ms-duplex-boolean="@data.isprovinceimp" id="isprovinceimp1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isprovinceimp" ms-duplex-boolean="@data.isprovinceimp" id="isprovinceimp2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">是否计划新开工：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isplanNewWork" ms-duplex-boolean="@data.isplanNewWork" id="isplanNewWork1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isplanNewWork" ms-duplex-boolean="@data.isplanNewWork" id="isplanNewWork2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否市重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="iscityimp" ms-duplex-boolean="@data.iscityimp" id="iscityimp1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="iscityimp" ms-duplex-boolean="@data.iscityimp" id="iscityimp2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group mb0">
+                            <label class="col-sm-2 control-label input-sm">是否计划竣工：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isplanComplete" ms-duplex-boolean="@data.isplanComplete" id="isplanComplete1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isplanComplete" ms-duplex-boolean="@data.isplanComplete" id="isplanComplete2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否区重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isdistrictimp" ms-duplex-boolean="@data.isdistrictimp" id="isdistrictimp1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isdistrictimp" ms-duplex-boolean="@data.isdistrictimp" id="isdistrictimp2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 工作安排 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">工作安排</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractLeader" class="col-sm-2 control-label  input-sm">分包领导：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractLeader" class="form-control label-form-control input-sm"  ms-html="@data.subcontractLeader"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1" class="col-sm-2 control-label  input-sm">分包单位1：</label>
+                                <div class="col-sm-8">
+                                    <span id="subcontractCompany1" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany1"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1Person" class="col-sm-2 control-label  input-sm">分包单位1责任人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany1Person" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany1Person"></span>
+                                </div>
+                                <label for="subcontractCompany1PersonPhone" class="col-sm-2 control-label  input-sm">分包单位1责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany1PersonPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany1PersonPhone"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1Contact" class="col-sm-2 control-label input-sm">分包单位1联系人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany1Contact" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany1Contact"></span>
+                                </div>
+                                <label for="subcontractCompany1ContactPhone" class="col-sm-2 control-label  input-sm">分包单位1联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany1ContactPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany1ContactPhone"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractCompany2" class="col-sm-2 control-label  input-sm">分包单位2：</label>
+                                <div class="col-sm-8">
+                                    <span id="subcontractCompany2" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany2"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany2Person" class="col-sm-2 control-label  input-sm">分包单位2责任人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany2Person" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany2Person"></span>
+                                </div>
+                                <label for="subcontractCompany2PersonPhone" class="col-sm-2 control-label  input-sm">分包单位2责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany2PersonPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany2PersonPhone"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany2Contact" class="col-sm-2 control-label input-sm">分包单位2联系人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany2Contact" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany2Contact"></span>
+                                </div>
+                                <label for="subcontractCompany2ContactPhone" class="col-sm-2 control-label  input-sm">分包单位2联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany2ContactPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany2ContactPhone"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractCompany3" class="col-sm-2 control-label  input-sm">分包单位3：</label>
+                                <div class="col-sm-8">
+                                    <span id="subcontractCompany3" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany3"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany3Person" class="col-sm-2 control-label  input-sm">分包单位3责任人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany3Person" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany3Person"></span>
+                                </div>
+                                <label for="subcontractCompany3PersonPhone" class="col-sm-2 control-label  input-sm">分包单位3责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany3PersonPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany3PersonPhone"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany3Contact" class="col-sm-2 control-label input-sm">分包单位3联系人：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany3Contact" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany3Contact"></span>
+                                </div>
+                                <label for="subcontractCompany3ContactPhone" class="col-sm-2 control-label  input-sm">分包单位3联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <span id="subcontractCompany3ContactPhone" class="form-control label-form-control input-sm"  ms-html="@data.subcontractCompany3ContactPhone"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 审批字段 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">审批字段</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">选址意见书是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issiteselect" ms-duplex-boolean="@data.issiteselect" id="issiteselect1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="issiteselect" ms-duplex-boolean="@data.issiteselect" id="issiteselect2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+
+                            <label class="col-sm-2 control-label input-sm">建设用地规划许可证：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isbuildland" ms-duplex-boolean="@data.isbuildland" id="isbuildland1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isbuildland" ms-duplex-boolean="@data.isbuildland" id="isbuildland2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">国有土地使用证是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isstateland" ms-duplex-boolean="@data.isstateland" id="isstateland1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isstateland" ms-duplex-boolean="@data.isstateland" id="isstateland2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">人防批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ispeopledefence" ms-duplex-boolean="@data.ispeopledefence" id="ispeopledefence1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="ispeopledefence" ms-duplex-boolean="@data.ispeopledefence" id="ispeopledefence2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">立项批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isprojectapprove" ms-duplex-boolean="@data.isprojectapprove" id="isprojectapprove1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isprojectapprove" ms-duplex-boolean="@data.isprojectapprove" id="isprojectapprove2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否联审联批项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ischeckapprove" ms-duplex-boolean="@data.ischeckapprove" id="ischeckapprove1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="ischeckapprove" ms-duplex-boolean="@data.ischeckapprove" id="ischeckapprove2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">建设工程规划许可证是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isbuildproject" ms-duplex-boolean="@data.isbuildproject" id="isbuildproject1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isbuildproject" ms-duplex-boolean="@data.isbuildproject" id="isbuildproject2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否模拟审批项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issimulateapprove" ms-duplex-boolean="@data.issimulateapprove" id="issimulateapprove1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="issimulateapprove" ms-duplex-boolean="@data.issimulateapprove" id="issimulateapprove2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">环评批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isenvironmentapprove" ms-duplex-boolean="@data.isenvironmentapprove" id="isenvironmentapprove1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isenvironmentapprove" ms-duplex-boolean="@data.isenvironmentapprove" id="isenvironmentapprove2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">文物勘探是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isculturalrelics" ms-duplex-boolean="@data.isculturalrelics" id="isculturalrelics1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isculturalrelics" ms-duplex-boolean="@data.isculturalrelics" id="isculturalrelics2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">气象局手续是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isweather" ms-duplex-boolean="@data.isweather" id="isweather1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isweather" ms-duplex-boolean="@data.isweather" id="isweather2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">抗震设防是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isantiknock" ms-duplex-boolean="@data.isantiknock" id="isantiknock1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isantiknock" ms-duplex-boolean="@data.isantiknock" id="isantiknock2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">节能审批是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isenergyconservation" ms-duplex-boolean="@data.isenergyconservation" id="isenergyconservation1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isenergyconservation" ms-duplex-boolean="@data.isenergyconservation" id="isenergyconservation2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">园林绿化是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isparkafforest" ms-duplex-boolean="@data.isparkafforest" id="isparkafforest1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isparkafforest" ms-duplex-boolean="@data.isparkafforest" id="isparkafforest2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">消防是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isfirecontrol" ms-duplex-boolean="@data.isfirecontrol" id="isfirecontrol1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isfirecontrol" ms-duplex-boolean="@data.isfirecontrol" id="isfirecontrol2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+
+                            <label class="col-sm-2 control-label input-sm">是否存在问题：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isproblem" ms-duplex-boolean="@data.isproblem" id="isproblem1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isproblem" ms-duplex-boolean="@data.isproblem" id="isproblem2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">模拟审批是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issimulatefinish" ms-duplex-boolean="@data.issimulatefinish" id="issimulatefinish1" value="1" disabled>
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="issimulatefinish" ms-duplex-boolean="@data.issimulatefinish" id="issimulatefinish2" value="2" disabled>
+                                    否
+                                </label>
+                            </div>
+                            <div class="col-sm-4" id="questionContentId">
+                                <label>
+                                    <span id="questionContent" class="form-control label-form-control input-sm" style="width: 500px;" ms-html="@data.questionContent"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 其他 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">其他</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="upload clearfix">
+                            <div class="upload-fr" style="width:100%;">
+                                <div class="form-group" style="margin-left:0;">
+                                    <label  class="col-sm-1 control-label input-sm" style="width:100px;">附件：</label>
+                                    <div ms-if="@files.length > 0" class="col-sm-6" name="attachment">
+                                        <!--<p ms-for="el in @files">-->
+                                        <!--相关文件下载：<a ms-attr="{href:el.ftpPath}" class="hd-detail">{{el.name}}</a>-->
+                                        <!--</p>-->
+                                        <ul class="worktrend-list">
+                                            <li ms-for = "(k,el) in @files" style="line-height:32px;">
+                                                <!--<div ms-if ="el.suffix == 'jpg' || el.suffix == 'png' || el.suffix =='jpeg' ">-->
+                                                <!--<img style="width: 120px;height: 120px;" ms-attr="{src:el.uri}" alt="">-->
+                                                <!--&lt;!&ndash;<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>&ndash;&gt;-->
+                                                <!--<a ms-attr="{href:el.uri}" download >下载 </a>-->
+                                                <!--</div>-->
+                                                {{el.name}}.{{el.suffix}}
+                                                <!--<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>-->
+                                                <a ms-attr="{href:el.uri}"  download >下载 </a>
+                                                <!--</p>-->
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div ms-if="@files.length == 0" class="col-sm-6" name="attachment">
+                                        <ul class="worktrend-list">
+                                            <li style="line-height:32px;">
+                                                <span class="name">没有相关附件！</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="zhj-wrap clearfix">
+                                    <label class="lab" style="width:100px;text-align:right;padding:0 3px 0 0;">是否结转：</label>
+                                    <div class="radio col-sm-4">
+                                        <label style="padding-right:35px">
+                                            <input type="radio" name="transferStatus" ms-duplex-boolean="@data.transferStatus" id="transferStatus1" value="1" disabled>
+                                            是
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="transferStatus" ms-duplex-boolean="@data.transferStatus" id="transferStatus2" value="2" disabled>
+                                            否
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#project-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "project_view",
+    		        data: {},
+                    files: {},
+                    downLoad :function (path) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/file/downLoad",
+                            data : {
+                                'path' : path
+                            },
+                            success : function(data) {
+
+                            }
+                        };
+                        page.namespace.postRequest(HtmlMenuOpt);
+                    }
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/pds/project/project-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/project/getProjectById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+                        isProblemAction(data.isproblem);
+                         page.model.vm.files=data.attachmentInfoList;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+
+    $(".pro-add-head").on("click",function(){
+        if($(this).hasClass('active')){
+            $(this).removeClass("active").siblings('.pro-add-bottom').hide();
+        }else{
+            $(this).addClass("active").siblings('.pro-add-bottom').show();
+        }
+    })
+
+    function isProblemAction(type) {
+        debugger;
+        if(type == '2'){
+            $("#questionContentId").hide();
+        }else if(type =='1'){
+            $("#questionContentId").show();
+        }
+    }
+
+</script>

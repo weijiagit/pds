@@ -1,0 +1,119 @@
+<namespace id="urlresources-edit">
+    <ol class="breadcrumb">
+        <li><a href="#">资源管理</a></li>
+        <li><a href="#">修改</a></li>
+    </ol>
+	<section class="content" id="editURLResourcesSection" ms-controller="urlresources_edit">
+        <div class="box box-info">
+		    <form role="form" id="editURLResourcesForm"  class="form-horizontal">
+            <div class="row ">
+                <div class="col-sm-12">
+                    <!-- 右对齐的 btn-group -->
+                    <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fa fa-floppy-o"></i> 提交
+                        </button>
+                        <a class="btn btn-sm btn-default" id="btnCancel">
+                            <i class="fa fa-align-justify"> 返回</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+      			<div class="form-group">
+      				<label for="name" class="col-sm-1 control-label requiredMask input-sm">URL名称</label>
+   			 		<div class="col-sm-5">
+   			 			<input name="name" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@data.name}">
+   			 		</div>
+      			</div>
+      			<div class="form-group">
+      				<label for="url" class="col-sm-1 control-label requiredMask input-sm">URL路径</label>
+   			 		<div class="col-sm-5">
+   			 			<input name="url" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@data.url}">
+   			 		</div>
+      			</div>
+   			 	<div class="form-group">
+   			 		<label for="description" class="col-sm-1 control-label input-sm">URL描述&nbsp;&nbsp;</label>
+   			 		<div class="col-sm-5">
+   			 			<textarea name="description" rows="3" class="form-control input-sm" placeholder="" ms-attr="{value:@data.description}"></textarea>
+   			 		</div>
+   			 	</div>
+      		</div>
+      		<input type="hidden" name="id" ms-attr="{value:@data.id}" style="width: 100%" />
+		</form>
+        </div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+$(function() {
+	var page = {
+        namespace: $('#urlresources-edit').namespace(),
+        model: {
+            vm: avalon.define({
+                $id: "urlresources_edit",
+                data: {},
+                options: {},
+                defaults: {}
+            })
+        },
+        init: function () {
+            $("#editURLResourcesForm").validate({
+                rules: {
+                    'name': {
+                        required: true,
+                        maxlength: 255
+                    },
+                    'url': {
+                        required: true,
+                        maxlength: 255
+                    },
+                    'description': {
+                        required: false,
+                        maxlength: 255
+                    }
+                }, submitHandler: function (form) {
+                    page.doEdit();
+                }
+            });
+        },
+        doCancel: function () {
+            page.namespace.skiphtml("/pages/urlresources/urlresources-list.html");
+        },
+        doEdit: function () {
+            var submitSysUserForm = {
+                endpoint: "/urlresources/editUrlResources",
+                formObj: $("#editURLResourcesForm"),
+                success: function (data) {
+                    alertTool.success("操作成功!");
+                    page.doCancel();
+                },
+                failure: function (data) {
+                    alertTool.error(data);
+                }
+            };
+
+            page.namespace.submitForm(submitSysUserForm);
+        },
+        initView: function () {
+            page.namespace.getRequest({
+                endpoint: "/urlresources/getUrlResourcesById",
+                data: {"id": page.namespace.getParam("id")},
+                success: function (data) {
+                    page.model.vm.data = data;
+                },
+                failure: function (data) {
+                    alertTool.error(data);
+                }
+            });
+        }
+    }
+	
+	page.init();
+	
+	page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+    avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+    page.initView();
+});
+</script>

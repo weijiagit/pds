@@ -1,0 +1,67 @@
+<namespace id="government-review-approve-view">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">审批部门明细</span>
+		</div>
+		<section class="content" id="viewSysUserSection" ms-controller="government_review_approve_view">
+			<form role="form" id="viewSysUserForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">审批手续：</label>
+					<div class="col-sm-4">
+						<span id="name" class="form-control input-sm label-form-control">{{@data.imageText}}</span>
+					</div>
+					<label for="userAccount" class="col-sm-2 control-label requiredMask input-sm">所属部门：</label>
+					<div class="col-sm-4">
+						 <span id="userAccount" class="form-control input-sm label-form-control">{{@data.departName}}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="email" class="col-sm-2 control-label requiredMask input-sm">显示顺序：</label>
+					<div class="col-sm-4">
+						<span id="email" class="form-control input-sm label-form-control">{{@data.sequence}}</span>
+					</div>
+					<label for="disabledDict" class="col-sm-2 control-label requiredMask input-sm">是否显示：</label>
+					<div class="col-sm-4">
+					  	<span id="disabledDict"  class="form-control input-sm label-form-control">{{@data.showPicStr}}</span>
+					</div>
+				</div>
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#government-review-approve-view').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "government_review_approve_view",
+			        data: {}
+			    })
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/governmentReviewAndApprove/government-review-approve-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/departgovernment/getDepartGovernmentById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		}
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		page.initView();
+	});
+</script>

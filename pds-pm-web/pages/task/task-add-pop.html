@@ -1,0 +1,270 @@
+<namespace id="task-add" ms-controller="task_add">
+    <section class="content" id="addTaskSection">
+        <form role="form" id="addTaskForm"  class="form-horizontal">
+            <div class="form-group">
+                <label for="projectName" class="control-label">
+                    <span class="star">*</span>项目名称：</label>
+                <div class="con" name="content">
+                    <input type="text" name="projectName" id="projectName" class="ipt-txt">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="subcontractLeader" class="control-label">
+                    <span class="star">*</span>分包领导：
+                </label>
+                <div class="con" style="width:150px;margin-right: 38px;">
+                    <input type="text" name="subcontractLeader" id="subcontractLeader" class="ipt-txt fl" style="width:150px;">
+                </div>
+                <label for="endDateStr" class="control-label">
+                    时间节点：
+                </label>
+                <div class="con" style="width:150px;">
+                    <input type="text" name ="endDateStr" class="ipt-txt fl" style="width:150px;" id="endDateStr" readonly>
+                </div>
+            </div>
+            <div class="form-group pds-layer pds-responsible">
+                <label for="responsibleDepartments" class="control-label">
+                    <span class="star">*</span>责任单位：
+                </label>
+                <div class="con rel" style="width:150px;margin-right: 38px;">
+                    <!-- <select name="" id="" class="select1">
+                        <option value=""></option>
+                    </select> -->
+                    <div id="department" class="filter-item clearfix department">
+                        <div class="pro-search-wrap">
+                            <input id="responsibleDepartments" name="responsibleDepartments" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                            <input id="responsibleDepartmentIds" name="responsibleDepartmentIds" type="hidden" class="form-control input-sm" placeholder="" >
+                            <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <label for="responsiblePeople" class="control-label">
+                    责任人：
+                </label>
+                <div class="con" style="width:150px;">
+                    <select id="responsiblePeople" name="responsiblePeople" class="select1">
+                        <option ms-for="el in @userNames"  ms-attr="{value:el.id}">
+                            {{el.name}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="progressWork" class="control-label">
+                    工程进度：
+                </label>
+                <div class="con" style="width:150px;margin-right: 38px;">
+                    <input type="text" name="progressWork" id="progressWork" class="ipt-txt fl" style="width:150px;">
+                </div>
+                <label for="batch" class="control-label">
+                    <span class="star">*</span>批次：
+                </label>
+                <div class="con" style="width:150px;">
+                    <input type="text" name="batch" id="batch" class="ipt-txt fl" style="width:150px;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="workContent" class="control-label">
+                    <span class="star">*</span>工作任务：
+                </label>
+                <div class="con" name="content">
+                    <textarea name="workContent" id="workContent" class="textarea1" style="resize:none;" class="form-control input-sm" rows="6"
+                              placeholder=""></textarea>
+                </div>
+            </div>
+            <div class="btn-wrap tc">
+                <button type="submit" class="pds-btn mr20" value="" id="saveBtn">保存</button>
+                <button type="button" class="pds-btn-border" data-dismiss="modal">取消</button>
+            </div>
+        </form>
+
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#task-add').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "task_add",
+                    userNames:{},
+                    data: {}
+
+                })
+            },
+            init : function() {
+                $('#addTaskForm').validate({
+                    ignore: '',
+                    rules : {
+                        projectName : {
+                            required : true,
+                            maxlength : 255
+                        },
+                        subcontractLeader : {
+                            required : true,
+                            maxlength : 255
+                        },
+                        workContent : {
+                            required : true,
+                            maxlength : 1000
+                        },
+                        responsibleDepartments:{
+                            required :true
+                        },
+                        progressWork : {
+                            maxlength : 255
+                        },
+                        batch : {
+                            required :true,
+                            maxlength : 255
+                        }
+
+                    },
+                    messages:{
+                        projectName: {
+                            required: '项目名称不能为空',
+                            maxlength :"最多输入255个字"
+                        },
+                        subcontractLeader: {
+                            required: '分包领导不能为空',
+                            maxlength :"最多输入255个字"
+                        },
+                        workContent: {
+                            required: '工作任务不能为空',
+                            maxlength :"最多输入1000个字"
+                        },
+                        responsibleDepartments: {
+                            required: '责任单位不能为空'
+                        },
+                        progressWork :{
+                            maxlength :"最多输入255个字"
+                        },
+                        batch: {
+                            required: '批次不能为空',
+                            maxlength :"最多输入255个字"
+                        }
+                    },
+                    submitHandler : function(form) {
+                        $("#saveBtn").prop("disabled",true);
+                        page.doAdd();
+                    }
+                });
+                page.namespace.root.find('#planBeginDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#planBeginDateStr").datetimepicker("setStartDate", new Date());
+                });
+                page.namespace.root.find('#endDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#endDateStr").datetimepicker("setStartDate", new Date());
+                });
+            },
+            doAdd : function() {
+                var submitsForm = {
+                    endpoint : "/task/saveTask",
+                    formObj : $("#addTaskForm"),
+                    success : function(data) {
+
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure:function(data) {
+                        $("#saveBtn").prop("disabled",false);
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.submitForm(submitsForm);
+            },
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='z-index:999;position:absolute;margin-top:1px;height:150px; border:1px solid #d2d6de; overflow:auto;margin-top: -5px;margin-left: 4px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+                page.namespace.root.find('.pds-layer .con').on('mouseleave', function(){
+                    page.namespace.root.find('#departmentTree').remove();
+                });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+                    console.log(node[0].text);
+                    $("#responsibleDepartments").val(node[0].text);
+                    $('#responsibleDepartmentIds').val(node[0].id);
+
+                    //debugger;
+
+                    // 去掉必填项
+                     $("#responsibleDepartments-error").remove();
+                     $("#responsibleDepartments").removeClass();
+                     $("#responsibleDepartments").addClass("ipt-txt");
+
+                    $('#departmentTree').remove();
+//
+                    //debugger;
+                    page.namespace.getRequest({
+                        endpoint : "/task/selectUserInfo",
+                        data : {deptId:$('#responsibleDepartmentIds').val()},
+                        success : function(data) {
+                            page.model.vm.userNames=data;
+                        },
+                        failure : function(data) {
+                            alertTool.error(data);
+                        }
+                    });
+
+                });
+            }
+        };
+        page.init();
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+        avalon.scan(page.namespace.root[0], page.model.vm);
+    });
+</script>

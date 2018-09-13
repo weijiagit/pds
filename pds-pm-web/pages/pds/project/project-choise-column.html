@@ -1,0 +1,129 @@
+<namespace id="project-list">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">项目批量修改字段选择</span>
+		</div>
+		<section class="content" id="searchProjectSection" ms-controller="project_list">
+			<div class="">
+				<!-- form start -->
+				<form class="form-horizontal" id="searchProjectForm">
+					<div class="pro-choise-search clearfix">
+						<input type="text" class="ipt-txt" placeholder="输入需要修改的字段" id="columnName">
+						<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+					</div>
+					<div class="pro-choise-select-wrap clearfix">
+						<div class="all fl">
+							<div class="head">待选字段</div>
+							<div class="select-item">
+								<div class="tit">全部</div>
+								<ul class="list">
+									<li ms-for="(k,el) in @all_project_list">
+										<a href="javascript:;">{{el.tableName}}</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="arr-box fl">
+							<a href="javascript:;" class="btn-arrl" id="pro-choise-add"></a>
+							<a href="javascript:;" class="btn-arrr" id="pro-choise-remove"></a>
+						</div>
+						<div class="select fl">
+							<div class="head">已选字段</div>
+							<div class="select-item">
+								<div class="tit">全部</div>
+								<ul class="list">
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="btn-wrap">
+						<a href="javascript:;" class="pds-btn mr20" id="save">确定</a>
+						<a href="javascript:;" class="pds-btn-border" id="btnCancel">取消</a>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-list').namespace(),
+
+            model: {
+                vm: avalon.define({
+                    $id: "project_list",
+                    all_project_list: {}
+                })
+            },
+            getId : function() {
+                return page.namespace.getParam('ids');
+            },
+            doQuery : function() {
+                var columnName = page.namespace.root.find('#columnName').val();
+                page.namespace.getRequest({
+                    endpoint : "/project/getProjectAllColumn",
+                    data : {"columnName":columnName},
+                    success : function(data) {
+                        page.model.vm.all_project_list={};
+                        page.model.vm.all_project_list=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/pds/project/project-list.html");
+            },
+            save : function() {
+                var temparr = [];
+                var tempstr = '';
+                var ids = page.getId();
+
+                $(".select .select-item").find(".list li").each(function(index, el) {
+                    temparr.push($(el).children("a").html());
+                    tempstr = temparr.join(",");
+                });
+                if(tempstr == ''){
+                    alertTool.warning("请选择要批量修改的列!");
+                    return;
+                }
+                page.namespace.skiphtml("/pages/pds/project/project-batch-update.html?idsString=" + ids +"&columnNamesString=" +tempstr);
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.doQuery();
+
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#save').on('click', page.save);
+        page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+    });
+
+
+    $(".pro-choise-select-wrap .select-item").on("click",".list li",function(){
+        if($(this).hasClass('cur')){
+            $(this).removeClass('cur');
+        }else{
+            $(this).addClass('cur');
+        }
+    })
+    $("#pro-choise-add").on("click",function(){
+        $(".all .select-item").find(".list li").each(function(index, el) {
+            if($(this).hasClass('cur')){
+                $(this).removeClass("cur").remove().appendTo($(".select .select-item ul.list"));
+            }
+        });
+    })
+    $("#pro-choise-remove").on("click",function(){
+        $(".select .select-item").find(".list li").each(function(index, el) {
+            if($(this).hasClass('cur')){
+                $(this).removeClass("cur").remove().appendTo($(".all .select-item ul.list"));
+            }
+        });
+    })
+    $(".pro-choise-select-wrap").on("click",".select-item .tit",function(){
+        $(this).siblings('.list').children("li").addClass('cur');
+    })
+</script>

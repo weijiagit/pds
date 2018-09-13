@@ -1,0 +1,134 @@
+<namespace id="project-flow-list">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">项目流程监控</span>
+        </div>
+		<section class="content" id="searchProjectSection" ms-controller="project_flow_list">
+			<div class="">
+				<!-- form start -->
+				<form class="form-horizontal" id="searchProjectForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">项目名称：</label>
+						<div class="filter-item clearfix fl">
+							<!-- <div class="pro-search-wrap clearfix"> -->
+								<!--<input type="text" name="projectName" id="projectName" placeholder="请填写所需要查询的项目名称" class="ipt-txt fl"></input>-->
+								<span name="projectName" class="fl" style="min-width:455px;max-width:800px;white-space:nowrap;text-overflow:ellipsis;overflow: hidden;margin-right:10px;" ms-html="@data.projectName"></span>
+							<!-- </div> -->
+							<!--<a href="javascript:;" class="pds-btn fl">查询</a>-->
+							<a href="javascript:;" class="pds-btn-border fl" id="queryHistory">历史记录</a>
+						</div>
+					</div>
+					<ul class="pro-flow-list-item clearfix">
+						<li ms-for="(k,el) in @all_project_list" ms-attr="{class:'status'+el.approveStatus}">
+							<span class="txt">{{el.imageText}}</span>
+							<div class="pro-flow-status-wrap">
+								<a ms-if="el.approveStatus != '1'" href="javascript:;" class="btn btn1" ms-click="@toChangeProjectFlowStatus(el,'1')">无需办理</a>
+								<a ms-if="el.approveStatus != '2'" href="javascript:;" class="btn btn2" ms-click="@toChangeProjectFlowStatus(el,'2')">未开始</a>
+								<a ms-if="el.approveStatus != '3'" href="javascript:;" class="btn btn3" ms-click="@toChangeProjectFlowStatus(el,'3')">受理中</a>
+								<a ms-if="el.approveStatus != '4'" href="javascript:;" class="btn btn4" ms-click="@toChangeProjectFlowStatus(el,'4')" name="process_problem" ms-attr="{id:'problem_'+k}">存在问题</a>
+								<a ms-if="el.approveStatus != '5'" href="javascript:;" class="btn btn5" ms-click="@toChangeProjectFlowStatus(el,'5')">完结</a>
+							</div>
+						</li>
+					</ul>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-list').namespace(),
+
+            model: {
+                vm: avalon.define({
+                    $id: "project_flow_list",
+                    data: {},
+                    all_project_list: {},
+                    toChangeProjectFlowStatus:function (el,status) {
+                        if(status == '1' || status == '2' || status == '3'){
+                            var HtmlMenuOpt = {
+                                endpoint : "/project/updateProjectFlowStatusById",
+                                data : {
+                                    'projectDepartId' : el.id,
+                                    'approveStatus':status
+                                },
+                                success : function() {
+                                    page.init();
+                                }
+                            };
+                            page.namespace.getRequest(HtmlMenuOpt);
+                        }else if(status == '4'){
+                            page.namespace.modal.open(page,{
+                                id:"addProjectDepartProblemModal",
+                                title:"存在问题",
+                                hidden : function(e,ra){
+                                    if(ra && ra.length > 0){
+                                        page.init();
+                                    }
+                                }
+                            },'/pages/pds/project/project-flow-problem-pop.html',{'id':el.id,'projectId':page.getId(),'departId':el.departmentId,'approveStatus':status},'550px;');
+                        }else if(status == '5'){
+                            page.namespace.modal.open(page,{
+                                id:"addProjectDepartCloseModal",
+                                title:"完结",
+                                hidden : function(e,ra){
+                                    if(ra && ra.length > 0){
+                                        page.init();
+                                    }
+                                }
+                            },'/pages/pds/project/project-flow-close-pop.html',{'id':el.id,'approveStatus':status},'550px;');
+						}
+
+
+                    }
+                })
+            },
+            queryHistory : function() {
+                var id = page.getId();
+                page.namespace.skiphtml("/pages/pds/project/project-flow-history.html?id=" + id);
+            },
+            getId : function() {
+                return page.namespace.getParam('id');
+            },
+            init : function() {
+                page.namespace.getRequest({
+                    endpoint : "/project/getProjectFlowListById",
+                    data : {'projectId':page.getId()},
+                    success : function(data) {
+                        page.model.vm.data={};
+                        page.model.vm.all_project_list={};
+                        page.model.vm.data=data;
+                        page.model.vm.all_project_list=data.projectDepartInfoList;
+
+                        var businessView = sessionStorage.getItem("process-problem");
+                        page.namespace.root.find('[name="process_problem"]').each(function (i,obj) {
+                            var id = obj.id;
+                            if(businessView != null){
+                                $("#"+id).show();
+                            }else{
+                                $("#"+id).hide();
+                            }
+                        });
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+
+        page.namespace.root.find('#queryHistory').on('click', page.queryHistory);
+    });
+
+    $("ul.pro-flow-list-item").on("click","li",function(){
+        if($(this).hasClass('active')){
+            $(this).removeClass("active");
+        }else{
+            $(this).addClass('active');
+        }
+    });
+</script>

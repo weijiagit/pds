@@ -1,0 +1,169 @@
+<namespace id="task-view" ms-controller="task_view">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">项目推进详情</span>
+        </div>
+        <section class="content" id="addTaskSection">
+            <form role="form"  id="viewTaskForm" class="form-horizontal">
+                    <div class="form-group">
+                        <label for="projectName" class="col-sm-2 control-label requiredMask input-sm">
+                            项目名称：
+                        </label>
+                        <div class="col-sm-4">
+                            <span id="projectName" class="form-control label-form-control input-sm"  ms-html="@data.projectName">
+                            </span>
+                        </div>
+                        <label for="subcontractLeader" class="col-sm-2 control-label requiredMask input-sm">
+                            分包领导：
+                        </label>
+                        <div class="col-sm-4">
+                            <span id="subcontractLeader" class="form-control label-form-control input-sm"  ms-html="@data.subcontractLeader">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workContent" class="col-sm-2 control-label requiredMask input-sm">
+                            工作任务：
+                        </label>
+                        <div class="col-sm-10">
+                            <textarea name="workContent" id="workContent" class="form-textarea" readonly="true" ms-html="@data.workContent">
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label requiredMask input-sm">
+                            责任单位：
+                        </label>
+                        <div class="col-sm-4">
+                            <span class="form-control label-form-control input-sm"  ms-if="@data.responsibleDepartment != null">
+                                {{@data.responsibleDepartment}}
+                            </span>
+                            <span  class="form-control label-form-control input-sm"  ms-if="@data.responsibleDepartment == null" >
+                                /
+                            </span>
+                        </div>
+                        <label class="col-sm-2 control-label requiredMask input-sm">
+                            责任人：
+                        </label>
+                        <div class="col-sm-4">
+                            <span class="form-control label-form-control input-sm"  ms-if="@data.responsiblePeople != null">
+                                {{@data.responsiblePeople}}
+                            </span>
+                            <span  class="form-control label-form-control input-sm"  ms-if="@data.responsiblePeople == null" >
+                                /
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="endDate" class="col-sm-2 control-label requiredMask input-sm">
+                            时间节点：
+                        </label>
+                        <div class="col-sm-4">
+                            <span id="endDate" class="form-control label-form-control input-sm"  ms-if="@data.endDate != null">
+                                {{@data.endDate | date}}
+                            </span>
+                            <span id="endDate1" class="form-control label-form-control input-sm"  ms-if="@data.endDate == null">
+                                /
+                            </span>
+                        </div>
+                        <label for="createDate" class="col-sm-2 control-label requiredMask input-sm">
+                            创建时间：</label>
+                        <div class="col-sm-4">
+                            <span id="createDate" class="form-control label-form-control input-sm"  >
+                                {{@data.createDate | date}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate" class="col-sm-2 control-label requiredMask input-sm">
+                            完成情况：
+                        </label>
+                        <div class="col-sm-4">
+                            <span class="form-control label-form-control input-sm" ms-if="@data.isDepartFinish ==0" >
+                                否
+                            </span>
+                            <span class="form-control label-form-control input-sm" ms-if="@data.isDepartFinish ==1" >
+                                是
+                            </span>
+                        </div>
+                        <label for="createDate" class="col-sm-2 control-label requiredMask input-sm">
+                            核查情况：
+                        </label>
+                        <div class="col-sm-4">
+                            <span  class="form-control label-form-control input-sm" ms-if="@data.isFinish == 0" >
+                                否
+                            </span>
+                            <span  class="form-control label-form-control input-sm" ms-if="@data.isFinish == 1" >
+                               是
+                            </span>
+                        </div>
+                    </div>
+
+                <div class="form-group">
+                    <label for="endDate" class="col-sm-2 control-label requiredMask input-sm">
+                        工程进度：
+                    </label>
+                    <div class="col-sm-4">
+                            <span id="progressWork" class="form-control label-form-control input-sm"  ms-html="@data.progressWork">
+                            </span>
+                    </div>
+                    <label for="createDate" class="col-sm-2 control-label requiredMask input-sm">
+                        批次：</label>
+                    <div class="col-sm-4">
+                            <span id="batch" class="form-control label-form-control input-sm"  ms-html="@data.batch">
+                            </span>
+                    </div>
+                </div>
+
+                <div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#task-view').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "task_view",
+                    data: {}
+                })
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/task/task-list.html");
+            },
+            doBack :function () {
+                page.namespace.skiphtml("/pages/home.html");
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/task/detailTask",
+                    data : {"id":page.namespace.getParam("id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+
+        var  type = page.namespace.getParam("type");
+        if(type != null && type =='task'){
+            page.namespace.root.find('#btnCancel').on('click', page.doBack);
+        }else {
+            page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+        }
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

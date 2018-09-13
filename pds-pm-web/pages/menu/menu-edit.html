@@ -1,0 +1,118 @@
+<namespace id="menu-edit">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改菜单</span>
+		</div>
+		<section class="content" id="editMenuSection" ms-controller="menu_edit">
+			<form role="form" id="editMenuForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>菜单名称：</label>
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@menu.name}">
+					</div>
+					<label for="url" class="col-sm-2 control-label requiredMask input-sm">菜单地址：</label>
+					<div class="col-sm-4">
+						<input name="url" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@menu.url}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="cls" class="col-sm-2 control-label requiredMask input-sm">菜单样式：</label>
+					<div class="col-sm-4">
+						<input name="cls" type="text" class="form-control input-sm" placeholder=""  ms-attr="{value:@menu.cls}">
+					</div>
+					<label for="layout" class="col-sm-2 control-label requiredMask input-sm">布局地址：</label>
+					<div class="col-sm-4">
+						<input name="layout" type="text" value="main-bodyindex" class="form-control input-sm" placeholder="" ms-attr="{value:@menu.layout}">
+					</div>
+				</div>
+                <div class="form-group">
+					<label for="sequence" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>菜单排序：</label>
+					<div class="col-sm-4">
+						<input name="sequence" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@menu.sequence}">
+					</div>
+				</div>        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+					<input type="hidden" name="id" ms-attr="{value:@menu.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#menu-edit').namespace(),
+			model : {
+				vm : avalon.define({
+					$id : "menu_edit",
+					menu : {}
+				})
+			},
+			init : function() {
+				$("#editMenuForm").validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'layout' : {
+							required : true,
+							maxlength : 255
+						},
+						'sequence' : {
+							required : true,
+							number : true,
+							digits : true,
+							min : 1
+						}
+					},
+					submitHandler : function(form) {
+
+						page.doEdit();
+					}
+				});
+				
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/menu/menu-list.html');
+			},
+			initView : function() {
+				page.namespace.getRequest({
+					endpoint : "/sysmenu/getMenuById",
+					data : {
+						"id" : page.namespace.getParam("id")
+					},
+					success : function(data) {
+						page.model.vm.menu = data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			},
+			doEdit : function() {
+				var submitSysUserForm = {
+					endpoint : "/sysmenu/editMenu",
+					formObj : $("#editMenuForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.submitForm(submitSysUserForm);
+			}
+		};
+
+		avalon.scan(page.namespace.root[0], page.model.vm); // void braces
+		page.init();
+		page.initView();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+	});
+</script>

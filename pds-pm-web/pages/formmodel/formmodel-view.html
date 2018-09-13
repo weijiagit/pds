@@ -1,0 +1,99 @@
+<namespace id="formmodel-view"   ms-controller="formmodel_view">
+<ol class="breadcrumb">
+    <li><a href="#">模板</a></li>
+    <li><a href="#">明细</a></li>
+</ol>
+<section class="content" id="viewFormModelSection">
+    <div class="box box-info">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+    	<form role="form" id="viewSysParamForm" class="form-horizontal">
+            <div class="form-group">
+                <label for="modelName" class="col-sm-1 control-label input-sm">模板名称</label>
+                <div class="col-sm-5">
+                    <span id="modelName" class="form-control label-form-control input-sm"  >{{@data.modelName}}</span>
+                </div>
+                <label for="modelCode" class="col-sm-1 control-label input-sm">模板编码</label>
+                <div class="col-sm-5">
+                    <span id="modelCode" class="form-control label-form-control input-sm"  >{{@data.modelCode}}</span>
+                </div>
+            </div>
+            
+            
+            <div class="box box-info" style="border-top: 0px;">
+				<div class="box-body" id="fieldList" style="margin-top: -10px;">
+					<table id="fieldListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>字段英文名称</th>
+								<th>字段中文名称</th>
+								<th>字段类型</th>
+								<th>字段长度</th>
+								<th>字段顺序</th>
+								<th>是否显示</th>
+							</tr>
+							<tr ms-for="el in @formFrameworks"
+							ms-if="el.fieldEnName != 'id' && el.fieldEnName != 'version' && el.fieldEnName != 'creator_id' && el.fieldEnName != 'modifier_id' && el.fieldEnName != 'is_available'">
+				                <td><span class="form-control label-form-control input-sm">{{el.fieldEnName}}</span></td>
+				                <td><span class="form-control label-form-control input-sm">{{el.fieldChName}}</span></td>
+				                <td><span class="form-control label-form-control input-sm">{{el.fieldTypeName}}</span></td>
+				                <td><span class="form-control label-form-control input-sm">{{el.fieldLen}}</span></td>
+				                <td><span class="form-control label-form-control input-sm">{{el.sequence}}</span></td>
+				                <td><span class="form-control label-form-control input-sm">{{el.isDisplayName}}</span></td>
+				            </tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+            
+
+        </form>    
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#formmodel-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "formmodel_view",
+    		        data: {},
+    		        formFrameworks:[]
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/formmodel/formmodel-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/formModel/getSysFormFrameworks",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+						 page.model.vm.formFrameworks=data.formFrameworks;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+</script>

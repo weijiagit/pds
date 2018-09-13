@@ -1,0 +1,170 @@
+<namespace id="attractProject-view" >
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">招商前期项目明细</span>
+        </div>
+        <section class="content" id="viewAttractProjectSection" ms-controller="attractProject_view">
+            <form role="form"  id="viewAttractProjectForm" class="form-horizontal">
+                <div class="">
+                    <div class="form-group">
+                        <label for="projectName" class="col-sm-2 control-label requiredMask input-sm">拟项目名称：</label>
+                        <div class="col-sm-4">
+                            <span id=projectName class="form-control label-form-control input-sm"  >{{@data.projectName}}</span>
+                        </div>
+                        <label for="createDate" class="col-sm-2 control-label requiredMask input-sm">创建时间：</label>
+                        <div class="col-sm-4">
+                            <span id=createDate class="form-control label-form-control input-sm"  >{{@data.createDateStr}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyName" class="col-sm-2 control-label requiredMask input-sm">公司全称：</label>
+                        <div class="col-sm-4">
+                            <span id="companyName" class="form-control label-form-control input-sm"  >{{@data.companyName}}</span>
+                        </div>
+                        <label for="investmentCompany" class="col-sm-2 control-label requiredMask input-sm">投资单位：</label>
+                        <div class="col-sm-4">
+                            <span id=investmentCompany class="form-control label-form-control input-sm"  >{{@data.investmentCompany}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="landAcquisition" class="col-sm-2 control-label requiredMask input-sm">征地：</label>
+                        <div class="col-sm-4">
+                            <span id=landAcquisition class="form-control label-form-control input-sm"  >{{@data.landAcquisition}}</span>
+                        </div>
+                        <label for="floorSpace" class="col-sm-2 control-label requiredMask input-sm">占地面积：</label>
+                        <div class="col-sm-4">
+                            <span id=floorSpace class="form-control label-form-control input-sm"  >{{@data.floorSpace}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="siteLocation" class="col-sm-2 control-label requiredMask input-sm">选址位置：</label>
+                        <div class="col-sm-4">
+                            <span id=siteLocation class="form-control label-form-control input-sm"  >{{@data.siteLocation}}</span>
+                        </div>
+                        <label for="totalInvestment" class="col-sm-2 control-label requiredMask input-sm">总投资(元)：</label>
+                        <div class="col-sm-4">
+                            <span id=totalInvestment class="form-control label-form-control input-sm"  >{{@data.totalInvestment}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="chargeName" class="col-sm-2 control-label requiredMask input-sm">项目负责人姓名：</label>
+                        <div class="col-sm-4">
+                            <span id=chargeName class="form-control label-form-control input-sm"  >{{@data.chargeName}}</span>
+                        </div>
+                        <label for="chargePhone" class="col-sm-2 control-label requiredMask input-sm">负责人电话：</label>
+                        <div class="col-sm-4">
+                            <span id=chargePhone class="form-control label-form-control input-sm"  >{{@data.chargePhone}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactName" class="col-sm-2 control-label requiredMask input-sm">项目联系人姓名：</label>
+                        <div class="col-sm-4">
+                            <span id=contactName class="form-control label-form-control input-sm"  >{{@data.contactName}}</span>
+                        </div>
+                        <label for="contactPhone" class="col-sm-2 control-label requiredMask input-sm">联系人电话：</label>
+                        <div class="col-sm-4">
+                            <span id=contactPhone class="form-control label-form-control input-sm"  >{{@data.contactPhone}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescribe" class="col-sm-2 control-label requiredMask input-sm">项目简介：</label>
+                        <div class="col-sm-10">
+                            <textarea name="projectDescribe" id="projectDescribe" class="form-textarea" readonly="true">{{@data.projectDescribe}}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="investSurvey" class="col-sm-2 control-label requiredMask input-sm">投资概况：</label>
+                        <div class="col-sm-10">
+                            <textarea name="investSurvey" id="investSurvey" class="form-textarea" readonly="true">{{@data.investSurvey}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="upload clearfix">
+                        <div class="upload-fr" style="width:100%;">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label input-sm">入园协议扫描件：</label>
+                                <div ms-if="@files.length > 0" class="col-sm-6" name="attachment">
+                                    <!--<p ms-for="el in @files">-->
+                                    <!--相关文件下载：<a ms-attr="{href:el.ftpPath}" class="hd-detail">{{el.name}}</a>-->
+                                    <!--</p>-->
+                                    <ul class="worktrend-list">
+                                        <li ms-for = "(k,el) in @files" style="line-height:32px;">
+                                            <!--<div ms-if ="el.suffix == 'jpg' || el.suffix == 'png' || el.suffix =='jpeg' ">-->
+                                            <!--<img style="width: 120px;height: 120px;" ms-attr="{src:el.uri}" alt="">-->
+                                            <!--&lt;!&ndash;<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>&ndash;&gt;-->
+                                            <!--<a ms-attr="{href:el.uri}" download >下载 </a>-->
+                                            <!--</div>-->
+                                            {{el.name}}.{{el.suffix}}
+                                            <!--<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>-->
+                                            <a ms-attr="{href:el.uri}"  download >下载 </a>
+                                            <!--</p>-->
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div ms-if="@files.length == 0" class="col-sm-6" name="attachment">
+                                    <ul class="worktrend-list">
+                                        <li style="line-height:32px;">
+                                            <span class="name">没有相关附件！</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#attractProject-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "attractProject_view",
+    		        data: {},
+                    files: {},
+                    downLoad :function (path) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/file/downLoad",
+                            data : {
+                                'path' : path
+                            },
+                            success : function(data) {
+
+                            }
+                        };
+                        page.namespace.postRequest(HtmlMenuOpt);
+                    }
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/pds/project/project-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+                    endpoint : "/project/getAttractProjectContById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+                         page.model.vm.files=data.attachmentInfoList;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+</script>

@@ -1,0 +1,19 @@
+<meta charset="utf-8">
+<namespace id="errorPage" ms-controller="pds-error-page">
+	<div class="pro-add-wrap" style="min-height: 757px;text-align: center;">
+		<span class="error-bg"></span>
+		<p class="error-page-txt">很抱歉，页面丢了！</p>
+		<a href="javascript:;" class="pds-btn" id="goHome">返回首页</a>
+	</div>
+</namespace>
+<script type="text/javascript">
+$(document).ready(function() {
+	var page = {
+        namespace : $('#errorPage').namespace()
+
+    }
+    page.namespace.root.find("#goHome").on("click",function(){
+    	page.namespace.skiphtml("/pages/index.html");
+    })
+});
+</script>

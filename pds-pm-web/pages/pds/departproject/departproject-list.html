@@ -1,0 +1,267 @@
+<namespace id="departproject-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">部门上报项目管理</span>
+        </div>
+        <section class="content" id="searchDepartProjectSection" ms-controller="departproject_list">
+            <div class="">
+                <form class="form-horizontal" id="searchDepartProjectForm">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">项目名称</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="projectName" id="projectName" placeholder="请输入所需要查询的项目名称" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix rel">
+                        <label class="filed-label fl">填报部门</label>
+                        <div class="pro-search-wrap rel">
+                            <div id="department" class="filter-item clearfix department">
+                                <input id="departmentName" name="departmentName" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                                <input id="departmentId" name="departmentId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix" style="margin-bottom: 6px;">
+                        <div class="fl clearfix">
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl mr20" id="reset">重置</a> -->
+                            <a href="javascript:;" class="pds-btn fl pds-add" id="addBtn" func="task-add">新增</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label">工作动态</div>
+                        </div> -->
+                        <div class="pro-table" id="workdynamiceList" style="margin-top: -10px;">
+                            <table id="departProjectListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0" width="100%">
+                                <thead>
+                                <tr>
+                                    <th class="content-center">序号</th>
+                                    <th>项目名称</th>
+                                    <th>建设单位</th>
+                                    <th>建设内容和规模</th>
+                                    <th>总投资</th>
+                                    <th>计划开工时间</th>
+                                    <th>计划竣工时间</th>
+                                    <th>填报部门</th>
+                                    <th>部门联系人</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#departproject-list').namespace(),
+            model: {
+                vm: avalon.define({
+                    $id: "departproject_list",
+
+                })
+            },
+            init : function () {
+                // 查询
+                var query = sessionStorage.getItem("depart-project-query");
+                if(query !=null){
+                    $("#queryBtn").show();
+                }else{
+                    $("#queryBtn").hide();
+                }
+                // 新增
+                var add = sessionStorage.getItem("depart-project-add");
+                if(add !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doView:function(id) {
+                page.namespace.skiphtml("/pages/pds/departproject/departproject-view.html?id=" + id);
+            },
+            doDepartProjectEdit:function(id) {
+                page.namespace.skiphtml("/pages/pds/departproject/departproject-edit.html?id=" + id);
+            },
+
+            doDepartProjectDel:function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/departproject/deleteDepartProject",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.doQuery();
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doReset : function() {
+                $('#searchDepartProjectForm')[0].reset();
+                $('#departmentId').val("");
+                page.listTable.ajax.reload();
+            },
+            doAdd : function() {
+                page.namespace.skiphtml("/pages/pds/departproject/departproject-add.html");
+            },
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:300px; border:1px solid #d2d6de; overflow:auto;margin-top: 30px;margin-left: 2px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+                page.namespace.root.find('#departmentTree').parent(".pro-search-wrap").on('mouseleave', function(){
+                    page.namespace.root.find('#departmentTree').remove();
+                });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+//
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+
+                    $('#departmentName').val(node[0].text);
+                    $('#departmentId').val(node[0].id);
+
+                    $('#departmentTree').remove();
+                });
+            }
+        };
+        page.init();
+        page.listTable = $('#departProjectListTable').initDataTable({
+            url : "/departproject/getDepartProjectPage",
+            urlDataFn : function() {
+                var searchForm = $("#searchDepartProjectForm").serializeJson();
+                return searchForm;
+            },
+            lengthChange : false,
+            checkbox : false,
+            index : true,
+            viewFlag : true,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                departProjectDel : function(id, rowData) {
+                    page.doDepartProjectDel(id);
+                },
+                departProjectEdit : function(id, rowData) {
+                    page.doDepartProjectEdit(id);
+                }
+            },
+            columns : [
+                {
+                    "data" : "projectName",
+                    "width" : "7%"
+                },{
+                    "data" : "companyName",
+                    "width" : "7%"
+                },{
+                    "data" : "constructionContentScale",
+                    "width" : "7%"
+                },{
+                    "data" : "totalInvestment",
+                    "width" : "5%",
+                    "render" :function (data, type, row) {
+                        return formatCurrency(data);
+                    }
+                },{
+                    "data" : "planBeginDateStr",
+                    "class" : "content-center",
+                    "width" : "7%"
+                },{
+                    "data" : "planEndDateStr",
+                    "class" : "content-center",
+                    "width" : "7%"
+                },{
+                    "data" : "departName",
+                    "class" : "content-center",
+                    "width" : "5%"
+                },{
+                    "data" : "userName",
+                    "class" : "content-center",
+                    "width" : "6%"
+                }
+            ]
+        });
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+    });
+
+    function formatCurrency(num){
+        num = num.toString().replace(/\$|\,/g,'');
+        if(isNaN(num))
+            num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num*100+0.50000000001);
+        cents = num%100;
+        num = Math.floor(num/100).toString();
+        if(cents<10)
+            cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+            num = num.substring(0,num.length-(4*i+3))+','+
+                num.substring(num.length-(4*i+3));
+        return (((sign)?'':'-') + num + '.' + cents);
+    }
+</script>

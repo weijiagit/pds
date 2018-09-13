@@ -1,0 +1,118 @@
+spring :
+    application :
+         admin.enabled : true #MBeanServer
+    datasource : 
+         driver-class-name : com.mysql.jdbc.Driver
+         url : jdbc:mysql://172.16.200.180:3306/pds?useUnicode=true&characterEncoding=utf8&useSSL=false
+         username : root
+         password : test123
+         tomcat : 
+              max-wait : 30000  # tomcat pool , Number of ms to wait before throwing an exception if no connection is available.
+              max-idle : 15
+              max-active : 50 # Maximum number of active connections that can be allocated from this pool at the same time.
+              test-on-borrow : true # Validate the connection before borrowing it from the pool.
+              validation-query : select 1
+    jpa : 
+          generate-ddl : false
+          show-sql : true
+          properties : 
+               hibernate : 
+                    show_sql : true
+                    dialect : com.fykj.kernel.springjpa.hibernate.mysql.MySQLServerDialect
+                    
+    cache :
+         ehcache : 
+               config : classpath:ehcache.xml
+    http :
+        multipart : 
+              enabled : true
+              max-file-size : 50Mb
+              max-request-size : 50Mb
+              resolve-lazily : false
+    redis :
+        host : 172.16.200.42
+        port : 6379
+        pool.max-idle : 8
+        pool.min-idle : 0
+        pool.max-active : 8  
+        pool.max-wait : -1   
+server : 
+    port : 8689 
+    context-path : /api
+    tomcat :
+         uri-encoding : UTF-8
+         basedir : /work/api/tomcatbasedir
+management : 
+     security.enabled : false 
+logging:
+  file : /log/api.log
+  level:
+    com.kcfy : DEBUG
+    org.springframework: INFO
+    org.hibernate : INFO
+ #   org.springframework: DEBUG
+    
+cpp : 
+    name : xmgl
+    auth.authentication : true
+    auth.authorization : true
+    jwt :
+      secret : jiazhongjin
+      expiration : 3600000000 #milliseconds  ; long long time , only for developing 
+      header : _token
+    ehcache :
+          name : dev 
+    redis : 
+          expired-time : 120  #seconds
+          redis-off-proxy : true 
+          header : _redis_token 
+          session-user-expired-time : 12 #HOURS redis 用户信息储存时间
+    thread : 
+         name : ''
+         alive-count : 3
+         max-count : 9
+         alive-time : 3600 # seconds
+    user :
+       default-password : 11111
+    department :
+       role-id : 605af196-0ee0-4bea-b001-97ae921a3bf3
+    file : 
+       dsk-path : X:/xmgl   #simple file directory
+       #host : http://172.16.200.180:81 #IP地址 指定文件存储的地址
+       host : http://pds-file.cnsaas.com #IP地址 指定文件存储的地址
+    export:
+       dir-path : c:/usr/
+    kaptcha :
+          enable : true
+          header-key : _kaptcha_key
+          header-value : _kaptcha_value
+          expired-time : 60  #second 
+    mock :
+         enable : false
+         header-key : _mock_enable
+    
+    smsaccount : #短信运营商账号密码
+         smsSendUrl : http://106.ihuyi.cn/webservice/sms.php?method=Submit
+         longName : cf_kechuang
+         passWord : 123456
+    cors :
+         origins :
+               - "*"
+    sso :                   
+        enable : true        
+        host : http://1.194.238.247:8090/
+        loginUrl : sso/passport/login?appkey=2017014702&ReturnUrl=http%3A%2F%2F172.16.200.42%2Fpds-pm-web%2Fpages%2FssoLogin.html
+        loginOutUrl : sso/passport/loginOut
+        validTokenUrl : sso/passport/validate/
+
+    apr :
+        enable : true
+        #host : http://1.194.238.196:81/
+        host : http://demo8.fyxmt.com/
+        rejectUrl : wap/api/project/reject
+        Authorization : 655091221e63239f05e11e78939fa163efa7d8c2539774857
+
+    oam :
+        enable : true
+        url : http://1.194.238.57:88/bizapi/apibiz.php
+        strkey : 754f20a42ac3d1643f41ab4741b8709b

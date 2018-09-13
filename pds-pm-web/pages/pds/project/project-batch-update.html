@@ -1,0 +1,2007 @@
+<namespace id="project-batch-update">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">批量修改</span>
+		</div>
+		<section class="content" id="projectBatchUpdate" ms-controller="project_batch_update">
+			<form role="form" class="form-horizontal" id="projectBatchUpdateForm">
+				<div class="">
+					<div class="works-tab-wrap" style="overflow:auto;">
+						<table class="pds-index-works-tab pds-proj-tab" style="border:1px solid #e8eaf1;width:auto!important;word-break: keep-all;">
+							<thead>
+							<tr>
+								<th width="200">
+									<label class="control-label requiredMask input-sm">
+										项目名称
+									</label>
+
+								</th>
+								<th ms-for ="(k,el) in @all_choise_column_list" width="200">
+									<label class="control-label requiredMask input-sm">
+										<span class="star" ms-if="el.fieldName == 'company_name' || el.fieldName == 'organization_code'
+										|| el.fieldName == 'project_attribute' || el.fieldName == 'construction_nature'
+										|| el.fieldName == 'industry_classification' || el.fieldName == 'plan_begin_date'
+										|| el.fieldName == 'plan_end_date' || el.fieldName == 'total_investment' || el.fieldName == 'enterprise_legal_person'
+										|| el.fieldName == 'enterprise_contact_person' || el.fieldName == 'enterprise_contact_phone'
+										|| el.fieldName == 'enterprise_charge_person' || el.fieldName == 'enterprise_charge_phone' || el.fieldName == 'construction_content_scale'">*</span>
+										{{el.tableName}}
+									</label>
+								</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr ms-for ="(k,el) in @all_project_list">
+								<td ms-if="el.projectName != null"><div class="title">{{el.projectName}}</div></td>
+
+								<td ms-if="el.projectNumber !=null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="projectNumber" ms-attr="{id:'projectNumber'+k}" type="text"
+												   ms-duplex-value="el.projectNumber" class="form-control input-sm" placeholder="" onkeyup="checkRulesProjectNumber(this)">
+										</div>
+									</div>
+								</td>
+
+								<td  ms-if="el.companyName !=null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="companyName" ms-attr="{id:'companyName'+k}" type="text"
+												   ms-duplex-value="el.companyName" class="form-control input-sm" placeholder="" onkeyup="checkRulesCompanyName(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.organizationCode !=null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="organizationCode" ms-attr="{id:'organizationCode'+k}"
+												   ms-duplex-value="el.organizationCode" type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesOrganizationCode(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.projectAttribute != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="projectAttribute" ms-attr="{id:'projectAttribute'+k}"
+													ms-duplex="el.projectAttribute" class="form-control input-sm" onchange="checkRulesProjectAttribute(this)">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @projectAttributeList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.constructionNature !=null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="constructionNature" ms-attr="{id:'constructionNature'+k}"
+													ms-duplex="el.constructionNature" class="form-control input-sm" onchange="checkRulesConstructionNature(this)">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @constructionNatureList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.industryClassification != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="industryClassification" ms-attr="{id:'industryClassification'+k}"
+													ms-duplex="el.industryClassification" class="form-control input-sm" onchange="checkRulesIndustryClassification(this)">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @industryClassificationList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.implementSchedule != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="implementSchedule" id = "implementSchedule" ms-duplex="el.implementSchedule" class="form-control input-sm">
+												<option ms-for="el in @implementScheduleList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.planBeginDate != null">
+									<div class="">
+										<div class="col-sm-12">
+											<div class="datatimepicker-wrap rel">
+												<input name="planBeginDateStr" ms-duplex-value="el.planBeginDateStr" readonly type="text" class="form-control input-sm" placeholder="" ms-attr='{id:"planBeginDateStr"+k}' >
+												<span class="data-del"><i class="fa fa-close"></i></span>
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.planEndDate != null">
+									<div class="">
+										<div class="col-sm-12">
+											<div class="datatimepicker-wrap rel">
+												<input name="planEndDateStr" ms-duplex-value="el.planEndDateStr" readonly type="text" class="form-control input-sm" placeholder="" ms-attr='{id:"planEndDateStr"+k}' >
+												<span class="data-del"><i class="fa fa-close"></i></span>
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.actualBeginDate != null">
+									<div class="">
+										<div class="col-sm-12">
+											<div class="datatimepicker-wrap rel">
+												<input name="actualBeginDateStr" ms-duplex-value="el.actualBeginDateStr" readonly type="text" class="form-control input-sm" placeholder="" ms-attr='{id:"actualBeginDateStr"+k}' >
+												<span class="data-del"><i class="fa fa-close"></i></span>
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.actualEndDate != null">
+									<div class="">
+										<div class="col-sm-12">
+											<div class="datatimepicker-wrap rel">
+												<input name="actualEndDateStr" ms-duplex-value="el.actualEndDateStr" readonly type="text" class="form-control input-sm" placeholder="" ms-attr='{id:"actualEndDateStr"+k}'>
+												<span class="data-del"><i class="fa fa-close"></i></span>
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.totalInvestmentFlag == '1'">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="totalInvestmentStr" ms-attr="{id:'totalInvestmentStr'+k}" ms-duplex-value="el.totalInvestment"
+												   type="text" class="form-control input-sm" placeholder="" maxlength="15" onkeyup="checkRulesTotalInvestmentStr(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.enterpriseLegalPerson != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="enterpriseLegalPerson" ms-attr="{id:'enterpriseLegalPerson'+k}" ms-duplex-value="el.enterpriseLegalPerson"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesEnterpriseLegalPerson(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.enterpriseContactPerson != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="enterpriseContactPerson" ms-attr="{id:'enterpriseContactPerson'+k}" ms-duplex-value="el.enterpriseContactPerson"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesEnterpriseContactPerson(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.enterpriseContactPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="enterpriseContactPhone" ms-attr="{id:'enterpriseContactPhone'+k}" ms-duplex-value="el.enterpriseContactPhone"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesEnterpriseContactPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.enterpriseChargePerson != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="enterpriseChargePerson" ms-attr="{id:'enterpriseChargePerson'+k}" ms-duplex-value="el.enterpriseChargePerson"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesEnterpriseChargePerson(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.enterpriseChargePhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="enterpriseChargePhone" ms-attr="{id:'enterpriseChargePhone'+k}" ms-duplex-value="el.enterpriseChargePhone"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesEnterpriseChargePhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.constructionContentScale != null">
+									<div class="">
+										<div class="col-sm-12">
+											<!--<textarea name="constructionContentScale" ms-attr="{id:'constructionContentScale'+k}" ms-duplex-value="el.constructionContentScale"-->
+											<!--class="form-textarea" onkeyup="checkRulesConstructionContentScale(this)"></textarea>-->
+											<input name="constructionContentScale" ms-attr="{id:'constructionContentScale'+k}" ms-duplex-value="el.constructionContentScale"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesConstructionContentScale(this)"></input>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.ispppProject != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="ispppProject" ms-attr="{id:'ispppProject'+k}"
+													ms-duplex="el.ispppProject" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isplanNewWork != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isplanNewWork" ms-attr="{id:'isplanNewWork'+k}"
+													ms-duplex="el.isplanNewWork" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isplanComplete != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isplanComplete" ms-attr="{id:'isplanComplete'+k}"
+													ms-duplex="el.isplanComplete" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isprovinceimp != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isprovinceimp" ms-attr="{id:'isprovinceimp'+k}"
+													ms-duplex="el.isprovinceimp" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.iscityimp != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="iscityimp" ms-attr="{id:'iscityimp'+k}"
+													ms-duplex="el.iscityimp" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isdistrictimp != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isdistrictimp" ms-attr="{id:'isdistrictimp'+k}"
+													ms-duplex="el.isdistrictimp" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractLeader != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractLeader" ms-duplex-value="el.subcontractLeader" ms-attr="{id:'subcontractLeader'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractLeader(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany1 != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany1" ms-duplex-value="el.subcontractCompany1" ms-attr="{id:'subcontractCompany1'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany1(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany1Person != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany1Person" ms-duplex-value="el.subcontractCompany1Person" ms-attr="{id:'subcontractCompany1Person'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany1Person(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany1PersonPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany1PersonPhone" ms-duplex-value="el.subcontractCompany1PersonPhone" ms-attr="{id:'subcontractCompany1PersonPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany1PersonPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany1Contact != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany1Contact" ms-duplex-value="el.subcontractCompany1Contact" ms-attr="{id:'subcontractCompany1Contact'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany1Contact(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany1ContactPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany1ContactPhone" ms-duplex-value="el.subcontractCompany1ContactPhone" ms-attr="{id:'subcontractCompany1ContactPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany1ContactPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany2 != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany2" ms-duplex-value="el.subcontractCompany2" ms-attr="{id:'subcontractCompany2'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany2(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany2Person != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany2Person" ms-duplex-value="el.subcontractCompany2Person" ms-attr="{id:'subcontractCompany2Person'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany2Person(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany2PersonPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany2PersonPhone" ms-duplex-value="el.subcontractCompany2PersonPhone" ms-attr="{id:'subcontractCompany2PersonPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany2PersonPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany2Contact != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany2Contact" ms-duplex-value="el.subcontractCompany2Contact" ms-attr="{id:'subcontractCompany2Contact'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany2Contact(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany2ContactPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany2ContactPhone" ms-duplex-value="el.subcontractCompany2ContactPhone" ms-attr="{id:'subcontractCompany2ContactPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany2ContactPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany3 != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany3" ms-duplex-value="el.subcontractCompany3" ms-attr="{id:'subcontractCompany3'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany3(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany3Person != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany3Person" ms-duplex-value="el.subcontractCompany3Person" ms-attr="{id:'subcontractCompany3Person'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany3Person(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany3PersonPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany3PersonPhone" ms-duplex-value="el.subcontractCompany3PersonPhone" ms-attr="{id:'subcontractCompany3PersonPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany3PersonPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany3Contact != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany3Contact" ms-duplex-value="el.subcontractCompany3Contact" ms-attr="{id:'subcontractCompany3Contact'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany3Contact(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.subcontractCompany3ContactPhone != null">
+									<div class="">
+										<div class="col-sm-12">
+											<input name="subcontractCompany3ContactPhone" ms-duplex-value="el.subcontractCompany3ContactPhone" ms-attr="{id:'subcontractCompany3ContactPhone'+k}"
+												   type="text" class="form-control input-sm" placeholder="" onkeyup="checkRulesSubcontractCompany3ContactPhone(this)">
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.issiteselect != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="issiteselect" ms-attr="{id:'issiteselect'+k}"
+													ms-duplex="el.issiteselect" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isproblem != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isproblem" ms-attr="{id:'isproblem'+k}"
+													ms-duplex="el.isproblem" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+											<div ms-if="el.isproblem != null && el.isproblem =='1' ">
+												<input name="questionContent" ms-duplex-value="el.questionContent" ms-attr="{id:'questionContent'+k}"
+													   type="text" class="form-control input-sm" placeholder="" onkeyup="checkQuestionContentLen(this)">
+											</div>
+
+											<div ms-if="el.isproblem != null && el.isproblem =='2' ">
+
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isstateland != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isstateland" ms-attr="{id:'isstateland'+k}"
+													ms-duplex="el.isstateland" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.ispeopledefence != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="ispeopledefence" ms-attr="{id:'ispeopledefence'+k}"
+													ms-duplex="el.ispeopledefence" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isprojectapprove != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isprojectapprove" ms-attr="{id:'isprojectapprove'+k}"
+													ms-duplex="el.isprojectapprove" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.ischeckapprove != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="ischeckapprove" ms-attr="{id:'ischeckapprove'+k}"
+													ms-duplex="el.ischeckapprove" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isbuildproject != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isbuildproject" ms-attr="{id:'isbuildproject'+k}"
+													ms-duplex="el.isbuildproject" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.issimulateapprove != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="issimulateapprove" ms-attr="{id:'issimulateapprove'+k}"
+													ms-duplex="el.issimulateapprove" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isenvironmentapprove != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isenvironmentapprove" ms-attr="{id:'isenvironmentapprove'+k}"
+													ms-duplex="el.isenvironmentapprove" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isculturalrelics != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isculturalrelics" ms-attr="{id:'isculturalrelics'+k}"
+													ms-duplex="el.isculturalrelics" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isweather != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isweather" ms-attr="{id:'isweather'+k}"
+													ms-duplex="el.isweather" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isantiknock != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isantiknock" ms-attr="{id:'isantiknock'+k}"
+													ms-duplex="el.isantiknock" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isenergyconservation != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isenergyconservation" ms-attr="{id:'isenergyconservation'+k}"
+													ms-duplex="el.isenergyconservation" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isparkafforest != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isparkafforest" ms-attr="{id:'isparkafforest'+k}"
+													ms-duplex="el.isparkafforest" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isfirecontrol != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isfirecontrol" ms-attr="{id:'isfirecontrol'+k}"
+													ms-duplex="el.isfirecontrol" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.isbuildland != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="isbuildland" ms-attr="{id:'isbuildland'+k}"
+													ms-duplex="el.isbuildland" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.issimulatefinish != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="issimulatefinish" ms-attr="{id:'issimulatefinish'+k}"
+													ms-duplex="el.issimulatefinish" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+
+								<td class="content-center" ms-if="el.transferStatus != null">
+									<div class="">
+										<div class="col-sm-12">
+											<select name="transferStatus" ms-attr="{id:'transferStatus'+k}"
+													ms-duplex="el.transferStatus" class="form-control input-sm">
+												<option selected="selected" value="">请选择</option>
+												<option ms-for="el in @radioList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+											</select>
+										</div>
+									</div>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+			<div class="btn-wrap">
+				<a href="javascript:;" class="pds-btn mr20" id="save">确定</a>
+				<a href="javascript:;" class="pds-btn-border" id="btnCancel">取消</a>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-batch-update').namespace(),
+
+            model: {
+                vm: avalon.define({
+                    $id: "project_batch_update",
+                    radioList: {},
+                    projectAttributeList: {},
+                    constructionNatureList:{},
+                    industryClassificationList:{},
+                    implementScheduleList:{},
+                    all_choise_column_list:{},
+                    all_project_list: {}
+                })
+            },
+            getIdsString : function() {
+                return page.namespace.getParam('idsString');
+            },
+            getColumnNamesString : function() {
+                return page.namespace.getParam('columnNamesString');
+            },
+            doCancel : function() {
+                $("body").find(".datetimepicker").remove();
+                page.namespace.skiphtml("/pages/pds/project/project-list.html");
+            },
+            doEdit : function() {
+                //建设单位
+                var checkCompanyName = function($companyName,$companyNameError){
+                    var companyName = page.namespace.root.find($companyName).val();
+                    if(companyName == '' ){
+                        $($companyName).siblings(".error").remove();
+                        $($companyName).after("<label id='"+$companyNameError+"' class='error'>建设单位不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //组织机构代码
+                var checkOrganizationCode = function($organizationCode,$organizationCodeError){
+                    var organizationCode = page.namespace.root.find($organizationCode).val();
+                    if(organizationCode == '' ){
+                        $($organizationCode).siblings(".error").remove();
+                        $($organizationCode).after("<label id='"+$organizationCodeError+"' class='error'>组织机构代码不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //项目属地
+                var checkProjectAttribute = function($projectAttribute,$projectAttributeError){
+                    var projectAttribute = page.namespace.root.find($projectAttribute).val();
+                    if(projectAttribute == '' ){
+                        $($projectAttribute).siblings(".error").remove();
+                        $($projectAttribute).after("<label id='"+$projectAttributeError+"' class='error'>必选字段</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //建设性质
+                var checkConstructionNature = function($constructionNature,$constructionNatureError){
+                    var constructionNature = page.namespace.root.find($constructionNature).val();
+                    if(constructionNature == '' ){
+                        $($constructionNature).siblings(".error").remove();
+                        $($constructionNature).after("<label id='"+$constructionNatureError+"' class='error'>必选字段</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //行业分类
+                var checkIndustryClassification = function($industryClassification,$industryClassificationError){
+                    var industryClassification = page.namespace.root.find($industryClassification).val();
+                    if(industryClassification == '' ){
+                        $($industryClassification).siblings(".error").remove();
+                        $($industryClassification).after("<label id='"+$industryClassificationError+"' class='error'>必选字段</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //计划开工日期
+                var checkPlanBeginDateStr = function($planBeginDateStr,$planBeginDateStrError){
+                    var planBeginDateStr = page.namespace.root.find($planBeginDateStr).val();
+                    if(planBeginDateStr == '' ){
+                        $($planBeginDateStr).siblings(".error").remove();
+                        $($planBeginDateStr).after("<label id='"+$planBeginDateStrError+"' class='error'>计划开工日期不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //计划竣工日期
+                var checkPlanEndDateStr = function($planEndDateStr,$planEndDateStrError){
+                    var planEndDateStr = page.namespace.root.find($planEndDateStr).val();
+                    if(planEndDateStr == '' ){
+                        $($planEndDateStr).siblings(".error").remove();
+                        $($planEndDateStr).after("<label id='"+$planEndDateStrError+"' class='error'>计划竣工日期不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //总投资
+                var checkTotalInvestmentStr = function($totalInvestmentStr,$totalInvestmentStrError){
+                    var totalInvestmentStr = page.namespace.root.find($totalInvestmentStr).val();
+                    if(totalInvestmentStr == '' ){
+                        $($totalInvestmentStr).siblings(".error").remove();
+                        $($totalInvestmentStr).after("<label id='"+$totalInvestmentStrError+"' class='error'>总投资不能为空</label>");
+                        return 1;
+                    }else{
+                        if(!(/^([1-9]\d*|[0])(\.\d{1,2})?$/.test(totalInvestmentStr))){
+                            $($totalInvestmentStr).siblings(".error").remove();
+                            $($totalInvestmentStr).after("<label id='"+$totalInvestmentStrError+"' class='error'>请填写整数或小数为2位的数字</label>");
+                            return 1;
+                        }else{
+                            return 0;
+                        }
+                    }
+                }
+
+                //企业法人
+                var checkEnterpriseLegalPerson = function($enterpriseLegalPerson,$enterpriseLegalPersonError){
+                    var enterpriseLegalPerson = page.namespace.root.find($enterpriseLegalPerson).val();
+                    if(enterpriseLegalPerson == '' ){
+                        $($enterpriseLegalPerson).siblings(".error").remove();
+                        $($enterpriseLegalPerson).after("<label id='"+$enterpriseLegalPersonError+"' class='error'>企业法人不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //企业联系人
+                var checkEnterpriseContactPerson = function($enterpriseContactPerson,$enterpriseContactPersonError){
+                    var enterpriseContactPerson = page.namespace.root.find($enterpriseContactPerson).val();
+                    if(enterpriseContactPerson == '' ){
+                        $($enterpriseContactPerson).siblings(".error").remove();
+                        $($enterpriseContactPerson).after("<label id='"+$enterpriseContactPersonError+"' class='error'>企业联系人不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //企业联系人联系方式
+                var checkEnterpriseContactPhone = function($enterpriseContactPhone,$enterpriseContactPhoneError){
+                    var enterpriseContactPhone = page.namespace.root.find($enterpriseContactPhone).val();
+                    if(enterpriseContactPhone == '' ){
+                        $($enterpriseContactPhone).siblings(".error").remove();
+                        $($enterpriseContactPhone).after("<label id='"+$enterpriseContactPhoneError+"' class='error'>企业联系人联系方式不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //企业负责人
+                var checkEnterpriseChargePerson = function($enterpriseChargePerson,$enterpriseChargePersonError){
+                    var enterpriseChargePerson = page.namespace.root.find($enterpriseChargePerson).val();
+                    if(enterpriseChargePerson == '' ){
+                        $($enterpriseChargePerson).siblings(".error").remove();
+                        $($enterpriseChargePerson).after("<label id='"+$enterpriseChargePersonError+"' class='error'>企业负责人不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //企业负责人联系方式
+                var checkEnterpriseChargePhone = function($enterpriseChargePhone,$enterpriseChargePhoneError){
+                    var enterpriseChargePhone = page.namespace.root.find($enterpriseChargePhone).val();
+                    if(enterpriseChargePhone == '' ){
+                        $($enterpriseChargePhone).siblings(".error").remove();
+                        $($enterpriseChargePhone).after("<label id='"+$enterpriseChargePhoneError+"' class='error'>企业负责人联系方式不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+                //建设内容和规模
+                var checkConstructionContentScale = function($constructionContentScale,$constructionContentScaleError){
+                    var constructionContentScale = page.namespace.root.find($constructionContentScale).val();
+                    if(constructionContentScale == '' ){
+                        $($constructionContentScale).siblings(".error").remove();
+                        $($constructionContentScale).after("<label id='"+$constructionContentScaleError+"' class='error'>建设内容和规模不能为空</label>");
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }
+
+
+//                    //分包领导
+//                    var checkSubcontractLeader = function($subcontractLeader,$subcontractLeaderError){
+//                        var subcontractLeader = page.namespace.root.find($subcontractLeader).val();
+//                        if(subcontractLeader.length > 255){
+//                            $($subcontractLeader).siblings(".error").remove();
+//                            $($subcontractLeader).after("<label id='"+$subcontractLeaderError+"' class='error'>请输入一个长度最多是 255 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位1
+//                    var checkSubcontractCompany1 = function($subcontractCompany1,$subcontractCompany1Error){
+//                        var subcontractCompany1 = page.namespace.root.find($subcontractCompany1).val();
+//                        if(subcontractCompany1.length > 255){
+//                            $($subcontractCompany1).siblings(".error").remove();
+//                            $($subcontractCompany1).after("<label id='"+$subcontractCompany1Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位1责任人
+//                    var checkSubcontractCompany1Person = function($subcontractCompany1Person,$subcontractCompany1PersonError){
+//                        var subcontractCompany1Person = page.namespace.root.find($subcontractCompany1Person).val();
+//                        if(subcontractCompany1Person.length > 50){
+//                            $($subcontractCompany1Person).siblings(".error").remove();
+//                            $($subcontractCompany1Person).after("<label id='"+$subcontractCompany1PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位1责任人联系方式
+//                    var checkSubcontractCompany1PersonPhone = function($subcontractCompany1PersonPhone,$subcontractCompany1PersonPhoneError){
+//                        var subcontractCompany1PersonPhone = page.namespace.root.find($subcontractCompany1PersonPhone).val();
+//                        if(subcontractCompany1PersonPhone.length > 50){
+//                            $($subcontractCompany1PersonPhone).siblings(".error").remove();
+//                            $($subcontractCompany1PersonPhone).after("<label id='"+$subcontractCompany1PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位1联系人
+//                    var checkSubcontractCompany1Contact = function($subcontractCompany1Contact,$subcontractCompany1ContactError){
+//                        var subcontractCompany1Contact = page.namespace.root.find($subcontractCompany1Contact).val();
+//                        if(subcontractCompany1Contact.length > 50){
+//                            $($subcontractCompany1Contact).siblings(".error").remove();
+//                            $($subcontractCompany1Contact).after("<label id='"+$subcontractCompany1ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位1联系人联系方式
+//                    var checkSubcontractCompany1ContactPhone = function($subcontractCompany1ContactPhone,$subcontractCompany1ContactPhoneError){
+//                        var subcontractCompany1ContactPhone = page.namespace.root.find($subcontractCompany1ContactPhone).val();
+//                        if(subcontractCompany1ContactPhone.length > 50){
+//                            $($subcontractCompany1ContactPhone).siblings(".error").remove();
+//                            $($subcontractCompany1ContactPhone).after("<label id='"+$subcontractCompany1ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//
+//                    //分包单位2
+//                    var checkSubcontractCompany2 = function($subcontractCompany2,$subcontractCompany2Error){
+//                        var subcontractCompany2 = page.namespace.root.find($subcontractCompany2).val();
+//                        if(subcontractCompany2.length > 255){
+//                            $($subcontractCompany2).siblings(".error").remove();
+//                            $($subcontractCompany2).after("<label id='"+$subcontractCompany2Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位2责任人
+//                    var checkSubcontractCompany2Person = function($subcontractCompany2Person,$subcontractCompany2PersonError){
+//                        var subcontractCompany2Person = page.namespace.root.find($subcontractCompany2Person).val();
+//                        if(subcontractCompany2Person.length > 50){
+//                            $($subcontractCompany2Person).siblings(".error").remove();
+//                            $($subcontractCompany2Person).after("<label id='"+$subcontractCompany2PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位2责任人联系方式
+//                    var checkSubcontractCompany2PersonPhone = function($subcontractCompany2PersonPhone,$subcontractCompany2PersonPhoneError){
+//                        var subcontractCompany2PersonPhone = page.namespace.root.find($subcontractCompany2PersonPhone).val();
+//                        if(subcontractCompany2PersonPhone.length > 50){
+//                            $($subcontractCompany2PersonPhone).siblings(".error").remove();
+//                            $($subcontractCompany2PersonPhone).after("<label id='"+$subcontractCompany2PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位2联系人
+//                    var checkSubcontractCompany2Contact = function($subcontractCompany2Contact,$subcontractCompany2ContactError){
+//                        var subcontractCompany2Contact = page.namespace.root.find($subcontractCompany2Contact).val();
+//                        if(subcontractCompany2Contact.length > 50){
+//                            $($subcontractCompany2Contact).siblings(".error").remove();
+//                            $($subcontractCompany2Contact).after("<label id='"+$subcontractCompany2ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位2联系人联系方式
+//                    var checkSubcontractCompany2ContactPhone = function($subcontractCompany2ContactPhone,$subcontractCompany2ContactPhoneError){
+//                        var subcontractCompany2ContactPhone = page.namespace.root.find($subcontractCompany2ContactPhone).val();
+//                        if(subcontractCompany2ContactPhone.length > 50){
+//                            $($subcontractCompany2ContactPhone).siblings(".error").remove();
+//                            $($subcontractCompany2ContactPhone).after("<label id='"+$subcontractCompany2ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//
+//                    //分包单位3
+//                    var checkSubcontractCompany3 = function($subcontractCompany3,$subcontractCompany3Error){
+//                        var subcontractCompany3 = page.namespace.root.find($subcontractCompany3).val();
+//                        if(subcontractCompany3.length > 255){
+//                            $($subcontractCompany3).siblings(".error").remove();
+//                            $($subcontractCompany3).after("<label id='"+$subcontractCompany3Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位3责任人
+//                    var checkSubcontractCompany3Person = function($subcontractCompany3Person,$subcontractCompany3PersonError){
+//                        var subcontractCompany3Person = page.namespace.root.find($subcontractCompany3Person).val();
+//                        if(subcontractCompany3Person.length > 50){
+//                            $($subcontractCompany3Person).siblings(".error").remove();
+//                            $($subcontractCompany3Person).after("<label id='"+$subcontractCompany3PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位3责任人联系方式
+//                    var checkSubcontractCompany3PersonPhone = function($subcontractCompany3PersonPhone,$subcontractCompany3PersonPhoneError){
+//                        var subcontractCompany3PersonPhone = page.namespace.root.find($subcontractCompany3PersonPhone).val();
+//                        if(subcontractCompany3PersonPhone.length > 50){
+//                            $($subcontractCompany3PersonPhone).siblings(".error").remove();
+//                            $($subcontractCompany3PersonPhone).after("<label id='"+$subcontractCompany3PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位3联系人
+//                    var checkSubcontractCompany3Contact = function($subcontractCompany3Contact,$subcontractCompany3ContactError){
+//                        var subcontractCompany3Contact = page.namespace.root.find($subcontractCompany3Contact).val();
+//                        if(subcontractCompany3Contact.length > 50){
+//                            $($subcontractCompany3Contact).siblings(".error").remove();
+//                            $($subcontractCompany3Contact).after("<label id='"+$subcontractCompany3ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+//
+//                    //分包单位3联系人联系方式
+//                    var checkSubcontractCompany3ContactPhone = function($subcontractCompany3ContactPhone,$subcontractCompany3ContactPhoneError){
+//                        var subcontractCompany3ContactPhone = page.namespace.root.find($subcontractCompany3ContactPhone).val();
+//                        if(subcontractCompany3ContactPhone.length > 50){
+//                            $($subcontractCompany3ContactPhone).siblings(".error").remove();
+//                            $($subcontractCompany3ContactPhone).after("<label id='"+$subcontractCompany3ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+//                            return 1;
+//                        }else{
+//                            return 0;
+//                        }
+//                    }
+
+
+
+                var listSize = page.model.vm.all_project_list;
+
+                var getColumnNamesArry = page.getColumnNamesString();
+                //格式验证
+                var result = 0;
+                for(var j = 0;j<listSize.length;j++){
+                    if(getColumnNamesArry.indexOf("建设单位") >= 0 ){
+                        var $companyName = '#companyName'+j;
+                        var $companyNameError = 'companyName'+j+'-error';
+                        result += checkCompanyName($companyName,$companyNameError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("组织机构代码") >= 0 ){
+                        var $organizationCode = '#organizationCode'+j;
+                        var $organizationCodeError = 'organizationCode'+j+'-error';
+                        result += checkOrganizationCode($organizationCode,$organizationCodeError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("项目属地") >= 0 ){
+                        var $projectAttribute = '#projectAttribute'+j;
+                        var $projectAttributeError = 'projectAttribute'+j+'-error';
+                        result += checkProjectAttribute($projectAttribute,$projectAttributeError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("建设性质") >= 0 ){
+                        var $constructionNature = '#constructionNature'+j;
+                        var $constructionNatureError = 'constructionNature'+j+'-error';
+                        result += checkConstructionNature($constructionNature,$constructionNatureError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("行业分类") >= 0 ){
+                        var $industryClassification = '#industryClassification'+j;
+                        var $industryClassificationError = 'industryClassification'+j+'-error';
+                        result += checkIndustryClassification($industryClassification,$industryClassificationError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("计划开工日期") >= 0 ){
+                        var $planBeginDateStr = '#planBeginDateStr'+j;
+                        var $planBeginDateStrError = 'planBeginDateStr'+j+'-error';
+                        result += checkPlanBeginDateStr($planBeginDateStr,$planBeginDateStrError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("计划竣工日期") >= 0 ){
+                        var $planEndDateStr = '#planEndDateStr'+j;
+                        var $planEndDateStrError = 'planEndDateStr'+j+'-error';
+                        result += checkPlanEndDateStr($planEndDateStr,$planEndDateStrError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("总投资") >= 0 ){
+                        var $totalInvestmentStr = '#totalInvestmentStr'+j;
+                        var $totalInvestmentStrError = 'totalInvestmentStr'+j+'-error';
+                        result += checkTotalInvestmentStr($totalInvestmentStr,$totalInvestmentStrError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("企业法人") >= 0 ){
+                        var $enterpriseLegalPerson = '#enterpriseLegalPerson'+j;
+                        var $enterpriseLegalPersonError = 'enterpriseLegalPerson'+j+'-error';
+                        result += checkEnterpriseLegalPerson($enterpriseLegalPerson,$enterpriseLegalPersonError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("企业联系人") >= 0 ){
+                        var $enterpriseContactPerson = '#enterpriseContactPerson'+j;
+                        var $enterpriseContactPersonError = 'enterpriseContactPerson'+j+'-error';
+                        result += checkEnterpriseContactPerson($enterpriseContactPerson,$enterpriseContactPersonError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("企业联系人联系方式") >= 0 ){
+                        var $enterpriseContactPhone = '#enterpriseContactPhone'+j;
+                        var $enterpriseContactPhoneError = 'enterpriseContactPhone'+j+'-error';
+                        result += checkEnterpriseContactPhone($enterpriseContactPhone,$enterpriseContactPhoneError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("企业负责人") >= 0 ){
+                        var $enterpriseChargePerson = '#enterpriseChargePerson'+j;
+                        var $enterpriseChargePersonError = 'enterpriseChargePerson'+j+'-error';
+                        result += checkEnterpriseChargePerson($enterpriseChargePerson,$enterpriseChargePersonError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("企业负责人联系方式") >= 0 ){
+                        var $enterpriseChargePhone = '#enterpriseChargePhone'+j;
+                        var $enterpriseChargePhoneError = 'enterpriseChargePhone'+j+'-error';
+                        result += checkEnterpriseChargePhone($enterpriseChargePhone,$enterpriseChargePhoneError);
+                    }
+
+                    if(getColumnNamesArry.indexOf("建设内容和规模") >= 0 ){
+                        var $constructionContentScale = '#constructionContentScale'+j;
+                        var $constructionContentScaleError = 'constructionContentScale'+j+'-error';
+                        result += checkConstructionContentScale($constructionContentScale,$constructionContentScaleError);
+                    }
+
+//                        if(getColumnNamesArry.indexOf("分包领导") >= 0 ){
+//                            var $subcontractLeader = '#subcontractLeader'+j;
+//                            var $subcontractLeaderError = 'subcontractLeader'+j+'-error';
+//                            result += checkSubcontractLeader($subcontractLeader,$subcontractLeaderError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位1") >= 0 ){
+//                            var $subcontractCompany1 = '#subcontractCompany1'+j;
+//                            var $subcontractCompany1Error = 'subcontractCompany1'+j+'-error';
+//                            result += checkSubcontractCompany1($subcontractCompany1,$subcontractCompany1Error);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位1责任人") >= 0 ){
+//                            var $subcontractCompany1Person = '#subcontractCompany1Person'+j;
+//                            var $subcontractCompany1PersonError = 'subcontractCompany1Person'+j+'-error';
+//                            result += checkSubcontractCompany1Person($subcontractCompany1Person,$subcontractCompany1PersonError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位1责任人联系方式") >= 0 ){
+//                            var $subcontractCompany1PersonPhone = '#subcontractCompany1PersonPhone'+j;
+//                            var $subcontractCompany1PersonPhoneError = 'subcontractCompany1PersonPhone'+j+'-error';
+//                            result += checkSubcontractCompany1PersonPhone($subcontractCompany1PersonPhone,$subcontractCompany1PersonPhoneError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位1联系人") >= 0 ){
+//                            var $subcontractCompany1Contact = '#subcontractCompany1Contact'+j;
+//                            var $subcontractCompany1ContactError = 'subcontractCompany1Contact'+j+'-error';
+//                            result += checkSubcontractCompany1Contact($subcontractCompany1Contact,$subcontractCompany1ContactError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位1联系人联系方式") >= 0 ){
+//                            var $subcontractCompany1ContactPhone = '#subcontractCompany1ContactPhone'+j;
+//                            var $subcontractCompany1ContactPhoneError = 'subcontractCompany1ContactPhone'+j+'-error';
+//                            result += checkSubcontractCompany1ContactPhone($subcontractCompany1ContactPhone,$subcontractCompany1ContactPhoneError);
+//                        }
+//
+//
+//                        if(getColumnNamesArry.indexOf("分包单位2") >= 0 ){
+//                            var $subcontractCompany2 = '#subcontractCompany2'+j;
+//                            var $subcontractCompany2Error = 'subcontractCompany2'+j+'-error';
+//                            result += checkSubcontractCompany2($subcontractCompany2,$subcontractCompany2Error);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位2责任人") >= 0 ){
+//                            var $subcontractCompany2Person = '#subcontractCompany2Person'+j;
+//                            var $subcontractCompany2PersonError = 'subcontractCompany2Person'+j+'-error';
+//                            result += checkSubcontractCompany2Person($subcontractCompany2Person,$subcontractCompany2PersonError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位2责任人联系方式") >= 0 ){
+//                            var $subcontractCompany2PersonPhone = '#subcontractCompany2PersonPhone'+j;
+//                            var $subcontractCompany2PersonPhoneError = 'subcontractCompany2PersonPhone'+j+'-error';
+//                            result += checkSubcontractCompany2PersonPhone($subcontractCompany2PersonPhone,$subcontractCompany2PersonPhoneError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位2联系人") >= 0 ){
+//                            var $subcontractCompany2Contact = '#subcontractCompany2Contact'+j;
+//                            var $subcontractCompany2ContactError = 'subcontractCompany2Contact'+j+'-error';
+//                            result += checkSubcontractCompany2Contact($subcontractCompany2Contact,$subcontractCompany2ContactError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位2联系人联系方式") >= 0 ){
+//                            var $subcontractCompany2ContactPhone = '#subcontractCompany2ContactPhone'+j;
+//                            var $subcontractCompany2ContactPhoneError = 'subcontractCompany2ContactPhone'+j+'-error';
+//                            result += checkSubcontractCompany2ContactPhone($subcontractCompany2ContactPhone,$subcontractCompany2ContactPhoneError);
+//                        }
+//
+//
+//                        if(getColumnNamesArry.indexOf("分包单位3") >= 0 ){
+//                            var $subcontractCompany3 = '#subcontractCompany3'+j;
+//                            var $subcontractCompany3Error = 'subcontractCompany3'+j+'-error';
+//                            result += checkSubcontractCompany3($subcontractCompany3,$subcontractCompany3Error);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位3责任人") >= 0 ){
+//                            var $subcontractCompany3Person = '#subcontractCompany3Person'+j;
+//                            var $subcontractCompany3PersonError = 'subcontractCompany3Person'+j+'-error';
+//                            result += checkSubcontractCompany3Person($subcontractCompany3Person,$subcontractCompany3PersonError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位3责任人联系方式") >= 0 ){
+//                            var $subcontractCompany3PersonPhone = '#subcontractCompany3PersonPhone'+j;
+//                            var $subcontractCompany3PersonPhoneError = 'subcontractCompany3PersonPhone'+j+'-error';
+//                            result += checkSubcontractCompany3PersonPhone($subcontractCompany3PersonPhone,$subcontractCompany3PersonPhoneError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位3联系人") >= 0 ){
+//                            var $subcontractCompany3Contact = '#subcontractCompany3Contact'+j;
+//                            var $subcontractCompany3ContactError = 'subcontractCompany3Contact'+j+'-error';
+//                            result += checkSubcontractCompany3Contact($subcontractCompany3Contact,$subcontractCompany3ContactError);
+//                        }
+//
+//                        if(getColumnNamesArry.indexOf("分包单位3联系人联系方式") >= 0 ){
+//                            var $subcontractCompany3ContactPhone = '#subcontractCompany3ContactPhone'+j;
+//                            var $subcontractCompany3ContactPhoneError = 'subcontractCompany3ContactPhone'+j+'-error';
+//                            result += checkSubcontractCompany3ContactPhone($subcontractCompany3ContactPhone,$subcontractCompany3ContactPhoneError);
+//                        }
+                }
+
+                var errorMsgCount = $("#projectBatchUpdate").find('.error').length;
+
+                if(result > 0 || errorMsgCount > 0){
+                    return;
+                }
+
+                var temp = [];
+                page.namespace.root.find('[name="projectNumber"]').each(function (i,obj) {
+                    temp.push(obj.value);
+                });
+
+                var nary=temp.sort();
+                for(var i=0;i<temp.length;i++){
+                    if(nary[i].trim() != ''){
+                        if (nary[i]==nary[i+1]){
+                            alertTool.warning('请勿输入相同的项目代码！');
+                            return;
+                        }
+                    }
+                }
+
+                var formJson = {
+                    columnNamesString : page.getColumnNamesString()
+                };
+//                    var formJson = {};
+                var list = page.model.vm.all_project_list;
+                formJson["projectBatchUpdateInVOs"] = JSON.stringify(list);
+
+                var HtmlMenuOpt = {
+                    endpoint : "/project/updateBatchProject",
+                    data : formJson,
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        page.doCancel();
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                        return;
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+
+            },
+            init : function() {
+
+                //多选项目id
+                var idsString = page.getIdsString();
+                //多选项目列名
+                var columnNamesString = page.getColumnNamesString();
+
+                var planBeginDate = function(planBeginDateStr,planEndDateStr){
+                    page.namespace.root.find(planBeginDateStr).autoBSNyr().on("click",function(ev){
+//                                page.namespace.root.find(planBeginDateStr).datetimepicker("setStartDate", new Date());
+                        page.namespace.root.find(planBeginDateStr).datetimepicker("setEndDate", page.namespace.root.find(planEndDateStr).val());
+                    });
+                }
+
+                var planEndDate = function(planEndDateStr,planBeginDateStr){
+                    page.namespace.root.find(planEndDateStr).autoBSNyr().on("click", function(ev){
+                        page.namespace.root.find(planEndDateStr).datetimepicker("setStartDate", page.namespace.root.find(planBeginDateStr).val());
+                    });
+                }
+
+                var actualBeginDate = function(actualBeginDateStr,actualEndDateStr){
+                    page.namespace.root.find(actualBeginDateStr).autoBSNyr().on("click", function(ev){
+//                                page.namespace.root.find(actualBeginDateStr).datetimepicker("setStartDate", new Date());
+                        page.namespace.root.find(actualBeginDateStr).datetimepicker("setEndDate", page.namespace.root.find(actualEndDateStr).val());
+                    });
+                }
+
+                var actualEndDate = function(actualEndDateStr,actualBeginDateStr){
+                    page.namespace.root.find(actualEndDateStr).autoBSNyr().on("click", function(ev){
+                        page.namespace.root.find(actualEndDateStr).datetimepicker("setStartDate", page.namespace.root.find(actualBeginDateStr).val());
+                    });
+                }
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getChoiseColumn",
+                    data : {"columnNamesString":columnNamesString},
+                    success : function(data) {
+                        page.model.vm.all_choise_column_list=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getProjectByIdAndColumn",
+                    data : {"idsString":idsString,"columnNamesString":columnNamesString},
+
+                    success : function(data) {
+                        page.model.vm.all_project_list=data;
+                        for(var j = 0;j < data.length;j++){
+                            var planBeginDateStr = "#planBeginDateStr"+j;
+                            var planEndDateStr = "#planEndDateStr"+j;
+                            var actualBeginDateStr = "#actualBeginDateStr"+j;
+                            var actualEndDateStr = "#actualEndDateStr"+j;
+
+                            planBeginDate(planBeginDateStr,planEndDateStr);
+                            planEndDate(planEndDateStr,planBeginDateStr);
+                            actualBeginDate(actualBeginDateStr,actualEndDateStr);
+                            actualEndDate(actualEndDateStr,actualBeginDateStr);
+
+                            $("#projectNumber"+j).val(deCode(data[j].projectNumber));
+                            $("#companyName"+j).val(deCode(data[j].companyName));
+                            $("#organizationCode"+j).val(deCode(data[j].organizationCode));
+                            $("#enterpriseLegalPerson"+j).val(deCode(data[j].enterpriseLegalPerson));
+                            $("#enterpriseContactPerson"+j).val(deCode(data[j].enterpriseContactPerson));
+                            $("#enterpriseContactPhone"+j).val(deCode(data[j].enterpriseContactPhone));
+                            $("#enterpriseChargePerson"+j).val(deCode(data[j].enterpriseChargePerson));
+                            $("#enterpriseChargePhone"+j).val(deCode(data[j].enterpriseChargePhone));
+                            $("#constructionContentScale"+j).val(deCode(data[j].constructionContentScale));
+                            $("#subcontractLeader"+j).val(deCode(data[j].subcontractLeader));
+                            $("#subcontractCompany1"+j).val(deCode(data[j].subcontractCompany1));
+                            $("#subcontractCompany1Person"+j).val(deCode(data[j].subcontractCompany1Person));
+                            $("#subcontractCompany1PersonPhone"+j).val(deCode(data[j].subcontractCompany1PersonPhone));
+                            $("#subcontractCompany1Contact"+j).val(deCode(data[j].subcontractCompany1Contact));
+                            $("#subcontractCompany1ContactPhone"+j).val(deCode(data[j].subcontractCompany1ContactPhone));
+                            $("#subcontractCompany2"+j).val(deCode(data[j].subcontractCompany2));
+                            $("#subcontractCompany2Person"+j).val(deCode(data[j].subcontractCompany2Person));
+                            $("#subcontractCompany2PersonPhone"+j).val(deCode(data[j].subcontractCompany2PersonPhone));
+                            $("#subcontractCompany2Contact"+j).val(deCode(data[j].subcontractCompany2Contact));
+                            $("#subcontractCompany2ContactPhone"+j).val(deCode(data[j].subcontractCompany2ContactPhone));
+                            $("#subcontractCompany3"+j).val(deCode(data[j].subcontractCompany3));
+                            $("#subcontractCompany3Person"+j).val(deCode(data[j].subcontractCompany3Person));
+                            $("#subcontractCompany3PersonPhone"+j).val(deCode(data[j].subcontractCompany3PersonPhone));
+                            $("#subcontractCompany3Contact"+j).val(deCode(data[j].subcontractCompany3Contact));
+                            $("#subcontractCompany3ContactPhone"+j).val(deCode(data[j].subcontractCompany3ContactPhone));
+                            $("#questionContent"+j).val(deCode(data[j].questionContent));
+                        }
+                        $(".datetimepicker").on("click",function(){
+                            var idx = $(".datetimepicker").eq(0).index();
+                            if($(".pro-add-wrap").find(".datatimepicker-wrap").eq($(this).index()-idx).children("input.form-control").val()){
+                                $(".pro-add-wrap").find(".datatimepicker-wrap").eq($(this).index()-idx).children(".data-del").show();
+                            }
+                        })
+
+                        $(".data-del").on("click",function(){
+                            $(this).siblings('input.form-control').val("");
+                            $(this).hide();
+                        })
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+
+                page.getAllCodes();
+            },
+            getAllCodes: () => {
+                page.getRadioList();
+                page.getProjectAttributeList();
+                page.getConstructionNatureList();
+                page.getIndustryClassificationList();
+                page.getImplementScheduleList();
+            },
+            getRadioList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.radioList=data;
+                },"RADIO_LIST");
+            },
+            getProjectAttributeList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.projectAttributeList=data;
+                },"PROJECT_ATTRIBUTE");
+            },
+            getConstructionNatureList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.constructionNatureList=data;
+                },"CONSTRUCTION_NATURE");
+            },
+            getIndustryClassificationList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.industryClassificationList=data;
+                },"INDUSTRY_CLASSIFICATION");
+            },
+            getImplementScheduleList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.implementScheduleList=data;
+                },"IMPLEMENT_SCHEDULE");
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+
+        page.namespace.root.find('#save').on('click', page.doEdit);
+        page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+
+    });
+
+    //项目代码
+    function checkRulesProjectNumber(obj){
+        var $projectNumber = '#'+$(obj).attr("id");
+        var $projectNumberError = $(obj).attr("id")+'-error';
+
+        var projectNumber = obj.value;
+
+        page.namespace.getRequest({
+            endpoint : "/project/getProjectByProjectNumber",
+            data : {"projectNumber":projectNumber},
+            async: false,
+            success : function(data) {
+                if(data.length == 0){
+                    if(projectNumber.length > 36){
+                        $($projectNumber).siblings(".error").remove();
+                        $($projectNumber).after("<label id='"+$projectNumberError+"' class='error'>请输入一个长度最多是 36 的字</label>");
+                        return;
+                    }else{
+                        if(/[【】]/.test(projectNumber)){
+                            $($projectNumber).siblings(".error").remove();
+                            $($projectNumber).after("<label id='"+$projectNumberError+"' class='error'>项目代码不可包含【】符号</label>");
+                            return;
+                        }else{
+                            $($projectNumber).siblings(".error").remove();
+                        }
+                    }
+                }else{
+                    $($projectNumber).siblings(".error").remove();
+                    $($projectNumber).after("<label id='"+$projectNumberError+"' class='error'>该项目代码已存在</label>");
+                    return;
+                }
+            },
+        });
+
+    }
+
+    // 是否存在问题内容
+    function checkQuestionContentLen(obj){
+        var questionContent = obj.value;
+        var $questionContent = '#'+$(obj).attr("id");
+        var $questionContentError = $(obj).attr("id")+'-error';
+        if(questionContent.length > 255){
+            $($questionContent).siblings(".error").remove();
+            $($questionContent).after("<label id='"+$questionContentError+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($questionContent).siblings(".error").remove();
+        }
+	}
+
+    //建设单位
+    function checkRulesCompanyName(obj){
+        var $companyName = '#'+$(obj).attr("id");
+        var $companyNameError = $(obj).attr("id")+'-error';
+
+        var companyName = obj.value;
+        if(companyName == '' ){
+            $($companyName).siblings(".error").remove();
+            $($companyName).after("<label id='"+$companyNameError+"' class='error'>建设单位不能为空</label>");
+            return;
+        }else{
+            $($companyName).siblings(".error").remove();
+        }
+
+        if(companyName.length > 255){
+            $($companyName).siblings(".error").remove();
+            $($companyName).after("<label id='"+$companyNameError+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($companyName).siblings(".error").remove();
+        }
+    }
+
+    //组织机构代码
+    function checkRulesOrganizationCode(obj){
+        var $organizationCode = '#'+$(obj).attr("id");
+        var $organizationCodeError = $(obj).attr("id")+'-error';
+
+        var organizationCode = obj.value;
+        if(organizationCode == '' ){
+            $($organizationCode).siblings(".error").remove();
+            $($organizationCode).after("<label id='"+$organizationCodeError+"' class='error'>组织机构代码不能为空</label>");
+            return;
+        }else{
+            $($organizationCode).siblings(".error").remove();
+        }
+
+        if(organizationCode.length > 36){
+            $($organizationCode).siblings(".error").remove();
+            $($organizationCode).after("<label id='"+$organizationCodeError+"' class='error'>请输入一个长度最多是 36 的字</label>");
+            return;
+        }else{
+            $($organizationCode).siblings(".error").remove();
+        }
+    }
+
+    //项目属地
+    function checkRulesProjectAttribute(obj){
+        var $projectAttribute = '#'+$(obj).attr("id");
+        var $projectAttributeError = $(obj).attr("id")+'-error';
+
+        var projectAttribute = obj.value;
+        if(projectAttribute  == '' ){
+            $($projectAttribute).siblings(".error").remove();
+            $($projectAttribute).after("<label id='"+$projectAttributeError+"' class='error'>必选字段</label>");
+            return;
+        }else{
+            $($projectAttribute).siblings(".error").remove();
+        }
+    }
+
+    //建设性质
+    function checkRulesConstructionNature(obj){
+        var $constructionNature = '#'+$(obj).attr("id");
+        var $constructionNatureError = $(obj).attr("id")+'-error';
+
+        var constructionNature = obj.value;
+        if(constructionNature  == '' ){
+            $($constructionNature).siblings(".error").remove();
+            $($constructionNature).after("<label id='"+$constructionNatureError+"' class='error'>必选字段</label>");
+            return;
+        }else{
+            $($constructionNature).siblings(".error").remove();
+        }
+    }
+
+    //行业分类
+    function checkRulesIndustryClassification(obj){
+        var $industryClassification = '#'+$(obj).attr("id");
+        var $industryClassificationError = $(obj).attr("id")+'-error';
+
+        var industryClassification = obj.value;
+        if(industryClassification  == '' ){
+            $($industryClassification).siblings(".error").remove();
+            $($industryClassification).after("<label id='"+$industryClassificationError+"' class='error'>必选字段</label>");
+            return;
+        }else{
+            $($industryClassification).siblings(".error").remove();
+        }
+    }
+
+    //总投资
+    function checkRulesTotalInvestmentStr(obj){
+        var $totalInvestmentStr = '#'+$(obj).attr("id");
+        var $totalInvestmentStrError = $(obj).attr("id")+'-error';
+
+        var totalInvestmentStr = obj.value;
+        if(totalInvestmentStr == '' ){
+            $($totalInvestmentStr).siblings(".error").remove();
+            $($totalInvestmentStr).after("<label id='"+$totalInvestmentStrError+"' class='error'>总投资不能为空</label>");
+            return;
+        }else{
+            $($totalInvestmentStr).siblings(".error").remove();
+        }
+
+        if(!(/^([1-9]\d*|[0])(\.\d{1,2})?$/.test(totalInvestmentStr))){
+            $($totalInvestmentStr).siblings(".error").remove();
+            $($totalInvestmentStr).after("<label id='"+$totalInvestmentStrError+"' class='error'>请填写整数或小数为2位的数字</label>");
+            return;
+        }else{
+            $($totalInvestmentStr).siblings(".error").remove();
+        }
+    }
+
+    //企业法人
+    function checkRulesEnterpriseLegalPerson(obj){
+        var $enterpriseLegalPerson = '#'+$(obj).attr("id");
+        var $enterpriseLegalPersonError = $(obj).attr("id")+'-error';
+
+        var enterpriseLegalPerson = obj.value;
+        if(enterpriseLegalPerson == '' ){
+            $($enterpriseLegalPerson).siblings(".error").remove();
+            $($enterpriseLegalPerson).after("<label id='"+$enterpriseLegalPersonError+"' class='error'>企业法人不能为空</label>");
+            return;
+        }else{
+            $($enterpriseLegalPerson).siblings(".error").remove();
+        }
+
+        if(enterpriseLegalPerson.length > 50){
+            $($enterpriseLegalPerson).siblings(".error").remove();
+            $($enterpriseLegalPerson).after("<label id='"+$enterpriseLegalPersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($enterpriseLegalPerson).siblings(".error").remove();
+        }
+    }
+
+    //企业联系人
+    function checkRulesEnterpriseContactPerson(obj){
+        var $enterpriseContactPerson = '#'+$(obj).attr("id");
+        var $enterpriseContactPersonError = $(obj).attr("id")+'-error';
+
+        var enterpriseContactPerson = obj.value;
+        if(enterpriseContactPerson == '' ){
+            $($enterpriseContactPerson).siblings(".error").remove();
+            $($enterpriseContactPerson).after("<label id='"+$enterpriseContactPersonError+"' class='error'>企业联系人不能为空</label>");
+            return;
+        }else{
+            $($enterpriseContactPerson).siblings(".error").remove();
+        }
+
+        if(enterpriseContactPerson.length > 50){
+            $($enterpriseContactPerson).siblings(".error").remove();
+            $($enterpriseContactPerson).after("<label id='"+$enterpriseContactPersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($enterpriseContactPerson).siblings(".error").remove();
+        }
+    }
+
+    //企业联系人联系方式
+    function checkRulesEnterpriseContactPhone(obj){
+        var $enterpriseContactPhone = '#'+$(obj).attr("id");
+        var $enterpriseContactPhoneError = $(obj).attr("id")+'-error';
+
+        var enterpriseContactPhone = obj.value;
+        if(enterpriseContactPhone == '' ){
+            $($enterpriseContactPhone).siblings(".error").remove();
+            $($enterpriseContactPhone).after("<label id='"+$enterpriseContactPhoneError+"' class='error'>企业联系人联系方式不能为空</label>");
+            return;
+        }else{
+            $($enterpriseContactPhone).siblings(".error").remove();
+        }
+
+        if(enterpriseContactPhone.length > 50){
+            $($enterpriseContactPhone).siblings(".error").remove();
+            $($enterpriseContactPhone).after("<label id='"+$enterpriseContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($enterpriseContactPhone).siblings(".error").remove();
+        }
+    }
+
+    //企业负责人
+    function checkRulesEnterpriseChargePerson(obj){
+        var $enterpriseChargePerson = '#'+$(obj).attr("id");
+        var $enterpriseChargePersonError = $(obj).attr("id")+'-error';
+
+        var enterpriseChargePerson = obj.value;
+        if(enterpriseChargePerson == '' ){
+            $($enterpriseChargePerson).siblings(".error").remove();
+            $($enterpriseChargePerson).after("<label id='"+$enterpriseChargePersonError+"' class='error'>企业负责人不能为空</label>");
+            return;
+        }else{
+            $($enterpriseChargePerson).siblings(".error").remove();
+        }
+
+        if(enterpriseChargePerson.length > 50){
+            $($enterpriseChargePerson).siblings(".error").remove();
+            $($enterpriseChargePerson).after("<label id='"+$enterpriseChargePersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($enterpriseChargePerson).siblings(".error").remove();
+        }
+    }
+
+    //企业负责人联系方式
+    function checkRulesEnterpriseChargePhone(obj){
+        var $enterpriseChargePhone = '#'+$(obj).attr("id");
+        var $enterpriseChargePhoneError = $(obj).attr("id")+'-error';
+
+        var enterpriseChargePhone = obj.value;
+        if(enterpriseChargePhone == '' ){
+            $($enterpriseChargePhone).siblings(".error").remove();
+            $($enterpriseChargePhone).after("<label id='"+$enterpriseChargePhoneError+"' class='error'>企业负责人联系方式不能为空</label>");
+            return;
+        }else{
+            $($enterpriseChargePhone).siblings(".error").remove();
+        }
+
+        if(enterpriseChargePhone.length > 50){
+            $($enterpriseChargePhone).siblings(".error").remove();
+            $($enterpriseChargePhone).after("<label id='"+$enterpriseChargePhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($enterpriseChargePhone).siblings(".error").remove();
+        }
+    }
+
+    //建设内容和规模
+    function checkRulesConstructionContentScale(obj){
+        var $constructionContentScale = '#'+$(obj).attr("id");
+        var $constructionContentScaleError = $(obj).attr("id")+'-error';
+
+        var constructionContentScale = obj.value;
+        if(constructionContentScale == '' ){
+            $($constructionContentScale).siblings(".error").remove();
+            $($constructionContentScale).after("<label id='"+$constructionContentScaleError+"' class='error'>建设内容和规模不能为空</label>");
+            return;
+        }else{
+            $($constructionContentScale).siblings(".error").remove();
+        }
+
+        if(constructionContentScale.length > 1000){
+            $($constructionContentScale).siblings(".error").remove();
+            $($constructionContentScale).after("<label id='"+$constructionContentScaleError+"' class='error'>请输入一个长度最多是 1000 的字</label>");
+            return;
+        }else{
+            $($constructionContentScale).siblings(".error").remove();
+        }
+    }
+
+    //分包领导
+    function checkRulesSubcontractLeader(obj){
+        var $subcontractLeader = '#'+$(obj).attr("id");
+        var $subcontractLeaderError = $(obj).attr("id")+'-error';
+
+        var subcontractLeader = obj.value;
+        if(subcontractLeader.length > 255){
+            $($subcontractLeader).siblings(".error").remove();
+            $($subcontractLeader).after("<label id='"+$subcontractLeaderError+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($subcontractLeader).siblings(".error").remove();
+        }
+    }
+
+    //分包单位1
+    function checkRulesSubcontractCompany1(obj){
+        var $subcontractCompany1 = '#'+$(obj).attr("id");
+        var $subcontractCompany1Error = $(obj).attr("id")+'-error';
+
+        var subcontractCompany1 = obj.value;
+        if(subcontractCompany1.length > 255){
+            $($subcontractCompany1).siblings(".error").remove();
+            $($subcontractCompany1).after("<label id='"+$subcontractCompany1Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany1).siblings(".error").remove();
+        }
+    }
+
+    //分包单位1责任人
+    function checkRulesSubcontractCompany1Person(obj){
+        var $subcontractCompany1Person = '#'+$(obj).attr("id");
+        var $subcontractCompany1PersonError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany1Person = obj.value;
+        if(subcontractCompany1Person.length > 50){
+            $($subcontractCompany1Person).siblings(".error").remove();
+            $($subcontractCompany1Person).after("<label id='"+$subcontractCompany1PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany1Person).siblings(".error").remove();
+        }
+    }
+
+    //分包单位1责任人联系方式
+    function checkRulesSubcontractCompany1PersonPhone(obj){
+        var $subcontractCompany1PersonPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany1PersonPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany1PersonPhone = obj.value;
+        if(subcontractCompany1PersonPhone.length > 50){
+            $($subcontractCompany1PersonPhone).siblings(".error").remove();
+            $($subcontractCompany1PersonPhone).after("<label id='"+$subcontractCompany1PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany1PersonPhone).siblings(".error").remove();
+        }
+    }
+
+    //分包单位1联系人
+    function checkRulesSubcontractCompany1Contact(obj){
+        var $subcontractCompany1Contact = '#'+$(obj).attr("id");
+        var $subcontractCompany1ContactError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany1Contact = obj.value;
+        if(subcontractCompany1Contact.length > 50){
+            $($subcontractCompany1Contact).siblings(".error").remove();
+            $($subcontractCompany1Contact).after("<label id='"+$subcontractCompany1ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany1Contact).siblings(".error").remove();
+        }
+    }
+
+    //分包单位1联系人联系方式
+    function checkRulesSubcontractCompany1ContactPhone(obj){
+        var $subcontractCompany1ContactPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany1ContactPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany1ContactPhone = obj.value;
+        if(subcontractCompany1ContactPhone.length > 50){
+            $($subcontractCompany1ContactPhone).siblings(".error").remove();
+            $($subcontractCompany1ContactPhone).after("<label id='"+$subcontractCompany1ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany1ContactPhone).siblings(".error").remove();
+        }
+    }
+
+    //分包单位2
+    function checkRulesSubcontractCompany2(obj){
+        var $subcontractCompany2 = '#'+$(obj).attr("id");
+        var $subcontractCompany2Error = $(obj).attr("id")+'-error';
+
+        var subcontractCompany2 = obj.value;
+        if(subcontractCompany2.length > 255){
+            $($subcontractCompany2).siblings(".error").remove();
+            $($subcontractCompany2).after("<label id='"+$subcontractCompany2Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany2).siblings(".error").remove();
+        }
+    }
+
+    //分包单位2责任人
+    function checkRulesSubcontractCompany2Person(obj){
+        var $subcontractCompany2Person = '#'+$(obj).attr("id");
+        var $subcontractCompany2PersonError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany2Person = obj.value;
+        if(subcontractCompany2Person.length > 50){
+            $($subcontractCompany2Person).siblings(".error").remove();
+            $($subcontractCompany2Person).after("<label id='"+$subcontractCompany2PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany2Person).siblings(".error").remove();
+        }
+    }
+
+    //分包单位2责任人联系方式
+    function checkRulesSubcontractCompany2PersonPhone(obj){
+        var $subcontractCompany2PersonPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany2PersonPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany2PersonPhone = obj.value;
+        if(subcontractCompany2PersonPhone.length > 50){
+            $($subcontractCompany2PersonPhone).siblings(".error").remove();
+            $($subcontractCompany2PersonPhone).after("<label id='"+$subcontractCompany2PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany2PersonPhone).siblings(".error").remove();
+        }
+    }
+
+    //分包单位2联系人
+    function checkRulesSubcontractCompany2Contact(obj){
+        var $subcontractCompany2Contact = '#'+$(obj).attr("id");
+        var $subcontractCompany2ContactError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany2Contact = obj.value;
+        if(subcontractCompany2Contact.length > 50){
+            $($subcontractCompany2Contact).siblings(".error").remove();
+            $($subcontractCompany2Contact).after("<label id='"+$subcontractCompany2ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany2Contact).siblings(".error").remove();
+        }
+    }
+
+    //分包单位2联系人联系方式
+    function checkRulesSubcontractCompany2ContactPhone(obj){
+        var $subcontractCompany2ContactPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany2ContactPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany2ContactPhone = obj.value;
+        if(subcontractCompany2ContactPhone.length > 50){
+            $($subcontractCompany2ContactPhone).siblings(".error").remove();
+            $($subcontractCompany2ContactPhone).after("<label id='"+$subcontractCompany2ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany2ContactPhone).siblings(".error").remove();
+        }
+    }
+
+    //分包单位3
+    function checkRulesSubcontractCompany3(obj){
+        var $subcontractCompany3 = '#'+$(obj).attr("id");
+        var $subcontractCompany3Error = $(obj).attr("id")+'-error';
+
+        var subcontractCompany3 = obj.value;
+        if(subcontractCompany3.length > 255){
+            $($subcontractCompany3).siblings(".error").remove();
+            $($subcontractCompany3).after("<label id='"+$subcontractCompany3Error+"' class='error'>请输入一个长度最多是 255 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany3).siblings(".error").remove();
+        }
+    }
+
+    //分包单位3责任人
+    function checkRulesSubcontractCompany3Person(obj){
+        var $subcontractCompany3Person = '#'+$(obj).attr("id");
+        var $subcontractCompany3PersonError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany3Person = obj.value;
+        if(subcontractCompany3Person.length > 50){
+            $($subcontractCompany3Person).siblings(".error").remove();
+            $($subcontractCompany3Person).after("<label id='"+$subcontractCompany3PersonError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany3Person).siblings(".error").remove();
+        }
+    }
+
+    //分包单位3责任人联系方式
+    function checkRulesSubcontractCompany3PersonPhone(obj){
+        var $subcontractCompany3PersonPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany3PersonPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany3PersonPhone = obj.value;
+        if(subcontractCompany3PersonPhone.length > 50){
+            $($subcontractCompany3PersonPhone).siblings(".error").remove();
+            $($subcontractCompany3PersonPhone).after("<label id='"+$subcontractCompany3PersonPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany3PersonPhone).siblings(".error").remove();
+        }
+    }
+
+    //分包单位3联系人
+    function checkRulesSubcontractCompany3Contact(obj){
+        var $subcontractCompany3Contact = '#'+$(obj).attr("id");
+        var $subcontractCompany3ContactError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany3Contact = obj.value;
+        if(subcontractCompany3Contact.length > 50){
+            $($subcontractCompany3Contact).siblings(".error").remove();
+            $($subcontractCompany3Contact).after("<label id='"+$subcontractCompany3ContactError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany3Contact).siblings(".error").remove();
+        }
+    }
+
+    //分包单位3联系人联系方式
+    function checkRulesSubcontractCompany3ContactPhone(obj){
+        var $subcontractCompany3ContactPhone = '#'+$(obj).attr("id");
+        var $subcontractCompany3ContactPhoneError = $(obj).attr("id")+'-error';
+
+        var subcontractCompany3ContactPhone = obj.value;
+        if(subcontractCompany3ContactPhone.length > 50){
+            $($subcontractCompany3ContactPhone).siblings(".error").remove();
+            $($subcontractCompany3ContactPhone).after("<label id='"+$subcontractCompany3ContactPhoneError+"' class='error'>请输入一个长度最多是 50 的字</label>");
+            return;
+        }else{
+            $($subcontractCompany3ContactPhone).siblings(".error").remove();
+        }
+    }
+
+    function deCode(str){
+        var s = "";
+        if(str !=null){
+            if(str.length == 0) return "";
+            s = str.replace(/&amp;/g,"&");
+            s = s.replace(/&lt;/g,"<");
+            s = s.replace(/&gt;/g,">");
+            s = s.replace(/&nbsp;/g," ");
+            s = s.replace(/&#39;/g,"\'");
+            s = s.replace(/&quot;/g,"\"");
+		}
+        return s;
+    }
+</script>

@@ -1,0 +1,100 @@
+<!--所有的人 按照这个页面来做啊， 包括 列表+表单 -->
+	<section class="content-header">
+      <h1>
+       	文件（图片）上传
+        <small>-</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#">文件（图片）上传</a></li>
+        <li><a href="#">-</a></li>
+      </ol>
+    </section>
+    
+	 <!-- Main content -->
+    <section class="content"   id="viewSysParamSection"   ms-controller="sysparam_view">
+    
+    	<div class="box box-info">
+	        <div class="box-footer">
+	          <button type="button" class="btn btn-primary"
+	          
+	          >返回</button>
+	        </div> 
+      </div>
+      
+      <div class="box box-info">
+	    	
+	        
+	        <div class="box-body">
+	        		<div id="uploader2" class="wu-example">
+				    <!--用来存放文件信息-->
+				    <div id="thelist2" class="uploader-list"></div>
+				    <div class="btns2">
+				        <div id="picker2">选择文件</div>
+				        <button id="ctlBtn" class="btn btn-default">开始上传</button>
+				    </div>
+				</div>
+	        
+	        </div>
+	        
+	        
+	   </div>
+    </section>
+	
+	<script type="text/javascript">
+	var uploader = WebUploader.create({
+		formData: {
+            uid: 123,
+            fileType:"image"
+        },
+	    // swf文件路径
+	    swf: '../../dist/Uploader.swf',
+
+	    // 文件接收服务端。
+	    server: 'http://localhost:8080/webshowcase/data/uploaddata/file',
+
+	    // 选择文件的按钮。可选。
+	    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+	    pick: '#picker2',
+
+	    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+	    resize: false
+	});
+	
+	// 当有文件被添加进队列的时候
+	uploader.on( 'fileQueued', function( file ) {
+	    $("#thelist2").append( '<div id="' + file.id + '" class="item">' +
+	        '<h4 class="info">' + file.name + '</h4>' +
+	        '<p class="state">等待上传...</p>' +
+	    '</div>' );
+	});
+	
+	uploader.on( 'uploadSuccess', function( file ) {
+	    $( '#'+file.id ).find('p.state').text('已上传');
+	});
+
+	uploader.on( 'uploadError', function( file ) {
+	    $( '#'+file.id ).find('p.state').text('上传出错');
+	});
+
+	uploader.on( 'uploadComplete', function( file ) {
+	    $( '#'+file.id ).find('.progress').fadeOut();
+	});
+	
+	$("#ctlBtn").on('click', function() {
+		uploader.upload();
+    });
+	
+	
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,153 @@
+<namespace id="casecategory-edit"  ms-controller="casecategory_edit">
+<ol class="breadcrumb">
+    <li><a href="#">案例分类</a></li>
+    <li><a href="#">编辑</a></li>
+</ol>
+<section class="content" id="editCaseCategorySection">
+    <div class="box box-info">
+	    <form role="form" id="editCaseCategoryForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 提交
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+				<div class="form-group">
+					<label for="name" class="col-sm-1 control-label requiredMask input-sm">名称</label>
+					<div class="col-sm-5">
+            <input name="name" type="text" class="form-control input-sm" placeholder=""
+              ms-attr="{value:@data.name}">
+					</div>
+				</div>
+            <div class="form-group">
+                <label for="enable" class="col-sm-1 control-label requiredMask input-sm">状态</label>
+                <div class="col-sm-5">
+      						<select name="enable" class="form-control input-sm select2" ms-duplex="@data.enable">
+      							<option selected="selected" value="">请选择</option>
+      							<option ms-for="el in @options" ms-attr="{value:el.value}" ms-text="el.name"></option>
+      						</select>
+      					</div>
+            </div>
+            <div class="form-group">
+                <label for="defaut" class="col-sm-1 control-label requiredMask input-sm">是否默认</label>
+                <div class="col-sm-5">
+                  <select name="defaut" class="form-control input-sm select2" ms-duplex="@data.defaut">
+                    <option selected="selected" value="">请选择</option>
+                    <option ms-for="el in @defaults" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                  </select>
+                </div>
+            </div>
+				<div class="form-group">
+					<label for="desc" class="col-sm-1 control-label requiredMask input-sm">描述</label>
+					<div class="col-sm-5">
+						<textarea name="desc" class="form-control input-sm" rows="3"
+							placeholder=" ..."  >{{@data.desc}}</textarea>
+					</div>
+				</div>
+        <div class="form-group">
+					<label for="order" class="col-sm-1 control-label input-sm">顺序</label>
+					<div class="col-sm-5">
+            <input name="order" type="text" class="form-control input-sm" placeholder=""
+              ms-attr="{value:@data.order}" >
+					</div>
+				</div>
+			</div>
+		<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+	</form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#casecategory-edit').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "casecategory_edit",
+    		        data: {},
+                options : {},
+                defaults : {}
+    		    })
+    		},
+			init : function() {
+				$('#editCaseCategoryForm').validate({
+					rules : {
+            'name' : {
+							required : true,
+							maxlength : 64
+						},
+						'order' : {
+							required : true,
+							number : true
+						},
+						'desc' : {
+							required : true,
+							maxlength : 2000
+						},
+						'enable' : {
+							required : true
+						},
+						'defaut' : {
+							required : true
+						}
+					},
+					submitHandler : function(form) {
+						page.doEdit();
+					}
+				});
+			},
+			doEdit : function() {
+				var submitSysUserForm = {
+					endpoint : "/casecategory/updateCaseCategory",
+					formObj : $("#editCaseCategoryForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/casecategory/casecategory-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/casecategory/getCaseCategoryById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+
+        page.namespace.getCodes(function(data){
+					page.model.vm.options=data;
+				},"CASE_CATEGORY_ENABLE");
+
+        page.namespace.getCodes(function(data){
+					page.model.vm.defaults=data;
+				},"CASE_CATEGORY_DEFAULT");
+			}
+		};
+
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+</script>

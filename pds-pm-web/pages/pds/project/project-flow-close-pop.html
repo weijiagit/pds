@@ -1,0 +1,114 @@
+<namespace id="project-flow-close-pop">
+    <section class="content" id="projectFlowClosePopSection">
+        <form role="form" id="projectFlowClosePopForm"  class="form-horizontal">
+            <div class="">
+                <div class="form-group" id="fileCount">
+                    <label class="control-label"><span class="star">*</span>相关附件：</label>
+                    <div class="con" id="attachmentIds">
+                        <div name="fileUploadDiv"></div>
+                        <input readOnly name="caseImageId"  id="caseImageId" type="hidden" class="form-control input-sm" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="remark" class="control-label">
+                        备注：</label>
+                    <div class="con">
+                        <textarea name="remark" id="remark" class="textarea1" placeholder=""  ></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-wrap">
+                <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-close-pop').namespace(),
+            init : function() {
+                $('#projectFlowClosePopForm').validate({
+                    ignore: '',
+                    rules : {
+                        remark : {
+                            maxlength : 1000
+                        },
+                        caseImageId :{
+                            required : true
+                        }
+                    },messages:{
+                        remark :{
+                            maxlength :"最多输入1000个字"
+                        },
+                        caseImageId :{
+                            required :"请上传相关附件"
+                        }
+                    },submitHandler : function(form) {
+                        page.doAdd();
+                        $("#saveBtn").prop("disabled",true);
+                    }
+                });
+            },
+            getId : function() {
+                return page.namespace.modal.param(page,"id");
+            },
+            getStatus : function() {
+                return page.namespace.modal.param(page,"approveStatus");
+            },
+            doAdd : function() {
+                var id = page.getId();
+                var status = page.getStatus();
+                var $root=page.namespace.root;
+                var attachmentId = "";
+                $root.find('[name="caseImageIdStr"]').each(function (i,obj) {
+                    attachmentId += obj.value + ",";
+                });
+                var attachmentIds = attachmentId.substr(0,attachmentId.length-1);
+                var HtmlMenuOpt = {
+                    endpoint : "/project/updateProjectFlowStatusById",
+                    data : {
+                        'remark' : $root.find('[name="remark"]').val(),
+                        'attachmentIds' :attachmentIds,
+                        'approveStatus':status,
+                        'projectDepartId' : id
+                    },
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.getRequest(HtmlMenuOpt);
+            }
+        };
+
+        page.namespace.root.find('[name="fileUploadDiv"]').each(function(i,e){
+            var opt={
+                $fsc : $(e),
+                $fc : page.namespace.root.find('#filesDiv'), // form container
+                added : function(data,obj){
+                    obj.opt.$fsc.parent().children('input[name="caseImageId"]').val(data.id);
+                    $("#attachmentIds").append("<input type='hidden' name='caseImageIdStr' id='caseImageId"+data.id+"' value='"+data.id+"'/>");
+                    $("#caseImageId-error").remove();
+                },
+                removed : function(data,obj){
+                    obj.opt.$fsc.parent().children('input').val('');
+//                    $("#caseImageId"+data.id).remove();
+                },
+                types : ['image/jpeg','image/jpg','image/png','application/msword','application/pdf',
+                    'application/x-zip-compressed','application/vnd.ms-powerpoint','application/vnd.ms'
+                ]
+            }
+            fileAttach(opt,true);
+        });
+        page.init();
+    });
+</script>

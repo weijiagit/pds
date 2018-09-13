@@ -1,0 +1,108 @@
+<namespace id="dictionaryData-edit">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改字典类型</span>
+		</div>
+		<section class="content" id="editDictionaryDataSection" ms-controller="dictionaryData_edit">
+			<form role="form" id="editDictionaryDataForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="dictName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>字典名称：</label>
+					<div class="col-sm-4">
+						<span id="dictName" class="form-control label-form-control input-sm" 
+	   			 			>{{@data.dictName}}</span>
+					</div>
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>描述：</label>
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control input-sm" 
+	   			 			placeholder=""  ms-attr="{value:@data.name}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="value" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>键值：</label>
+					<div class="col-sm-4">
+						<span id="value"  class="form-control label-form-control input-sm" 
+	   			 			>{{@data.value}}</span>
+					</div>
+					<label for="sequence" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>排序：</label>
+					<div class="col-sm-4">
+						<input name="sequence" type="text" class="form-control input-sm" 
+	   			 			placeholder=""   ms-attr="{value:@data.sequence}">
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#dictionaryData-edit').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "dictionaryData_edit",
+    		        data: {}
+    		    })
+    		},
+			init : function() {
+				$('#editDictionaryDataForm').validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'sequence' : {
+							required : true,
+							number : true,
+							digits : true,
+							min : 1
+						}
+					},submitHandler : function(form) {
+						page.doEdit();
+					}
+				});
+			},
+			doEdit : function() {
+				var submitsForm = {
+					endpoint : "/dictionary/editDictionaryData",
+					formObj : $("#editDictionaryDataForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure:function(data) {
+						alertTool.error(data);
+					}
+				};
+				
+				page.namespace.submitForm(submitsForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/dictionary/dictionaryData-list.html");
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/dictionary/getDictionaryDataById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+		
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+	});
+</script>

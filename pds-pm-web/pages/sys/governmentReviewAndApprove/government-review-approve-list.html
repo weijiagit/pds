@@ -1,0 +1,148 @@
+<meta charset="utf-8">
+<namespace id="government-review-approve-list">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">审批部门管理</span>
+		</div>
+		<section class="content" id="searchDepartGovernmentSection" ms-controller="government_review_approve_list">
+			<div class="">
+				<form class="form-horizontal" id="searchDepartGovernmentForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">审批手续</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								 <input type="text" name="imageText" class="ipt-txt" id="imageText" placeholder="审批手续">
+							</div>
+						</div>
+					</div>
+
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">添加</a>
+							<a href="javascript:;" class="pds-btn fl" id="deleteBtn" func="task-add">删除</a>
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+							<table id="departGovernmentListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>审批手续</th>
+										<th>所属部门</th>
+										<th>是否显示</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#government-review-approve-list').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "government_review_approve_list"
+			    })
+			},
+            doReset : function() {
+                $('#searchDepartGovernmentForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml('/pages/sys/governmentReviewAndApprove/government-review-approve-add.html');
+			},
+			doBatchDel : function() {
+				var selectRows = $('#departGovernmentListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doView : function(id) {
+				page.namespace.skiphtml('/pages/sys/governmentReviewAndApprove/government-review-approve-view.html?id='+id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/departgovernment/removeDepartGovernment",
+				  	data : {'id' : id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml('/pages/sys/governmentReviewAndApprove/government-review-approve-edit.html?id='+id);
+			}
+		}
+		
+		page.listTable = $('#departGovernmentListTable').initDataTable({
+			url : "/departgovernment/getDepartGovernmentPage",
+			urlDataFn : function() {
+				return $("#searchDepartGovernmentForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "imageText",
+				"orderable" : false,
+				"width" : "15%"
+			}, {
+				"data" : "departName",
+				"width" : "10%"
+			}, {
+				"data" : "showPic",
+				"width" : "10%",
+                "class" : "content-center",
+				"render" : function(data, type, row, meta) {
+					return data == 1 ? '<label class="label label-success">是</label>' :'<label class="label label-danger">否</label>';
+				}
+			} ]
+		});
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find("#addBtn").on('click', page.doAdd);
+		page.namespace.root.find("#deleteBtn").on('click', page.doBatchDel);
+        page.namespace.root.find("#assignDept").on('click', page.doAssignDept);
+	});
+</script>

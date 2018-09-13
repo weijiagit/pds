@@ -1,0 +1,255 @@
+<meta charset="utf-8">
+<namespace id="case-list" ms-controller="case_list">
+	<ol class="breadcrumb">
+		<li><a href="#">案例管理</a></li>
+		<li><a href="#">列表</a></li>
+	</ol>
+	<section class="content" id="searchCaseSection">
+		<div class="box box-info">
+			<form class="form-horizontal" id="searchCaseForm">
+				<div class="box-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">案例标题</span>
+								<input type="text" name="caseTitle" id="caseTitle" class="form-control input-sm" placeholder="案例标题">
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">案例作者</span>
+								<input type="text" name="caseAuth" id=""caseAuth"" class="form-control input-sm" placeholder="案例作者">
+								<span class="input-group-btn">
+                                    <button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                </span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-header with-border">
+				<div class="btn-group">
+					<a class="btn btn-success btn-sm" id="addBtn" func="case-list-add">
+                    	<span class="glyphicon glyphicon-plus"></span> 添加
+                    </a>
+                    <button class="btn btn-danger btn-sm" id="deleteBtn" func="case-list-del">
+                        <span class="glyphicon glyphicon-minus"></span> 删除
+                    </button>
+                    <button class="btn btn-success btn-sm" id="upCaseBtn" func="case-list-up">
+                        <span class="glyphicon glyphicon-minus"></span> 上架
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="downCaseBtn" func="case-list-down">
+                        <span class="glyphicon glyphicon-minus"></span> 下架
+                    </button>
+                    <button class="btn btn-success btn-sm" type="button" func="case-list-order"  id="sortBtn">
+						<span class="glyphicon glyphicon-minus"></span> 排序
+					</button>
+				</div>
+			</div>
+
+			<div class="box-body " id="caseList" style="margin-top: -15px;">
+				<table id="caseListTable" class="table dataTable row-border cell-border" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>案例标题</th>
+							<th>案例类型</th>
+							<th>技术领域</th>
+							<th>状态</th>
+							<th id="sorColumn">排序</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page={
+			namespace : $('#case-list').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "case_list"
+			    })
+			},
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/case/deleteCase",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#caseListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doUpCase : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/case/upCase",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchUpCase : function() {
+				var selectRows = $('#caseListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要上架的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doUpCase(selectRows.join(","));
+				});
+			},
+			doDownCase : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/case/downCase",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDownCase : function() {
+				var selectRows = $('#caseListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要下架的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDownCase(selectRows.join(","));
+				});
+			}
+		};
+
+		page.listTable = $('#caseListTable').initDataTable({
+			url : "/case/getCasePage",
+			urlDataFn : function() {
+				return $("#searchCaseForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				upCase: function(id, rowData){
+					page.doUpCase(id);
+				}
+			},
+			columns : [ {
+				"data" : "cTitle",
+				"width" : "10%"
+			}, {
+				"data" : "cType",
+				"width" : "15%",
+				"render" : function(data, type, row, meta) {
+					var type = "";
+					if(data == 1){
+						type = '<label class="label label-success">成功案例</label>';
+					}else if(data == 2){
+						type = '<label class="label label-success">奖励荣誉</label>';
+					}else if(data == 3){
+						type = '<label class="label label-success">已获专利</label>';
+					}else if(data == 4){
+						type = '<label class="label label-success">论文著作</label>';
+					}
+					return type;
+				}
+			}, {
+				"data" : "cTecName",
+				"width" : "15%"
+			}, {
+				"data" : "cStatus",
+				"width" : "10%",
+				"render" : function(data, type, row, meta) {
+					var status = "";
+					if(data == 1){
+						status = '<label class="label label-success">上架</label>';
+					}else if(data == 0){
+						status = '<label class="label label-danger">下架</label>';
+					}
+					return status;
+				}
+			}, {
+				"data" : "cOrder",
+				"width" : "10%"
+			} ]
+		});
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+		page.namespace.root.find('#upCaseBtn').on('click', page.doBatchUpCase);
+		page.namespace.root.find('#downCaseBtn').on('click', page.doBatchDownCase);
+		
+		page.namespace.root.find('#sortBtn').on('click',function(){
+			var $sortColumn=page.namespace.root.find('#sorColumn');
+			var ix=$sortColumn.index('#caseListTable > thead > tr > th');
+			var $table=page.namespace.root.find('#caseListTable');
+			$table.find('tbody > tr').each(function(i,e){
+				var $tr=$(e);
+				var $chk=$tr.find('[type="checkbox"]');
+				var id=$chk.val();
+				var $td=$($tr.find('td').get(ix));
+				var input='<input  name="_text_sort" type="text" data-id="'+id+'" value="'+$td.text()+'"></input>';
+				$td.html(input);
+
+			});
+			page.namespace.root.find('[name="_text_sort"]').on('change',function(e){
+				var vl=$(e.target).val();
+				var id=$(e.target).data('id');
+				console.log(id + " = "+vl);
+				var HtmlMenuOpt = {
+					endpoint : "/case/setTopLevel",
+					data : {
+						'id' : id,
+						'order' : vl
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+
+
+
+			});
+		});
+	});
+</script>

@@ -1,0 +1,165 @@
+<namespace id="sysrole-element">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">分配元素</span>
+        </div>
+        <section class="content" >
+            <div class="">
+                <div class="pds-pro-item clearfix">
+                    <div class="fl clearfix">
+						<a href="javascript:;" class="pds-btn fl" id="btnAddRole" func="task-add">添加权限</a>
+						<a href="javascript:;" class="pds-btn fl" id="btnDelRole" func="task-add">取消授权</a>
+						<a href="javascript:;" class="pds-btn fl" id="btnCancel" func="task-add">返回</a>
+                    </div>
+				</div>
+                 <div class="basic-pro-wrap">
+                    <div class="pro-table" id="role-table">
+                       <div class="col-sm-6">
+							<table id="sysrole-without-element-table"
+								class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0"
+								width="100%" style="min-width:auto;">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>元素名称</th>
+										<th>元素标识</th>
+										<th>所属菜单</th>
+										<th>元素描述</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+
+						<div class="col-sm-6">
+							<table id="sysrole-within-element-table"
+								class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0"
+								width="100%" style="min-width:auto;">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>元素名称</th>
+										<th>元素标识</th>
+										<th>所属菜单</th>
+										<th>元素描述</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+                    </div>
+                </div> 
+			</div>
+        </section>
+    </div>
+    
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysrole-element').namespace(),
+			init : function() {
+				
+			},
+			reload : function() {
+				page.listTable_1.ajax.reload();
+		  		page.listTable_2.ajax.reload();
+			},
+			getId : function() {
+				return page.namespace.getParam("id");
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-list.html');
+			},
+			doDel : function() {
+				var selectRows = $('#sysrole-within-element-table').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请在右侧列表中选择要撤销的记录!");
+					return;
+				}
+				
+				var HtmlMenuOpt = {
+					endpoint : "/sysrole/deleteRoleElement",
+				  	data : {"ids" : selectRows.join(",")},
+				  	success : function(data) {
+				  		alertTool.success("操作成功!");
+				  		page.reload();
+				  	}	
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doAdd : function() {
+				var selectRows = $('#sysrole-without-element-table').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请在左侧列表中选择要授权的记录!");
+					return;
+				}
+				var roleId=page.getId();
+				var elementId=selectRows.join(",");
+				var HtmlMenuOpt = {
+					endpoint : "/sysrole/addRoleElement",
+				  	data : {"roleId" :  roleId, "elementId" : elementId},
+				  	success : function(data) {
+				  		alertTool.success("操作成功");
+						  page.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			}
+		};
+		
+		page.listTable_1 = $('#sysrole-without-element-table').initDataTable({
+			url : "/sysrole/getSysRoleElement_not_grant",
+			paging: false,
+			urlDataFn : function() {
+				return {"id": page.getId()};
+			},
+			lengthChange : false,
+			checkbox : true,
+			columns : [{
+				"data" : "name",
+				"width" : "210px"
+			}, {
+				"data" : "funcId",
+				"width" : "210px"
+			}, {
+				"data" : "menuName",
+				"width" : "200px"
+			}, {
+				"data" : "description",
+				"width" : "200px"
+			}]
+		});
+		
+		page.listTable_2 = $('#sysrole-within-element-table').initDataTable({
+			url : "/sysrole/getSysRoleElement_grant",
+			paging: false,
+			urlDataFn : function() {
+				return {"id": page.getId()};
+			},
+			lengthChange : false,
+			checkbox : true,
+			columns : [{
+				"data" : "name",
+				"width" : "210px"
+			}, {
+				"data" : "funcId",
+				"width" : "210px"
+			}, {
+				"data" : "menuName",
+				"width" : "200px"
+			}, {
+				"data" : "description",
+				"width" : "200px"
+			}]
+		});
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		page.namespace.root.find('#btnDelRole').on('click', page.doDel);
+		page.namespace.root.find('#btnAddRole').on('click', page.doAdd);
+	});
+</script>

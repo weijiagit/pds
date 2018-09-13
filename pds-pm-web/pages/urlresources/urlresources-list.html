@@ -1,0 +1,138 @@
+<namespace id="urlresources-list">
+    <ol class="breadcrumb">
+        <li><a href="#">资源管理</a></li>
+        <li><a href="#">列表</a></li>
+    </ol>
+	<section class="content" id="searchURLResourcesSection" ms-controller="urlresources_list">
+		<div class="box box-info">
+			<form class="form-horizontal" id="searchURLResourcesForm">
+				<div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="btn-group">
+                                <a class="btn btn-success btn-sm" id="addBtn" func="urlresources-add">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    添加
+                                </a>
+                                <button class="btn btn-danger btn-sm" type="button" id="deleteBtn" func="urlresources-delete">
+                                    <span class="glyphicon glyphicon-minus"></span> 删除
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">URL名称</span>
+                                <input type="text" name="name" id="name" class="form-control input-sm" placeholder="URL名称">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">URL路径</span>
+                                <input type="text" name="url" id="url" class="form-control input-sm" placeholder="URL路径">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+			</form>
+		</div>
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-body" id="urlresourcesList" style="margin-top: -10px;">
+				<table id="urlresourcesListTable"
+					class="table dataTable row-border cell-border" cellspacing="0"
+					width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>URL名称</th>
+							<th>URL路径</th>
+							<th>URL描述</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#urlresources-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml('/pages/urlresources/urlresources-add.html');
+			},
+			doBatchDel : function() {
+				var selectRows = $('#urlresourcesListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				
+				page.doDel(selectRows.join(","));
+			},
+			doView : function(id) {
+				page.namespace.skiphtml('/pages/urlresources/urlresources-view.html?id='+id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/urlresources/deleteUrlResources",
+				  	data : {'ids' : id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml('/pages/urlresources/urlresources-edit.html?id='+id);
+			}
+		}
+		
+		page.listTable = $('#urlresourcesListTable').initDataTable({
+			url : "/urlresources/getUrlResourcesPage",
+			urlDataFn : function() {
+				return $("#searchURLResourcesForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "name",
+				"orderable" : false,
+				"width" : "15%"
+			}, {
+				"data" : "url",
+				"orderable" : false,
+				"width" : "15%"
+			}, {
+				"data" : "description",
+				"width" : "15%"
+			}]
+		});
+		
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find("#addBtn").on('click', page.doAdd);
+		page.namespace.root.find("#deleteBtn").on('click', page.doBatchDel);
+	});
+</script>

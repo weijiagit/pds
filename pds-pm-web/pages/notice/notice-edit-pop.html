@@ -1,0 +1,182 @@
+<namespace id="notice-edit">
+    <section class="content" id="editNoticeSection" ms-controller="notice_edit">
+        <form role="form"  id="editNoticeForm" class="form-horizontal">
+            <div class="">
+                <div class="form-group">
+                    <label for="content" class="control-label">
+                        <span class="star">*</span>公告内容：</label>
+                    <div class="con">
+                        <textarea name="content" id="content" class="textarea1" style="resize:none;" rows="6"
+                                  ms-html="@data.content" placeholder="">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group" id="fileCount">
+                    <label class="control-label">附件：</label>
+                    <div class="con"  name="caseImageDiv" id="caseImageDiv">
+
+                        <div name="fileUploadDiv" class="fileUploadDiv"></div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="btn-wrap">
+                <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+            </div>
+            <input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+        </form>
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#notice-edit').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "notice_edit",
+                    data: {},
+                    files :{}
+                })
+            },
+            init : function() {
+                $('#editNoticeForm').validate({
+                    ignore: '',
+                    rules : {
+                        content : {
+                            required : true,
+                            maxlength : 1000
+                        }
+                    },messages:{
+                        content :{
+                            required :"公告内容不能为空",
+                            maxlength :"最多输入1000个字"
+                        }
+                    },submitHandler : function(form) {
+                        $("#saveBtn").prop("disabled",true);
+                        page.doEdit();
+                    }
+                });
+            },
+            doEdit : function() {
+                var $root=page.namespace.root;
+                // 重新上传图片Id
+                var attachmentId = "";
+                $root.find('[name="caseImageId"]').each(function (i,obj) {
+                    attachmentId += obj.value + ",";
+                });
+                var attachmentIds = attachmentId.substr(0,attachmentId.length-1);
+                //修改的图片Id
+                var delImageId = "";
+                $root.find('[name="delImageId"]').each(function (i,obj) {
+                    delImageId += obj.value + ",";
+                });
+                var delImageIds = delImageId.substr(0,delImageId.length-1);
+
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/editNotice",
+                    data : {
+                        'id' : $root.find('[name="id"]').val(),
+                        'content' : $root.find('[name="content"]').val(),
+                        'attachmentIds' : attachmentIds,
+                        'delImageIds' : delImageIds
+                    },
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure:function(data) {
+                        $("#saveBtn").prop("disabled",false);
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/notice/detailNotice",
+                    data : {"id":page.namespace.modal.param(page,"id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                        page.model.vm.files=data.attachmentInfoList;
+                        if(data&&data.attachmentInfoList.length > 0){
+                            for(var i=0;i<data.attachmentInfoList.length;i++){
+                                var $fileName1 ="";
+                                var ig=data.attachmentInfoList[i];
+                                var name=ig.name;
+                                var suffix=ig.suffix;
+                                var fileName=name + '.' + suffix;
+
+                                var $fileName;
+                                $fileName = $(' <div name="imgTempDiv"> <span>'+fileName+'</span> '
+                                    +' <a id="update" href="javascript:void(0);">删除</a> </div>');
+
+                                $fileName.find('span').attr('data',ig.id);
+                                $fileName.find('#update').on('click',function(e){
+                                    debugger;
+                                    var $tempImgDiv=$(e.target).parents('div[name="imgTempDiv"]');
+                                    var delAttachmentId = $tempImgDiv.find('span').attr('data');
+//                                    $tempImgDiv.toggle();
+                                    $tempImgDiv.remove();
+                                    var temp =$tempImgDiv.parent().find('[class="input-group"]');
+                                    if(temp.length ==0) {
+                                        attachFile($tempImgDiv.parent().find('[name="fileUploadDiv"]'));
+                                    }
+                                    var data =$fileName.find('span').attr('data');
+                                    $("#caseImageDiv").append(
+                                        "<input type='hidden' name='delImageId' id='delImageId"+delAttachmentId+"' value='"+delAttachmentId+"'/>");
+
+                                });
+                                $fileName1=$fileName;
+                                var $img1Div=page.namespace.root.find('#caseImageDiv');
+                                $img1Div.append($fileName1);
+                            }
+                        }
+                        var $img1Div=page.namespace.root.find('#caseImageDiv');
+                        attachFile($img1Div.find('[name="fileUploadDiv"]'));
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+
+        function attachFile($e){
+            var idx = $(".con").find("div a").length;
+            var opt={
+                $fsc : $($e),
+                $fc : page.namespace.root.find('#filesDiv'), // form container
+                added : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val(data.id);
+                    $("#caseImageDiv").append(
+                        "<input type='hidden' name='caseImageId' id='caseImageId"+data.id+"' value='"+data.id+"'/>");
+
+                },
+                removed : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val('');
+                    $("#caseImageId"+data.id).remove();
+                },
+                types : ['image/jpeg','image/jpg','image/png','application/msword','application/pdf',
+                    'application/x-zip-compressed','application/vnd.ms-powerpoint','application/vnd.ms'
+                    ]
+            }
+            fileAttach(opt,true,idx);
+        }
+
+
+        page.init();
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+
+
+
+        page.initView();
+    });
+</script>

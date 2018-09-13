@@ -1,0 +1,108 @@
+<namespace id="pending-work-view">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">已办工作详情</span>
+        </div>
+        <section class="content" id="pendingWorkSection" ms-controller="pendingWork_view">
+            <form role="form"  id="pendingWorkForm" class="form-horizontal">
+                <div class="form-group">
+                    <label for="projectCode" class="col-sm-2 control-label requiredMask input-sm">
+                        项目代码：
+                    </label>
+                    <div class="col-sm-4" name="projectCode">
+                            <span id=projectCode class="form-control label-form-control input-sm"  ms-html="@data.projectCode">
+
+                            </span>
+                    </div>
+                    <label for="projectName" class="col-sm-2 control-label requiredMask input-sm">
+                        项目名称：
+                    </label>
+                    <div class="col-sm-4" name="projectName">
+                            <span id=projectName class="form-control label-form-control input-sm"  ms-html="@data.projectName">
+                            </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hastenTask" class="col-sm-2 control-label requiredMask input-sm">
+                        被催办任务：
+                    </label>
+                    <div class="col-sm-10">
+                            <textarea name="hastenTask" id="hastenTask" class="form-textarea" readonly="true" ms-html="@data.hastenTask">
+                            </textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="assignmentTask" class="col-sm-2 control-label requiredMask input-sm">
+                        被分配任务：
+                    </label>
+                    <div class="col-sm-10">
+                            <textarea name="assignmentTask" id="assignmentTask" class="form-textarea" readonly="true" ms-html="@data.assignmentTask">
+                            </textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="projectCreateTimeFormat" class="col-sm-2 control-label requiredMask input-sm">
+                        创建时间：
+                    </label>
+                    <div class="col-sm-4" name="projectCode">
+                            <span id=projectCreateTimeFormat class="form-control label-form-control input-sm"  >
+                                {{@data.projectCreateTime |date}}
+                            </span>
+                    </div>
+                    <label  class="col-sm-2 control-label requiredMask input-sm">
+                        操作类型：
+                    </label>
+                    <div class="col-sm-4" name="operationType">
+                            <span ms-if="@data.operationType == '0' " class="form-control label-form-control input-sm"  >
+                                重点项目
+                            </span>
+                        <span  ms-if="@data.operationType =='1' " class="form-control label-form-control input-sm"  >
+                                项目推进
+                            </span>
+                        <span ms-if="@data.operationType =='2' " class="form-control label-form-control input-sm"  >
+                                领导指示
+                            </span>
+                    </div>
+                </div>
+
+                <div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#pending-work-view').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "pendingWork_view",
+                    data: {}
+                })
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/pds/work/finish-work-list.html");
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/backlogWork/detailBacklogWork",
+                    data : {"id":page.namespace.getParam("id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

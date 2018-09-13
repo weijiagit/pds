@@ -1,0 +1,477 @@
+<namespace id="task-list" ms-controller="task-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">项目推进管理</span>
+        </div>
+        <section class="content" id="searchTaskSection" >
+            <div class="">
+                <form class="form-horizontal" id="searchTaskForm" onkeydown="if(event.keyCode==13)return false;">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">项目名称</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="projectName" id="projectName" placeholder="请填写所需要查询的项目名称" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix rel">
+                        <label class="filed-label fl">责任单位</label>
+                        <div class="pro-search-wrap rel">
+                            <div id="department" class="filter-item clearfix department">
+                                <input id="responsibleDepartment" name="responsibleDepartment" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                                <input id="responsibleDepartmentId" name="responsibleDepartmentId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">批次</label>
+                        <div class="filter-item clearfix">
+                            <div class="" style="width: 906px;">
+                                <select id="batch" name="batch" class="form-control input-sm select2">
+                                    <option selected="selected" value="">全部</option>
+                                    <option ms-for="el in @batches"  ms-attr="{value:el.batch}">
+                                        {{el.batch}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">是否完成</label>
+                        <div class="filter-item clearfix">
+                            <div class="" style="width: 200px;">
+                                <select name="isDepartFinish" id="isDepartFinish" class="form-control input-sm select2" >
+                                <option selected="selected" value="">全部</option>
+                                <option value="0">未完成</option>
+                                <option value="1">已完成</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                        </div>
+                        <!-- <div class="btn-wrap clearfix">
+                            <a href="javascript:;" class="pds-btn fl mr20" id="addBtn">新增</a>
+                            <a href="javascript:;" class="pds-btn fl" id="exportBtn">导出</a>
+                        </div> -->
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <!-- <div class="fl clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl mr20" id="reset">重置</a>
+                        </div> -->
+                        <div class="btn-wrap clearfix" style="float:left;">
+                            <a href="javascript:;" class="pds-btn fl mr20 pds-add" id="addBtn">新增</a>
+                            <a href="javascript:;" class="pds-btn fl pds-export" id="exportBtn">导出</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label" id="taskList">工作进展</div>
+                        </div> -->
+                        <div class="pro-table" id="projectList">
+                            <table id="taskListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>项目名称</th>
+                                    <th>分包领导</th>
+                                    <th>工作任务</th>
+                                    <th>责任单位</th>
+                                    <th>责任人</th>
+                                    <th>时间节点</th>
+                                    <th>创建时间</th>
+                                    <th>工程进度</th>
+                                    <th>批次</th>
+                                    <th>完成情况</th>
+                                    <th>核查情况</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    var viewFlag =false;
+    var exportFlag =false;
+    var delFlag =false;
+
+    $(function() {
+        var page = {
+            namespace : $('#task-list').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "task-list",
+                    batches :{}
+                })
+            },
+            init: function () {
+                var HtmlMenuOpt = {
+                    endpoint : "/task/queryBatch",
+                   /* data : {
+                        'ids' : id
+                    },*/
+                    success : function(data) {
+                        page.model.vm.batches=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+
+                // 查询
+                var query = sessionStorage.getItem("task-query");
+                if(query !=null){
+                    $("#queryBtn").show();
+                }else{
+                    $("#queryBtn").hide();
+                }
+                // 新增
+                var add = sessionStorage.getItem("task-add");
+                if(add !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+                // 详情
+                var view = sessionStorage.getItem("task-view");
+                if(view != null){
+                    viewFlag = true;
+                }
+                // 导出
+                var exportExcel = sessionStorage.getItem("task-export");
+                if(exportExcel !=null){
+                    $("#exportBtn").show();
+                }else{
+                    $("#exportBtn").hide();
+                }
+                // 删除
+                var del= sessionStorage.getItem("task-delete");
+                if(del !=null){
+                    delFlag =true;
+                }
+            },
+            doQuery : function() {
+                 page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchTaskForm')[0].reset();
+                $("#responsibleDepartmentId").val("");
+                page.listTable.ajax.reload();
+
+            },
+            doAdd : function() {
+                page.namespace.modal.open(page,{
+                    id:"addTaskModal",
+                    title:"新增项目推进",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchTaskForm')[0].reset();
+                            $("#responsibleDepartmentId").val("");
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/task/task-add-pop.html','','550px;');
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/task/task-view.html?id=" + id);
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/task/deleteTask",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doExport: function () {
+                var HtmlMenuOpt = {
+                    endpoint : "/task/validExportExcel",
+                    data : {
+                        'projectName' : $("#projectName").val(),
+                        'responsibleDepartment':$("#responsibleDepartment").val(),
+                        'isDepartFinish':$("#isDepartFinish").val()
+                    },
+                    success : function(data) {
+                      if(data){
+                          var form = $("<form>");
+                          form.attr('style', 'display:none');
+                          form.attr('target', '');
+                          form.attr('method', 'post');
+                          form.attr('action', '/api/task/taskExportExcel');
+                          // 查询条件
+                          var projectName = $('<input>');
+                          projectName.attr('type', 'hidden');
+                          projectName.attr('name', 'projectName');
+                          projectName.attr('value', $("#projectName").val());
+
+                          var responsibleDepartment = $('<input>');
+                          responsibleDepartment.attr('type', 'hidden');
+                          responsibleDepartment.attr('name', 'responsibleDepartment');
+                          responsibleDepartment.attr('value', $("#responsibleDepartment").val());
+
+                          var isDepartFinish = $('<input>');
+                          isDepartFinish.attr('type', 'hidden');
+                          isDepartFinish.attr('name', 'isDepartFinish');
+                          isDepartFinish.attr('value', $("#isDepartFinish").val());
+
+                          $('body').append(form);
+                          form.append(projectName);
+                          form.append(responsibleDepartment);
+                          form.append(isDepartFinish);
+                          form.submit();
+                      }
+                    },error :function (data) {
+                        alertTool.success(data.message);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:300px; border:1px solid #d2d6de; overflow:auto;margin-top: 30px;margin-left: 2px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+                page.namespace.root.find('#departmentTree').parent(".pro-search-wrap").on('mouseleave', function(){
+                    page.namespace.root.find('#departmentTree').remove();
+                });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+//
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+
+                    $('#responsibleDepartment').val(node[0].text);
+                    $('#responsibleDepartmentId').val(node[0].id);
+
+                    $('#departmentTree').remove();
+
+                });
+            }
+
+
+        };
+        page.init();
+
+        page.listTable = $('#taskListTable').initDataTable({
+            url : "/task/getTaskPage",
+            urlDataFn : function() {
+                return $("#searchTaskForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : viewFlag,
+            delFlag : delFlag,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                }
+            },
+            columns : [ {
+                "data" : "projectName",
+                "width" : "70px"
+            }, {
+                "data" : "subcontractLeader",
+                "width" : "50px",
+                "class" : "content-center",
+            }, {
+                "data" : "workContent",
+                "width" : "90px"
+            }, {
+                "data" : "responsibleDepartment",
+                "width" : "70px",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                   if(data != null){
+                       return data;
+                   }else{
+                       return "/";
+                   }
+                }
+            }, {
+                "data" : "responsiblePeople",
+                "width" : "70px",
+                "class" : "content-center",
+            }, {
+                "data" : "endDateFormat",
+                "class" : "content-center",
+                "width" : "70px",
+                "render" :function (data, type, row) {
+                    if(data !=null){
+                        return data;
+                    }else{
+                        return "<p style='text-align: center;'>/</p>";
+                    }
+                }
+            },{
+                "data" : "createDateFormat",
+                "class" : "content-center",
+                "width" : "70px"
+            },{
+                "data" : "progressWork",
+                "width" : "70px",
+                "render" :function (data, type, row) {
+                    if(data !=null){
+                        return data;
+                    }else{
+                        return "<p style='text-align: center;'>/</p>";
+                    }
+                }
+
+            },{
+                "data" : "batch",
+                "class" : "content-center",
+                "width" : "70px"
+            },{
+                "data" : "isDepartFinish",
+                "width" : "50px",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    var html="";
+                    //var taskCompletion = sessionStorage.getItem("task-completion");
+                        if(data == 0){
+                            html ="<input type='checkbox' value='"+row.id+"' disabled readonly onchange='finishStatus(this)'>";
+                        }else{
+                            html ="<input type='checkbox' value='"+row.id+"' disabled readonly checked='checked' onchange='offFinishStatus(this)'>";
+                        }
+
+                    return html;
+                }
+            },{
+                "data" : "isFinish",
+                "width" : "50px",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    var html="";
+                    var taskCheck = sessionStorage.getItem("task-check");
+                    if(taskCheck !=null){
+                        if(data == 0){
+                            html ="<input type='checkbox' value='"+row.id+"' onchange='InspectStatus(this)'>";
+                        }else{
+                            html ="<input type='checkbox' value='"+row.id+"' checked='checked' onchange='offInspectStatus(this)'>";
+                        }
+                    }else {
+                        if(data == 0){
+                            html ="<input type='checkbox' value='"+row.id+"' readonly disabled>";
+                        }else{
+                            html ="<input type='checkbox' value='"+row.id+"' checked='checked' readonly disabled>";
+                        }
+                    }
+                    return html;
+                }
+            }
+            ]
+        });
+
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#exportBtn').on('click', page.doExport);
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+        avalon.scan(page.namespace.root[0], page.model.vm);
+
+    });
+
+
+    function  publicURL(id,url) {
+        var namespace = $('#task-list').namespace();
+
+        var HtmlMenuOpt = {
+            endpoint : url,
+            data : {
+                'id' : id
+            },
+            success : function(data) {
+//                namespace.skiphtml('/pages/task/task-list.html');
+            },
+            failure:function(data) {
+                alertTool.error(data);
+            }
+        };
+        namespace.postRequest(HtmlMenuOpt);
+    }
+    function finishStatus(obj) {
+
+        publicURL(obj.value,'/task/updateTaskFinishStatusById');
+    }
+
+    function  InspectStatus(obj) {
+
+        publicURL(obj.value,'/task/updateTaskInspectStatusById');
+    }
+
+    function offFinishStatus(obj) {
+        publicURL(obj.value,'/task/editTaskFinishStatusById');
+    }
+
+    function offInspectStatus(obj) {
+        publicURL(obj.value,'/task/editTaskInspectStatusById')
+    }
+</script>

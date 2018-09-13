@@ -1,0 +1,84 @@
+<namespace id="business-view"   ms-controller="business-view">
+    <ol class="breadcrumb">
+        <li><a href="#">数据录入</a></li>
+        <li><a href="#">明细</a></li>
+    </ol>
+    <section class="content" id="viewFormModelSection">
+        <div class="box box-info">
+            <div class="row ">
+                <div class="col-sm-12">
+                    <!-- 右对齐的 btn-group -->
+                    <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                        <a class="btn btn-sm btn-default" id="btnCancel">
+                            <i class="fa fa-align-justify"> 返回</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+<form class="form-horizontal">
+            <div class="form-group" ms-for="el in @formFrameWorks">
+                <label for="desc" class="col-sm-1 control-label input-sm">{{el.fieldChName}}</label>
+                <div class="col-sm-8">
+                    <span id="desc" class="form-control label-form-control input-sm"  ms-attr="{name:el.fieldEnName}"  ></span>
+                </div>
+            </div>
+
+        </form>
+        </div>
+    </section>
+</namespace>
+<script type="text/javascript">
+
+    $_ready(function() {
+        var page = {
+            model: {
+                vm: avalon.define({
+                    $id: "business-view",
+                    formFrameWorks: []
+                })
+            },
+            namespace: $("#business-view").namespace(),
+            init: function () {
+                page.loadFormFrameWork();
+            },
+            loadFormFrameWork: function () {
+                page.namespace.getRequest({
+                    endpoint: "/formModel/getVIEWAllDisplayFormFramework",
+                    data: {modelId: page.namespace.getParam("modelId")},
+                    success: function (data) {
+                        page.model.vm.formFrameWorks = data;
+                        page.loadDataSource();
+                    },
+                    failure: function (data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            loadDataSource: function(){
+                page.namespace.getRequest({
+                    endpoint: "/business/getBusiness",
+                    data: { modelId: page.namespace.getParam("modelId"),
+                            businessId: page.namespace.getParam("id"),
+                            projectId: page.namespace.getParam("projectId")},
+                    success: function (data) {
+                        for(var i in data){
+                            $("[name="+i+"]").html(data[i])
+                        }
+                    },
+                    failure: function (data) {
+                        alertTool.error(data);
+                    }
+                });
+                },
+            doCancel : function(){
+                page.namespace.skiphtml('/pages/business/business-list.html?modelId='+page.namespace.getParam("modelId")+"&projectId="+page.namespace.getParam("projectId"));
+            }
+        }
+
+        page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+        avalon.scan(page.namespace.root[0], page.model.vm);
+        page.init();
+    });
+</script>

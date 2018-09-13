@@ -1,0 +1,81 @@
+<namespace id="project-view" ms-controller="project_view">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">项目明细</span>
+		</div>
+		<section class="content" id="addProjectSection">
+			<form role="form" id="addProjectForm"  class="form-horizontal">
+				<div class="form-group">
+				    <label for="enterpriseLegalPerson" class="col-sm-2 control-label requiredMask input-sm">企业法人：</label>
+                    <div class="col-sm-4">
+                        <span id="enterpriseLegalPerson" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseLegalPerson"></span>
+                    </div>
+					<label for="enterpriseContactPerson" class="col-sm-2 control-label requiredMask input-sm">企业联系人：</label>
+                    <div class="col-sm-4">
+                        <span id="enterpriseContactPerson" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseContactPerson"></span>
+                    </div>
+                     
+				</div>
+				<div class="form-group">
+					<label for="enterpriseContactPhone" class="col-sm-2 control-label requiredMask input-sm">企业联系人联系方式：</label>
+                            <div class="col-sm-4">
+                                <span id="enterpriseContactPhone" class="form-control label-form-control input-sm"  ms-html="@data.enterpriseContactPhone"></span>
+                            </div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+			</form>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#project-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "project_view",
+    		        data: {},
+                    files: {},
+                    downLoad :function (path) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/file/downLoad",
+                            data : {
+                                'path' : path
+                            },
+                            success : function(data) {
+
+                            }
+                        };
+                        page.namespace.postRequest(HtmlMenuOpt);
+                    }
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/pds/report/report.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/project/getProjectById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+                         page.model.vm.files=data.attachmentInfoList;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+
+</script>

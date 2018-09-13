@@ -1,0 +1,238 @@
+<namespace id="element-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+                <span class="fl">元素管理</span>
+        </div>
+        <section class="content" id="searchElementSection" ms-controller="element_view">
+            <div class="">
+                <form class="form-horizontal" id="searchElementForm">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">页面名称</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="name" id="name" class="ipt-txt" placeholder="页面名称">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">页面标识</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="funcId" id="code" class="ipt-txt" placeholder="页面标识">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix rel">
+                        <label class="filed-label fl">所在菜单</label>
+                        <div class="pro-search-wrap rel">
+                            <div id="menu" class="filter-item clearfix department">
+                                <input id="menuName" name="menuName" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                                <input id="menuId" name="menuId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                 
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fl clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a>
+                            <a href="javascript:;" class="pds-btn fl" id="deleteBtn" func="task-add">删除</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <div class="pro-table">
+                                <table id="elementListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>序号</th>
+                                        <th>页面元素名称</th>
+                                        <th>页面元素标识</th>
+                                        <th>所在菜单名称</th>
+                                        <th>页面元素描述</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#element-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml('/pages/element/element-add.html');
+			},
+            doReset : function() {
+                $('#searchElementForm')[0].reset();
+                $('#menuId').val("");
+                page.listTable.ajax.reload();
+            },
+			doBatchDel : function() {
+				var selectRows = $('#elementListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+			
+				page.doDel(selectRows.join(","));
+	
+			},
+            doAssignUrl : function() {
+                var selectRows = $('#elementListTable').getSelectedRow();
+
+                if(selectRows.length == 0) {
+                    alertTool.warning("请选择要分配资源的元素!");
+                    return;
+                }
+
+                if(selectRows.length > 1) {
+                    alertTool.warning("只能选择一条记录进行操作!");
+                    return;
+                }
+
+                page.namespace.skiphtml('/pages/element/element-resources.html?id='+selectRows[0]);
+            },
+			doView : function(id) {
+				page.namespace.skiphtml('/pages/element/element-view.html?id='+id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/element/deleteElement",
+				  	data : {'ids' : id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+                page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml('/pages/element/element-edit.html?id='+id);
+			},
+            doSelect : function() {
+                if(!!page.namespace.root.find('#menuTree')) {
+                    page.namespace.root.find('#menuTree').remove();
+                }
+
+                var html = "<div id='menuTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:300px; border:1px solid #d2d6de; overflow:auto;margin-top: 30px;margin-left: 2px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#menu').after(html);
+
+                page.namespace.root.find('#menuTree').parent(".pro-search-wrap").on('mouseleave', function(){
+                    page.namespace.root.find('#menuTree').remove();
+                });
+
+                var labelTree = $('#menuTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/sysmenu/loadMenuTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#menuTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#menuTree').jstree(true).get_selected(true);
+
+                    if(node.length > 1) {
+                        alertTool.warning("只能选择一个菜单叶子节点");
+                        return;
+                    }
+
+                    if(node[0].children.length > 0) {
+                        alertTool.warning("只能选择一个菜单叶子节点");
+                        return;
+                    }
+
+                    $('#menuName').val(node[0].text);
+                    $('#menuId').val(node[0].id);
+
+                    $('#menuTree').remove();
+                });
+            }
+		}
+		
+		page.listTable = $('#elementListTable').initDataTable({
+			url : "/element/getElementPage",
+			urlDataFn : function() {
+				return $("#searchElementForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "name",
+				"orderable" : false,
+				"width" : "10%"
+			}, {
+				"data" : "funcId",
+				"orderable" : false,
+				"width" : "10%"
+			}, {
+				"data" : "menuName",
+				"width" : "10%"
+			}, {
+				"data" : "description",
+				"width" : "7%"
+			}]
+		});
+		
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find("#addBtn").on('click', page.doAdd);
+		page.namespace.root.find("#deleteBtn").on('click', page.doBatchDel);
+        page.namespace.root.find("#assignUrl").on('click', page.doAssignUrl);
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+	});
+</script>

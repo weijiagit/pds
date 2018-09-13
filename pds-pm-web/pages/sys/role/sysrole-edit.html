@@ -1,0 +1,94 @@
+<namespace id="sysrole-edit">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改角色</span>
+		</div>
+		<section class="content" id="editSysRoleSection" ms-controller="sysrole_edit">
+			<form role="form" id="editSysRoleForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>角色名称：</label>
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control input-sm" placeholder="" ms-attr="{value:@role.name}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">角色描述：</label>
+					<div class="col-sm-4">
+						<textarea name="description" rows="3" class="form-control input-sm" placeholder="" ms-text="@role.description"></textarea>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id" ms-attr="{value:@role.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysrole-edit').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysrole_edit",
+			        role: {}
+			    })
+			},
+			init : function() {
+				$('#editSysRoleForm').validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'description' : {
+							maxlength : 255
+						}
+					},
+					submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+			},
+			doAdd : function() {
+				var submitSysRoleForm = {
+					endpoint : "/sysrole/modify",
+					formObj : $('#editSysRoleForm'),
+					success : function(data) {
+						alertTool.success('操作成功');
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				}
+				
+				page.namespace.submitForm(submitSysRoleForm);
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sysrole/getById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.role=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-list.html');
+			}
+		}
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.init();
+		page.initView();
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+	});
+</script>

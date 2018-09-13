@@ -1,0 +1,61 @@
+<namespace id="sysrole-view">
+    <div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">角色明细</span>
+		</div>
+		<section class="content" id="viewSysRoleSection" ms-controller="sysrole_view">
+			<form role="form" id="viewSysRoleForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">角色名称：</label>
+					<div class="col-sm-4">
+					<span id="name" class="form-control label-form-control input-sm" ms-text="@role.name"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">角色描述：</label>
+					<div class="col-sm-4">
+						 <span id="description"  class="form-control label-form-control input-sm"  ms-text="@role.description"></span>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		// view 
+		var page = {
+			namespace : $('#sysrole-view').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysrole_view",
+			        role: {}
+			    })
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sysrole/getById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.role=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		}
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+		page.initView();
+	});
+</script>

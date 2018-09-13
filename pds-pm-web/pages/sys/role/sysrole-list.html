@@ -1,0 +1,190 @@
+<namespace id="sysrole-list">
+ 	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">角色管理</span>
+        </div>
+		<section class="content" id="searchSysRoleSection" ms-controller="sysrole_list">
+			<div class="">
+				<form class="form-horizontal" id="searchSysRoleForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">角色名称</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								 <input type="text" name="name" class="ipt-txt" id="code" placeholder="角色名称">
+							</div>
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">角色描述</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								  <input type="text" name="description" class="ipt-txt"  placeholder="角色描述">
+							</div>
+						</div>
+					</div>
+
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addRole" func="task-add">添加角色</a>
+							<a href="javascript:;" class="pds-btn fl" id="delRole" func="task-add">撤销角色</a>
+							<a href="javascript:;" class="pds-btn fl" id="assignMenu" func="task-add">分配菜单</a>
+							<a href="javascript:;" class="pds-btn fl" id="assignPage" func="task-add">分配元素</a>
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+								<table id="sysroleListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>角色名称</th>
+										<th>角色描述</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysrole-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doReset : function() {
+				$('#searchSysRoleForm')[0].reset();
+				page.listTable.ajax.reload();
+			},
+			doReset : function() {
+                $('#searchSysRoleForm')[0].reset();
+                page.listTable.ajax.reload();
+
+            },
+			doAdd : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-add.html');
+			},
+			doBatchDel : function() {
+				var selectRows = $('#sysroleListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要撤销的角色!");
+					return;
+				}
+				
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/sysrole/delete",
+				  	data : {'ids':id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doAssignUrl : function() {
+				
+				var selectRows = $('#sysroleListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要分配资源的角色!");
+					return;
+				}
+				
+				if(selectRows.length > 1) {
+					alertTool.warning("只能选择一条记录进行操作!");
+					return;
+				}
+				page.namespace.skiphtml('/pages/sys/role/sysrole-resources.html?id='+selectRows[0]);
+			},
+			doAssignMenu : function() {
+				var selectRows = $('#sysroleListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要分配菜单的角色!");
+					return;
+				}
+				
+				if(selectRows.length > 1) {
+					alertTool.warning("只能选择一条记录进行操作!");
+					return;
+				}
+				page.namespace.skiphtml('/pages/sys/role/sysrole-menu.html?id='+selectRows[0]);
+			},
+			doAssignPage : function() {
+				
+				var selectRows = $('#sysroleListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要分配元素的角色!");
+					return;
+				}
+				
+				if(selectRows.length > 1) {
+					alertTool.warning("只能选择一条记录进行操作!");
+					return;
+				}
+				
+				page.namespace.skiphtml('/pages/sys/role/sysrole-element.html?id='+selectRows[0]);
+			},
+		};
+		
+		page.listTable = $('#sysroleListTable').initDataTable({
+			url : "/sysrole/getPage",
+			urlDataFn : function() {
+				return $("#searchSysRoleForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			info:true,
+			ops : {
+				view : function(id, rowData) {
+					page.namespace.skiphtml('/pages/sys/role/sysrole-view.html?id='+id);
+				},
+				edit : function(id, rowData) {
+					page.namespace.skiphtml('/pages/sys/role/sysrole-edit.html?id='+id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				}
+			},
+			columns : [{
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "description",
+				"width" : "15%"
+			}]
+		});
+		page.namespace.root.find("#queryBtn").on('click', page.doQuery);
+	    page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find('#addRole').on('click', page.doAdd);
+		page.namespace.root.find('#delRole').on('click', page.doBatchDel);
+		page.namespace.root.find("#assignUrl").on('click', page.doAssignUrl);
+		page.namespace.root.find("#assignMenu").on('click', page.doAssignMenu);
+		page.namespace.root.find("#assignPage").on('click', page.doAssignPage);
+	});
+
+</script>

@@ -1,0 +1,150 @@
+<div id="sysparam-list">
+	<ol class="breadcrumb">
+		<li><a href="#">系统参数</a></li>
+		<li><a href="#">列表</a></li>
+	</ol>
+	<section class="content" id="searchSysParamSection" ms-controller="sysparam_view">
+
+		<div class="box box-info">
+			<!-- form start -->
+			<form class="form-horizontal" id="searchSysParamForm">
+				<div class="box-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="btn-group">
+								<a class="btn btn-success btn-sm" id="addBtn" func="sysparam-add" > <span class="glyphicon glyphicon-plus"></span> 添加
+								</a>
+								<a class="btn btn-danger btn-sm" type="button" id="deleteBtn" func="sysparam-delete">
+									<span class="glyphicon glyphicon-minus"></span> 删除
+								</a>
+								<a id="refreshCacheBtn" type="button" class="btn btn-primary btn-sm" func="sysparam-refresh">
+									<span class="fa fa-refresh"></span> 刷新缓存
+								</a>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">编码</span> <input type="text" name="code" class="form-control input-sm" id="code" placeholder="编码">
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">参数值</span> <input type="text" name="value" class="form-control input-sm" id="value" placeholder="参数值">
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">详细描述</span> <input type="text" name="desc" class="form-control input-sm" id="desc" placeholder="描述"> <span
+									class="input-group-btn">
+									<button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+										<i class="fa fa-search"></i> 查询
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-body" id="sysparamList" style="margin-top: -10px;">
+				<table id="sysparamListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>编码</th>
+							<th>参数值</th>
+							<th>描述</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</div>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysparam-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml("/pages/sysparam/sysparam-add.html");
+			},
+			doView : function(id) {
+				page.namespace.skiphtml("/pages/sysparam/sysparam-view.html?id=" + id);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml("/pages/sysparam/sysparam-edit.html?id=" + id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/sysparam/deleteSysParamById",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#sysparamListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doRefreshCache : function() {
+				var HtmlMenuOpt = {
+					endpoint : "/sysparam/loadCache"
+				};
+				page.namespace.getRequest(HtmlMenuOpt);
+			}
+		};
+
+		page.listTable = $('#sysparamListTable').initDataTable({
+			url : "/sysparam/getSysParamsByPage",
+			urlDataFn : function() {
+				return $("#searchSysParamForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "code",
+				"width" : "10%"
+			}, {
+				"data" : "value",
+				"width" : "15%"
+			}, {
+				"data" : "desc",
+				"width" : "30%"
+			} ]
+		});
+
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+		page.namespace.root.find('#refreshCacheBtn').on('click', page.doRefreshCache);
+	});
+</script>

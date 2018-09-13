@@ -1,0 +1,80 @@
+<namespace id="personWork-view">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">个人办公任务详情</span>
+        </div>
+        <section class="content" id="viewPersonWorkSection" ms-controller="personWork_view">
+            <form role="form"  id="viewPersonWorkForm" class="form-horizontal">
+                <div class="form-group">
+                    <label for="taskContent" class="col-sm-2 control-label requiredMask input-sm">
+                        个人任务：
+                    </label>
+                    <div class="col-sm-10">
+                            <textarea name="taskContent" id="taskContent" class="form-textarea" readonly="true" ms-html="@data.taskContent">
+
+                            </textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDate" class="col-sm-2 control-label requiredMask input-sm">
+                        任务时间：
+                    </label>
+                    <div class="col-sm-4" name="userName">
+                            <span id=taskDate class="form-control label-form-control input-sm"  >
+                                {{@data.taskDate | date}}
+                            </span>
+                    </div>
+                    <label class="col-sm-2 control-label requiredMask input-sm">
+                        状态：
+                    </label>
+                    <div class="col-sm-4" name="state">
+                            <span ms-if ="@data.state == '0'"  class="form-control label-form-control input-sm"  >
+                                处理中
+                            </span>
+                             <span ms-if ="@data.state == '1'"  class="form-control label-form-control input-sm"  >
+                                完成
+                            </span>
+                    </div>
+                </div>
+
+                <div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#personWork-view').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "personWork_view",
+                    data: {}
+                })
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/pds/work/person-work-list.html");
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/personWork/detailPersonWork",
+                    data : {"id":page.namespace.getParam("id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

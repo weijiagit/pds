@@ -1,0 +1,102 @@
+<namespace id="notice-add">
+    <section class="content" id="addNoticeSection">
+        <form role="form" id="addNoticeForm"  class="form-horizontal">
+            <div class="">
+                <div class="form-group">
+                    <label for="content" class="control-label">
+                        <span class="star">*</span>公告内容：</label>
+                    <div class="con">
+                        <textarea name="content" id="content" class="textarea1" placeholder=""  ></textarea>
+                    </div>
+                </div>
+                 <div class="form-group" id="fileCount">
+                    <label class="control-label">附件：</label>
+                    <div class="con" id="attachmentIds">
+                        <div name="fileUploadDiv"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-wrap">
+                <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#notice-add').namespace(),
+            init : function() {
+                $('#addNoticeForm').validate({
+                    rules : {
+                        'content' : {
+                            required : true,
+                            maxlength : 1000
+                        }
+                    },messages:{
+                        content :{
+                            required :"公告内容不能为空",
+                            maxlength :"最多输入1000个字"
+                        }
+                    },submitHandler : function(form) {
+                        $("#saveBtn").prop("disabled",true);
+                        page.doAdd();
+
+                    }
+                });
+            },
+            doAdd : function() {
+                var $root=page.namespace.root;
+                var attachmentId = "";
+                $root.find('[name="caseImageId"]').each(function (i,obj) {
+                    attachmentId += obj.value + ",";
+                });
+                var attachmentIds = attachmentId.substr(0,attachmentId.length-1);
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/saveNotice",
+                    data : {
+                        'content' : $root.find('[name="content"]').val(),
+                        'attachmentIds' :attachmentIds,
+                    },
+                    success : function(data) {
+
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure : function(data) {
+                        $("#saveBtn").prop("disabled",false);
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            }
+        };
+
+        page.namespace.root.find('[name="fileUploadDiv"]').each(function(i,e){
+            var opt={
+                $fsc : $(e),
+                $fc : page.namespace.root.find('#filesDiv'), // form container
+                added : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val(data.id);
+                    $("#attachmentIds").append(
+                        "<input type='hidden' name='caseImageId' id='caseImageId"+data.id+"' value='"+data.id+"'/>");
+                },
+                removed : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val('');
+                    $("#caseImageId"+data.id).remove();
+
+                },
+                types : ['image/jpeg','image/jpg','image/png','application/msword','application/pdf',
+                    'application/x-zip-compressed','application/vnd.ms-powerpoint','application/vnd.ms'
+                    ]
+            }
+            fileAttach(opt,true);
+        });
+        page.init();
+    });
+</script>

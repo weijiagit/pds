@@ -1,0 +1,88 @@
+spring :
+    application :
+         admin.enabled : true #MBeanServer
+    datasource : 
+         driver-class-name : com.mysql.jdbc.Driver
+         url : jdbc:mysql://192.168.1.222:3306/qyh?useUnicode=true&characterEncoding=utf8&useSSL=false
+         username : root
+         password : zhongjin
+         tomcat : 
+              max-wait : 30000  # tomcat pool , Number of ms to wait before throwing an exception if no connection is available.
+              max-idle : 15
+              max-active : 50 # Maximum number of active connections that can be allocated from this pool at the same time.
+              test-on-borrow : true # Validate the connection before borrowing it from the pool.
+              validation-query : select 1
+    jpa : 
+          generate-ddl : true
+          show-sql : true
+          properties : 
+               hibernate : 
+                    show_sql : true
+                    dialect : org.hibernate.dialect.MySQL5Dialect
+                    
+    cache :
+         ehcache : 
+               config : classpath:ehcache.xml
+    http :
+        multipart : 
+              enabled : true
+              max-file-size : 3Mb
+              max-request-size : 10Mb 
+              resolve-lazily : false
+    redis : 
+        host : 192.168.1.51
+        port : 6379
+        pool.max-idle : 8
+        pool.min-idle : 0 
+        pool.max-active : 8  
+        pool.max-wait : -1   
+server : 
+    port : 8689 
+    contextPath : /api
+    tomcat :
+         uri-encoding : UTF-8
+management : 
+     security.enabled : false 
+logging:
+  level:
+    com.kcfy : DEBUG
+ #   org.springframework: DEBUG
+    
+cpp : 
+    name : nwwd
+    auth.authentication : true
+    auth.authorization : true
+    jwt :
+      secret : jiazhongjin
+      expiration : 360000 #milliseconds
+      header : _token
+    ehcache :
+          name : dev 
+    redis : 
+          expired-time : 120  #seconds
+          redis-off-proxy : true 
+    thread : 
+         name : ''
+         alive-count : 3
+         max-count : 9
+         alive-time : 3600 # seconds
+    user :
+       default-password : 11111
+    file : 
+       dsk-path : D:/file-store   #simple file directory
+    kaptcha :
+          enable : false
+          header-key : _kaptcha_key
+          header-value : _kaptcha_value
+          expired-time : 60  #second 
+          
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

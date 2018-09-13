@@ -1,0 +1,78 @@
+<namespace id="sysuser-view" ms-controller="sysuser_view">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">用户明细</span>
+		</div>
+		<section class="content" id="viewSysUserSection">
+			<form role="form" id="viewSysUserForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">用户名称：</label>
+					<div class="col-sm-4">
+						<span id="name" class="form-control input-sm label-form-control">{{@data.name}}</span>
+					</div>
+					<label for="userAccount" class="col-sm-2 control-label requiredMask input-sm">用户账号：</label>
+					<div class="col-sm-4">
+						 <span id="userAccount" class="form-control input-sm label-form-control">{{@data.userAccount}}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="email" class="col-sm-2 control-label requiredMask input-sm">用户邮箱：</label>
+					<div class="col-sm-4">
+						<span id="email" class="form-control input-sm label-form-control">{{@data.email}}</span>
+					</div>
+					<label for="disabledDict" class="col-sm-2 control-label requiredMask input-sm">用户状态：</label>
+					<div class="col-sm-4">
+					  	<span id="disabledDict"  class="form-control input-sm label-form-control">{{@data.disabledDict}}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="depName" class="col-sm-2 control-label requiredMask input-sm">用户部门：</label>
+					<div class="col-sm-4">
+					  	<span id="depName"  class="form-control input-sm label-form-control">{{@data.depName}}</span>
+					</div>
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">用户描述：</label>
+					<div class="col-sm-4">
+							<span id="description"  class="form-control label-form-control">{{@data.description}}</span>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#sysuser-view').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysuser_view",
+			        data: {}
+			    })
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/user/sysuser-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sysuser/getSysUserDepById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		}
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		page.initView();
+	});
+</script>

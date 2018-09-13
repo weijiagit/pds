@@ -1,0 +1,244 @@
+<namespace id="notice-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">通知公告管理</span>
+        </div>
+        <section class="content" id="searchNoticeSection" ms-controller="notice-list">
+            <div class="">
+                <form class="form-horizontal" id="searchNoticeForm" onkeydown="if(event.keyCode==13)return false;">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">公告内容</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="content" id="content" placeholder="请输入所需要查询的公告内容" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fl clearfix">
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl mr20" id="reset">重置</a> -->
+                            <a href="javascript:;" class="pds-btn fl pds-add" id="addBtn" func="task-add">新增</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label">通知公告</div>
+                        </div> -->
+                        <div class="pro-table" id="noticeList">
+                             <table id="noticeListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th class="content-center">序号</th>
+                                        <th>公告内容</th>
+                                        <th>公告创建时间</th>
+                                        <th>公告提交人</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    var viewFlag =false;
+    var editFlag =false;
+    var delFlag =false;
+    var publicFlag = false;
+    var topFlag =false;
+    var cancelTopFlag =false;
+    $(function() {
+        var page = {
+            namespace : $('#notice-list').namespace(),
+            init :function () {
+                var noticeView = sessionStorage.getItem("notice-view");
+                if(noticeView != null){
+                    viewFlag = true;
+                }
+                var noticeEdit = sessionStorage.getItem("notice-edit");
+                if(noticeEdit !=null){
+                    editFlag = true;
+                }
+                var noticeAdd = sessionStorage.getItem("notice-add");
+                if(noticeAdd !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+                var noticeDelete = sessionStorage.getItem("notice-delete");
+                if(noticeDelete !=null){
+                    delFlag =true;
+                }
+                var noticeRelease = sessionStorage.getItem("notice-release");
+                if(noticeRelease !=null){
+                    publicFlag = true;
+                }
+                var noticeQuery = sessionStorage.getItem("notice-query");
+                if(noticeQuery !=null){
+                    $("#queryBtn").show();
+                }else{
+                    $("#queryBtn").hide();
+                }
+                var noticeTop = sessionStorage.getItem("notice-top");
+                if(noticeTop !=null){
+                    topFlag= true;
+                }
+                var noticeNotTop = sessionStorage.getItem("notice-not-top");
+                if(noticeNotTop !=null){
+                    cancelTopFlag =true;
+                }
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchNoticeForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+            doAdd : function() {
+                page.namespace.modal.open(page,{
+                    id:"addNoticeModal",
+                    title:"新增通知公告",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchNoticeForm')[0].reset();
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/notice/notice-add-pop.html','','550px;');
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/notice/notice-view.html?id=" + id);
+            },
+            doEdit : function(id) {
+                page.namespace.modal.open(page,{
+                    id:"editNoticeModal",
+                    title:"修改通知公告",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchNoticeForm')[0].reset();
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/notice/notice-edit-pop.html',{id:id},'550px;');
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/deleteNotice",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            } ,
+            doPublish : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/publishNotice",
+                    data : {
+                        'id' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doTop : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/isTopNotice",
+                    data : {
+                        'id' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doCancelTop : function (id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/notice/cancelTopNotice",
+                    data : {
+                        'id' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            }
+        };
+        page.init();
+        page.listTable = $('#noticeListTable').initDataTable({
+            url : "/notice/getNoticePage",
+            urlDataFn : function() {
+                return $("#searchNoticeForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : viewFlag,
+            editFlag : editFlag,
+            delFlag : delFlag,
+            publicFlag : publicFlag,
+            topFlag : topFlag,
+            cancelTopFlag :cancelTopFlag,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                },
+                edit : function(id, rowData) {
+                    page.doEdit(id);
+                },
+                publish : function (id, rowData) {
+                     page.doPublish(id);
+                },
+                top : function (id, rowData) {
+                    page.doTop(id);
+                },
+                cancelTop : function (id, rowData) {
+                    page.doCancelTop(id);
+                }
+            },
+            columns : [ {
+                "data" : "content",
+                "width" : "24%"
+            }, {
+                "data" : "createDateFormat",
+                "width" : "4%",
+                "class" : "content-center"
+            }, {
+                "data" : "userName",
+                "width" : "4%",
+                "class" : "content-center"
+            }
+            ]
+        });
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+
+    });
+</script>

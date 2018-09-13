@@ -1,0 +1,80 @@
+<!-- author : Modified by Zhang Xiang on 2017/5/31 -->
+<meta charset="utf-8">
+<namespace id="sen-view" ms-controller="sen_view">
+	<ol class="breadcrumb">
+		<li><a href="#">敏感词管理</a></li>
+		<li><a href="#">明细</a></li>
+	</ol>
+	
+	<section class="content" id="viewSenSection">
+		<div class="box box-info">
+			<div class="row ">
+				<div class="col-sm-12">
+                    <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                        <a class="btn btn-sm btn-default" id="btnCancel">
+                            <i class="fa fa-align-justify"> 返回</i>
+                        </a>
+                    </div>
+            	</div>
+			</div>
+			
+			<div class="box-body">
+				<form role="form"  id="viewSenForm" class="form-horizontal">
+	   			 	<div class="form-group">
+	   			 		<label for="name" class="col-sm-1 input-sm control-label">敏感词名称</label>
+	   			 		<div class="col-sm-5">
+	   			 			<span id="name" class="form-control input-sm label-form-control">{{@data.name}}</span>
+	   			 		</div>
+	   			 	</div>
+	   			 	
+	   			 	<div class="form-group">
+	   			 		<label for="desc" class="col-sm-1 input-sm control-label">敏感词描述</label>
+	   			 		<div class="col-sm-5">
+	   			 			<span id="desc"  class="form-control label-form-control">{{@data.desc}}</span>
+	   			 		</div>
+	   			 	</div>
+	   			 	
+	   			 	<div class="form-group">
+	   			 		<label for="enable" class="col-sm-1 input-sm control-label">是否启用</label>
+						<div class="col-sm-5">
+	   			 			<span id="enable"  class="form-control input-sm label-form-control">{{@data.disabledDict}}</span>
+	   			 		</div>
+	   			 	</div>
+				</form>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#sen-view').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sen_view",
+			        data: {}
+			    })
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sensitive/sen-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sen/getSenById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		}
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		page.initView();
+	});
+</script>

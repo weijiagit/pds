@@ -1,0 +1,125 @@
+<namespace id="content-add"  ms-controller="content_add">
+<ol class="breadcrumb">
+    <li><a href="#">通知</a></li>
+    <li><a href="#">新增</a></li>
+</ol>
+<section class="content" id="editContentSection">
+    <div class="box box-info">
+	    <form role="form" id="addContentForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 提交
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+
+            <div class="form-group">
+                <label for="title" class="col-sm-1 control-label requiredMask input-sm">标题</label>
+                <div class="col-sm-5">
+                    <input name="title" type="text" class="form-control input-sm" placeholder="" >
+                </div>
+            </div>
+				<div class="form-group">
+					<label for="txt" class="col-sm-1 control-label requiredMask input-sm">内容</label>
+					<div class="col-sm-5">
+						<textarea name="txt" class="form-control input-sm" rows="3"
+							placeholder=" ..."  ></textarea>
+					</div>
+				</div>
+        <div class="form-group">
+            <label for="releaseDateStr" class="col-sm-1 control-label input-sm requiredMask">发布时间</label>
+            <div class="col-sm-5">
+              <input name="releaseDateStr" readonly style="background-color:#fff;" type="text" class="form-control input-sm" placeholder="" id="releaseDateStr" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="invalidDateStr" class="col-sm-1 control-label requiredMask input-sm">截止时间</label>
+            <div class="col-sm-5">
+                <input name="invalidDateStr" readonly style="background-color:#fff;" type="text" class="form-control input-sm" placeholder="" id="invalidDateStr" >
+            </div>
+        </div>
+
+			</div>
+	</form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#content-add').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "content_add",
+    		        data: {}
+    		    })
+    		},
+			init : function() {
+				$('#addContentForm').validate({
+					rules : {
+						'title' : {
+							required : true,
+							maxlength : 200
+						},
+						'txt' : {
+							required : true,
+							maxlength : 2000
+						},
+						'releaseDateStr' : {
+							required : true
+						},
+            'invalidDateStr' : {
+							required : true
+						}
+					},
+					submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+        page.namespace.root.find('#releaseDateStr').autoBSNyr().on("click", function(ev){
+              page.namespace.root.find("#releaseDateStr").datetimepicker("setStartDate", new Date());
+		            page.namespace.root.find("#releaseDateStr").datetimepicker("setEndDate", page.namespace.root.find("#invalidDateStr").val());
+		        });
+        page.namespace.root.find('#invalidDateStr').autoBSNyr().on("click", function(ev){
+		            page.namespace.root.find("#invalidDateStr").datetimepicker("setStartDate", page.namespace.root.find("#releaseDateStr").val());
+		        });
+
+			},
+			doAdd : function() {
+				var submitSysUserForm = {
+					endpoint : "/content/saveContent",
+					formObj : $("#addContentForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/content/content-list.html');
+			},
+			initView:function(){
+
+			}
+		};
+
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+</script>

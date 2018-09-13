@@ -1,0 +1,168 @@
+<!-- author : Modified by Zhang Xiang on 2017/5/31 -->
+<meta charset="utf-8">
+<namespace id="sen-list" ms-controller="sen_list">
+	<ol class="breadcrumb">
+		<li><a href="#">敏感词管理</a></li>
+		<li><a href="#">列表</a></li>
+	</ol>
+	<section class="content" id="searchSenSection">
+		<div class="box box-info">
+			<form class="form-horizontal" id="searchSenForm">
+				<div class="box-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">敏感词名称</span>
+								<input type="text" name="name" id="name" class="form-control input-sm" placeholder="敏感词名称">
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+							<div class="input-group">
+								<span class="input-group-addon">敏感词描述</span>
+								<input type="text" name="desc" id="desc" class="form-control input-sm" placeholder="敏感词描述">
+							</div>
+						</div>
+
+						<div class="col-sm-3 pull-right">
+							<div class="input-group">
+								<span class="input-group-addon">敏感词状态</span>
+								<select name="enable" class="form-control input-sm select2" >
+									<option selected="selected" value="">请选择</option>
+                                    <option ms-for="el in @status" ms-attr="{value:el.value}" ms-text="el.name"></option>
+								</select>
+								<span class="input-group-btn">
+                                    <button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                </span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-header with-border">
+				<div class="btn-group">
+					<a class="btn btn-success btn-sm" id="addBtn" func="sen-add">
+                    	<span class="glyphicon glyphicon-plus"></span> 添加
+                    </a>
+                    <button class="btn btn-danger btn-sm" id="deleteBtn" func="sen-delete">
+                        <span class="glyphicon glyphicon-minus"></span> 删除
+                    </button>
+				</div>
+			</div>
+
+			<div class="box-body " id="labelList" style="margin-top: -15px;">
+				<table id="senListTable"
+					class="table dataTable row-border cell-border" cellspacing="0"
+					width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>敏感词名称</th>
+							<th>敏感词描述</th>
+							<th>是否启用</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page={
+			namespace : $('#sen-list').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sen_list",
+			        status: {}
+			    })
+			},
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml("/pages/sensitive/sen-add.html");
+			},
+			doView : function(id) {
+				page.namespace.skiphtml("/pages/sensitive/sen-view.html?id=" + id);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml("/pages/sensitive/sen-edit.html?id=" + id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/sen/deleteSenById",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#senListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			getStatus : function(){
+				page.namespace.getCodes(function(data){
+					page.model.vm.status=data;
+				},"SEN_USEABLE");
+			}
+		};
+
+		page.listTable = $('#senListTable').initDataTable({
+			url : "/sen/getSenByPage",
+			urlDataFn : function() {
+				return $("#searchSenForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "name",
+				"width" : "15%"
+			}, {
+				"data" : "desc",
+				"width" : "15%"
+			}, {
+				"data" : "enable",
+				"width" : "10%",
+				"render" : function(data, type, row, meta) {
+					return data == 1 ? '<label class="label label-success">是</label>' :'<label class="label label-danger">否</label>';
+				}
+			} ]
+		});
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.getStatus() ;
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+	});
+</script>

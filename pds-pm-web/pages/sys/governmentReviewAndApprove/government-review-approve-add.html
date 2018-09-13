@@ -1,0 +1,196 @@
+<namespace id="government-review-approve-add">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">新增审批部门</span>
+		</div>
+		<section class="content" id="addDepartGovernmentSection" ms-controller="government_review_approve_add">
+			<form role="form" id="addDepartGovernmentForm"  class="form-horizontal">
+				<div class="form-group pds-layer">
+					<label class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>审批手续：</label>
+					<div class="col-sm-4">
+						<input name="imageText" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+
+					<label class="col-sm-2 control-label" style="margin-right:15px;">
+						<span class="star">*</span>所属部门：</label>
+					<div class="con rel col-sm-4" style="width:26.6666666%;padding-left:0;padding-right:0;">
+                        <div id="department" class="filter-item clearfix department" style="position:relative;">
+                            <div class="pro-search-wrap">
+                                <input id="departmentName" name="departmentName" type="text" class="form-control input-sm" placeholder="请选择" readonly />
+                                <input id="departId" name="departId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon" style="top:-3px;"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                        </div>
+                        
+					</div>
+
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>显示顺序：</label>
+					<div class="col-sm-4">
+						<input name="sequence" type="text" class="form-control input-sm" placeholder="" maxlength="10">
+					</div>
+					<label class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>是否显示：</label>
+					<div class="col-sm-4">
+						<select name="showPic" class="form-control input-sm select2">
+							<option selected="selected" value="">请选择</option>
+							<option ms-for="el in @data" ms-attr="{value:el.value}" ms-text="el.name"></option>
+						</select>
+					</div>
+				</div>
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+                </div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+$(function() {
+	var page = {
+		namespace : $('#government-review-approve-add').namespace(),
+		model:{
+			vm:avalon.define({
+		        $id: "government_review_approve_add",
+		        data: {}
+		    })
+		},
+		init : function() {
+			$("#addDepartGovernmentForm").validate({
+				rules : {
+                    imageText: {
+                        required: true,
+                        maxlength: 255
+                    },
+                    departmentName: {
+                        required: true,
+                        maxlength: 36
+                    },
+                    sequence: {
+                        required: true,
+                        number: true,
+                        digits: true,
+                        min: 1
+                    },
+                    showPic: {
+                        required: true,
+                        valueNotEquals: ''
+                    }
+                },
+				messages : {
+                    imageText: {
+						required: '行政审批单位不能为空'
+					},
+                    departmentName: {
+                        required: '所属部门不能为空'
+                    },
+                    sequence: {
+                        required: '显示顺序不能为空'
+                    }
+				},
+				submitHandler : function(form) {
+					page.doAdd();
+				}
+			});
+		},
+		doAdd : function() {
+			var submitSysUserForm = {
+				endpoint : "/departgovernment/saveDepartGovernment",
+				formObj : $("#addDepartGovernmentForm"),
+				success : function(data) {
+					alertTool.success("操作成功!");
+					page.doCancel();
+				},
+				failure:function(data) {
+					alertTool.error(data);
+				}
+			};
+
+			page.namespace.submitForm(submitSysUserForm);
+		},
+        doSelect : function() {
+            if(!!page.namespace.root.find('#departmentTree')) {
+                page.namespace.root.find('#departmentTree').remove();
+            }
+
+            var html = "<div id='departmentTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:150px; border:1px solid #d2d6de; overflow:auto;width:100%;top:31px;'></div>";
+            page.namespace.root.find('#department').after(html);
+
+            page.namespace.root.find('#departmentTree').parent(".con").on('mouseleave', function(){
+                page.namespace.root.find('#departmentTree').remove();
+            });
+
+            var labelTree = $('#departmentTree').jstree({
+                core : {
+                    'multiple':false,
+                    "animation" : 0,
+                    "check_callback" : true,
+                    "themes" : {
+                        "stripes" : false,
+                        "responsive" : false
+                    },
+                    data : function(obj, callback) {
+                        var opt = {};
+                        opt = {
+                            success : function(msg) {
+                                callback.call(this, msg);
+                            },
+                            data : {},
+                            endpoint : "/department/loadDepartmentTree"
+                        };
+
+                        page.namespace.getRequest(opt);
+                    }
+                },
+                "types" : {
+                    "default" : {
+                        "draggable" : false,
+                        "icon" : "fa fa-folder icon-state-warning icon-lg"
+                    }
+                },
+                "plugins" : [ "types", "dnd" ]
+            }).on("load_node.jstree", function() {
+                $('#departmentTree').jstree("open_all");
+            }).on("select_node.jstree", function() {
+                var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                if(node.length > 1) {
+//                    alertTool.warning("只能选择一个菜单叶子节点");
+//                    return;
+//                }
+//
+//                if(node[0].children.length > 0) {
+//                    alertTool.warning("只能选择一个菜单叶子节点");
+//                    return;
+//                }
+                $('.con #departmentName').val(node[0].text);
+                $('.con #departId').val(node[0].id);
+
+                $("#departmentName-error").remove();
+				$(".con #departmentName").removeClass();
+				$(".con #departmentName").addClass("form-control input-sm");
+
+                $('#departmentTree').remove();
+            });
+        },
+		doCancel : function() {
+			page.namespace.skiphtml("/pages/sys/governmentReviewAndApprove/government-review-approve-list.html");
+		},
+        getStatus : function(){
+            page.namespace.getCodes(function(data){
+                page.model.vm.data=data;
+            },"DEPART_GOVERNMENT_DISPLAY");
+        }
+	}
+
+	avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+	page.getStatus() ;
+	page.init();
+
+	page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+    page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+});
+</script>

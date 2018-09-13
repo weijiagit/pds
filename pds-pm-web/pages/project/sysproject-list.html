@@ -1,0 +1,180 @@
+
+<namespace id="sysproject-list">
+<ol class="breadcrumb">
+	<li><a href="#">项目管理</a></li>
+	<li><a href="#">列表</a></li>
+
+</ol>
+
+<section class="content" id="searchSysRoleSection"
+	ms-controller="sysrole_list">
+	<div class="box box-info">
+		<form class="form-horizontal" id="searchSysProjectForm">
+			<div class="box-body">
+				<div class="row">
+					<div class="col-sm-5">
+						<div class="btn-group">
+							<a class="btn btn-success btn-sm" id="addProject" type="button"
+								func="sysrole-add"> <span class="glyphicon glyphicon-plus"></span>
+								新增项目
+							</a>
+
+						</div>
+					</div>
+
+					<div class="col-sm-3">
+						<div class="input-group">
+							<span class="input-group-addon">项目名称</span> <input type="text"
+								name="projectName" class="form-control input-sm" id="code"
+								placeholder="项目名称"> <span class="input-group-btn">
+								<button class="btn btn-primary btn-sm" id="queryProject"
+									type="button">
+									<i class="fa fa-search"></i> 查询
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+
+	<!-- 列表 -->
+	<div class="box box-info" style="border-top: 0px;">
+		<div class="box-body" id="sysroleList" style="margin-top: -10px;">
+		    <!-- ************* -->
+			<table id="porjectListTable"
+				class="table dataTable row-border cell-border" cellspacing="0"
+				width="100%">
+				<thead>
+					<tr>
+						<th></th>
+						<th>项目名称</th>
+						<th>项目代码</th>
+						<th>栏目</th>
+						<th>人员</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+
+
+</section>
+
+</namespace>
+
+<script type="text/javascript">
+$(function() {
+	var page = {
+		
+		namespace : $('#sysproject-list').namespace(),//当前页面的命名空间
+		
+		doQuery : function() {//查询
+			
+			page.listTable.ajax.reload();
+		},
+		
+		doAdd : function() {//添加
+			page.namespace.skiphtml('/pages/project/sysproject-add.html');
+		},
+		
+		doView : function(id){//详情
+			page.namespace.skiphtml('/pages/project/sysproject-view.html');
+		},
+		doEdit : function(id,rowData) {
+			page.namespace.skiphtml("/pages/project/sysproject-edit.html?id=" + id);
+		},
+		/* what:function(){
+			$(this).data("datatables-checked");
+			page.namespace.skiphtml('/pages/project/sysproject-add.html');
+			
+		}	,
+		 */
+		
+		doDel : function(id) {
+			var HtmlMenuOpt = {
+				endpoint : "/project/deleteProject",
+				data : {
+					'projectId' : id
+				},
+				success : function(data) {
+					page.listTable.ajax.reload();
+				}
+			};
+
+			page.namespace.postRequest(HtmlMenuOpt);
+		},
+	
+		doBatchDel : function() {
+			var selectRows = $('#formmodelListTable').getSelectedRow();
+
+			if (selectRows.length == 0) {
+				alertTool.warning("请选择要删除的记录!");
+				return;
+			}
+			page.namespace.confirm(function(){
+				page.doDel(selectRows.join(","));
+			});
+		}
+	};
+	
+	page.listTable = $('#porjectListTable').initDataTable({
+		
+		url : "/project/getProjectIncludeMenuUser",
+		urlDataFn : function() {
+			return $("#searchSysProjectForm").serializeJson();
+		},
+		lengthChange : false,
+		checkbox : true,
+		ops : {
+			
+			del : function(id, rowData) {
+				page.doDel(id);
+			},
+			edit : function(id, rowData) {
+				page.doEdit(id,rowData);
+			}
+		},
+		columns : [ {
+			"data" : "projectName",
+			"width" : "15%"
+		}, {
+			"data" : "projectCode",
+			"width" : "15%"
+		}
+		, {
+			"data" : "menuNames",
+			"width" : "15%"
+		}, {
+			"data" : "userNames",
+			"width" : "15%",
+			/* "render" : function(data, type, row, meta) {
+				return row.userNames+"AAA";  在这一列加上自己的参数   
+			 } */
+		} /* , {
+			"data" : "编辑",
+			"width" : "15%",
+			"render" : function(data, type, row, meta) {
+				return "<a href='' datatables-checked='"+row.userNames+"' onclick='what(this)'>编辑</a>";
+			} 
+		}*/
+		
+		]
+	});
+
+	
+	page.namespace.root.find('#queryProject').on('click', page.doQuery);
+	page.namespace.root.find('#addProject').on('click', page.doAdd);
+
+	
+		
+		
+		
+		
+	
+});
+
+</script>

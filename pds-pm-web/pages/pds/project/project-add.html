@@ -1,0 +1,1037 @@
+<namespace id="project-add">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">项目新增</span>
+        </div>
+        <section class="content" id="addProjectSection" ms-controller="project_add">
+            <form role="form" id="addProjectForm" class="form-horizontal">
+                <!-- 基础信息 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix active">
+                        <span class="title">基础信息</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom" style="display: block;">
+                        <div class="form-group">
+                            <label for="projectName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>项目名称：</label>
+                            <div class="col-sm-4">
+                                <input name="projectName" id="projectName" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                            <label for="projectNumber" class="col-sm-2 control-label requiredMask input-sm">项目代码：</label>
+                            <div class="col-sm-4">
+                                <input name="projectNumber" id="projectNumber" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>建设单位：</label>
+                            <div class="col-sm-4">
+                                <input name="companyName" id="companyName" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                            <label for="organizationCode" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>组织机构代码：</label>
+                            <div class="col-sm-4">
+                                <input name="organizationCode" id="organizationCode" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectAttribute" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>项目属地：</label>
+                            <div class="col-sm-4">
+                                <select name="projectAttribute" id="projectAttribute" class="form-control input-sm select2">
+                                    <option selected="selected" value="">请选择</option>
+                                    <option ms-for="el in @projectAttributeList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                                </select>
+                            </div>
+                            <label for="constructionNature" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>建设性质：</label>
+                            <div class="col-sm-4">
+                                <select name="constructionNature" id="constructionNature" class="form-control input-sm select2">
+                                    <option selected="selected" value="">请选择</option>
+                                    <option ms-for="el in @constructionNatureList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="industryClassification" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>行业分类：</label>
+                            <div class="col-sm-4">
+                                <select name="industryClassification" id="industryClassification" class="form-control input-sm select2">
+                                    <option selected="selected" value="">请选择</option>
+                                    <option ms-for="el in @industryClassificationList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                                </select>
+                            </div>
+                            <label for="implementSchedule" class="col-sm-2 control-label input-sm">实施进度分类：</label>
+                            <div class="col-sm-4">
+                                <select name="implementSchedule" id = "implementSchedule" class="form-control input-sm select2">
+                                    <option ms-for="el in @implementScheduleList" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="planBeginDateStr" class="col-sm-2 control-label input-sm requiredMask"><span class="star">*</span>计划开工日期：</label>
+                            <div class="col-sm-4">
+                                <div class="datatimepicker-wrap rel">
+                                    <input name="planBeginDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="planBeginDateStr" >
+                                    <span class="data-del"><i class="fa fa-close"></i></span>
+                                </div>
+                            </div>
+                            <label for="planEndDateStr" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>计划竣工日期：</label>
+                            <div class="col-sm-4">
+                                <div class="datatimepicker-wrap rel">
+                                    <input name="planEndDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="planEndDateStr" >
+                                    <span class="data-del"><i class="fa fa-close"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="actualBeginDateStr" class="col-sm-2 control-label input-sm">实际开工日期：</label>
+                            <div class="col-sm-4">
+                                <div class="datatimepicker-wrap rel">
+                                    <input name="actualBeginDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="actualBeginDateStr" >
+                                    <span class="data-del"><i class="fa fa-close"></i></span>
+                                </div>
+                            </div>
+                            <label for="actualEndDateStr" class="col-sm-2 control-label input-sm">实际竣工日期：</label>
+                            <div class="col-sm-4">
+                                <div class="datatimepicker-wrap rel">
+                                    <input name="actualEndDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="actualEndDateStr" >
+                                    <span class="data-del"><i class="fa fa-close"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalInvestmentStr" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>总投资(元)：</label>
+                            <div class="col-sm-4">
+                                <input name="totalInvestmentStr" id="totalInvestmentStr" type="text" class="form-control input-sm" placeholder="" maxlength="15">
+                            </div>
+                            <label for="enterpriseLegalPerson" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>企业法人：</label>
+                            <div class="col-sm-4">
+                                <input name="enterpriseLegalPerson" id="enterpriseLegalPerson" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="enterpriseContactPerson" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>企业联系人：</label>
+                            <div class="col-sm-4">
+                                <input name="enterpriseContactPerson" id="enterpriseContactPerson" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                            <label for="enterpriseContactPhone" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>企业联系人联系方式：</label>
+                            <div class="col-sm-4">
+                                <input name="enterpriseContactPhone" id="enterpriseContactPhone" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="enterpriseChargePerson" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>企业负责人：</label>
+                            <div class="col-sm-4">
+                                <input name="enterpriseChargePerson" id="enterpriseChargePerson" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                            <label for="enterpriseChargePhone" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>企业负责人联系方式：</label>
+                            <div class="col-sm-4">
+                                <input name="enterpriseChargePhone" id="enterpriseChargePhone" type="text" class="form-control input-sm" placeholder="" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="constructionContentScale" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>建设内容和规模：</label>
+                            <div class="col-sm-10">
+                                <textarea name="constructionContentScale" id="constructionContentScale" class="form-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">行业分类是否PPP项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ispppProject" id="ispppProject1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="ispppProject" id="ispppProject2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否省重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isprovinceimp" id="isprovinceimp1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isprovinceimp" id="isprovinceimp2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">是否计划新开工：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isplanNewWork" id="isplanNewWork1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isplanNewWork" id="isplanNewWork2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否市重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="iscityimp" id="iscityimp1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="iscityimp" id="iscityimp2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group mb0">
+                            <label class="col-sm-2 control-label input-sm">是否计划竣工：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isplanComplete" id="isplanComplete1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isplanComplete" id="isplanComplete2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label  class="col-sm-2 control-label input-sm">是否区重点项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isdistrictimp" id="isdistrictimp1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isdistrictimp" id="isdistrictimp2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 工作安排 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">工作安排</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractLeader" class="col-sm-2 control-label  input-sm">分包领导：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractLeader" id="subcontractLeader" type="text" class="form-control input-sm" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1" class="col-sm-2 control-label  input-sm">分包单位1：</label>
+                                <div class="col-sm-8">
+                                    <input name="subcontractCompany1" id="subcontractCompany1" type="text" class="form-control input-sm" placeholder="" style="width:77.2%;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1Person" class="col-sm-2 control-label  input-sm">分包单位1责任人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany1Person" id="subcontractCompany1Person" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany1PersonPhone" class="col-sm-2 control-label  input-sm">分包单位1责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany1PersonPhone" id="subcontractCompany1PersonPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany1Contact" class="col-sm-2 control-label input-sm">分包单位1联系人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany1Contact" id="subcontractCompany1Contact" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany1ContactPhone" class="col-sm-2 control-label  input-sm">分包单位1联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany1ContactPhone" id="subcontractCompany1ContactPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractCompany2" class="col-sm-2 control-label  input-sm">分包单位2：</label>
+                                <div class="col-sm-8">
+                                    <input name="subcontractCompany2" id="subcontractCompany2" type="text" class="form-control input-sm" placeholder="" style="width:77.2%;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany2Person" class="col-sm-2 control-label  input-sm">分包单位2责任人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany2Person" id="subcontractCompany2Person" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany2PersonPhone" class="col-sm-2 control-label  input-sm">分包单位2责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany2PersonPhone" id="subcontractCompany2PersonPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany2Contact" class="col-sm-2 control-label input-sm">分包单位2联系人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany2Contact" id="subcontractCompany2Contact" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany2ContactPhone" class="col-sm-2 control-label  input-sm">分包单位2联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany2ContactPhone" id="subcontractCompany2ContactPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="form-group">
+                                <label for="subcontractCompany3" class="col-sm-2 control-label  input-sm">分包单位3：</label>
+                                <div class="col-sm-8">
+                                    <input name="subcontractCompany3" id="subcontractCompany3" type="text" class="form-control input-sm" placeholder="" style="width:77.2%;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany3Person" class="col-sm-2 control-label  input-sm">分包单位3责任人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany3Person" id="subcontractCompany3Person" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany3PersonPhone" class="col-sm-2 control-label  input-sm">分包单位3责任人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany3PersonPhone" id="subcontractCompany3PersonPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subcontractCompany3Contact" class="col-sm-2 control-label input-sm">分包单位3联系人：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany3Contact" id="subcontractCompany3Contact" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                                <label for="subcontractCompany3ContactPhone" class="col-sm-2 control-label  input-sm">分包单位3联系人联系方式：</label>
+                                <div class="col-sm-4">
+                                    <input name="subcontractCompany3ContactPhone" id="subcontractCompany3ContactPhone" type="text" class="form-control input-sm" placeholder="" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 审批字段 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">审批字段</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">选址意见书是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issiteselect" id="issiteselect1" value="1">
+                                    是
+                                </label>
+                                <label>
+                                    <input type="radio" name="issiteselect" id="issiteselect2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+
+                            <label class="col-sm-2 control-label input-sm">建设用地规划许可证：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isbuildland" id="isbuildland1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isbuildland" id="isbuildland2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label  class="col-sm-2 control-label input-sm">国有土地使用证是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isstateland" id="isstateland1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isstateland" id="isstateland2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">人防批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ispeopledefence" id="ispeopledefence1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="ispeopledefence" id="ispeopledefence2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">立项批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isprojectapprove" id="isprojectapprove1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isprojectapprove" id="isprojectapprove2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否联审联批项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="ischeckapprove" id="ischeckapprove1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="ischeckapprove" id="ischeckapprove2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">建设工程规划许可证是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isbuildproject" id="isbuildproject1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isbuildproject" id="isbuildproject2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">是否模拟审批项目：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issimulateapprove" id="issimulateapprove1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="issimulateapprove" id="issimulateapprove2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">环评批文是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isenvironmentapprove" id="isenvironmentapprove1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isenvironmentapprove" id="isenvironmentapprove2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label  class="col-sm-2 control-label input-sm">文物勘探是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isculturalrelics" id="isculturalrelics1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isculturalrelics" id="isculturalrelics2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">气象局手续是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isweather" id="isweather1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isweather" id="isweather2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">抗震设防是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isantiknock" id="isantiknock1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isantiknock" id="isantiknock2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">节能审批是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isenergyconservation" id="isenergyconservation1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isenergyconservation" id="isenergyconservation2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label class="col-sm-2 control-label input-sm">园林绿化是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isparkafforest" id="isparkafforest1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isparkafforest" id="isparkafforest2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">消防是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isfirecontrol" id="isfirecontrol1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="isfirecontrol" id="isfirecontrol2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <label  class="col-sm-2 control-label input-sm">是否存在问题：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="isproblem" id="isproblem1" value="1" onclick="isProblemAction('1')">
+                                    是
+                                </label>
+                                <label>
+                                    <input type="radio" name="isproblem" id="isproblem2" value="2" checked="checked" onclick="isProblemAction('2')">
+                                    否
+                                </label>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label input-sm">模拟审批是否完成：</label>
+                            <div class="radio col-sm-4">
+                                <label style="padding-right:35px">
+                                    <input type="radio" name="issimulatefinish" id="issimulatefinish1" value="1">
+                                    是
+                                </label>
+                                <label   >
+                                    <input type="radio" name="issimulatefinish" id="issimulatefinish2" value="2" checked="checked" >
+                                    否
+                                </label>
+                            </div>
+                            <div class="col-sm-4" id="questionContentId">
+                                <label>
+                                    <input name="questionContent" id="questionContent" type="text" class="form-control input-sm" style="width: 500px;height: 30px;" placeholder="" >
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 其他 -->
+                <div class="basicinfo-wrap">
+                    <div class="pro-add-head clearfix">
+                        <span class="title">其他</span>
+                        <a href="javascript:;" class="arr-t"></a>
+                    </div>
+                    <div class="pro-add-bottom">
+                        <div class="upload clearfix">
+                            <div class="upload-fr">
+                                <div class="form-group" id="fileCount" style="margin-left:0;">
+                                    <label class="col-sm-1 control-label input-sm" style="width:100px;">附件：</label>
+                                    <div class="col-sm-6" id="attachmentId">
+                                        <div name="fileUploadDiv"></div>
+                                    </div>
+                                </div>
+                                <div class="zhj-wrap clearfix">
+                                    <label class="lab" style="width:100px;text-align:right;padding:0 3px 0 0;">是否结转：</label>
+                                    <div class="radio col-sm-4">
+                                        <label style="padding-right:35px">
+                                            <input type="radio" name="transferStatus" id="transferStatus1" value="1">
+                                            是
+                                        </label>
+                                        <label   >
+                                            <input type="radio" name="transferStatus" id="transferStatus2" value="2" checked="checked" >
+                                            否
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-wrap">
+                    <button type="submit" class="btn btn-draft" id="draft">草稿</button>
+                    <button type="submit" class="btn btn-save" id="save">保存</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">取消</a>
+                </div>
+                <input type="hidden" name="attachmentIds" id="attachmentIds" value="" />
+            </form>
+            
+        </section>
+    </div>
+    
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var status="";
+        var btnFlag = true;
+        var page = {
+            namespace : $('#project-add').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "project_add",
+                    projectAttributeList: {},
+                    constructionNatureList:{},
+                    industryClassificationList:{},
+                    implementScheduleList:{},
+                    data:{}
+                })
+            },
+            init : function() {
+                $("#addProjectForm").validate({
+                    rules : {
+                        projectName : {
+                            required : true,
+                            maxlength : 255
+                        },
+                        projectNumber : {
+//                            required : true,
+                            maxlength : 36,
+                            projectNumberCheck : true,
+                            projectNumberExists : true
+                        },
+                        companyName : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 255
+                        },
+                        organizationCode : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 36
+                        },
+                        totalInvestmentStr : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            myRule : true
+                        },
+                        constructionContentScale : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 1000
+                        },
+                        projectAttribute : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            }
+                        },
+                        constructionNature : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            }
+                        },
+                        planBeginDateStr : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                        },
+                        planEndDateStr : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                        },
+                        enterpriseLegalPerson : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 50
+                        },
+                        enterpriseContactPerson : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 50
+                        },
+                        enterpriseContactPhone : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 50
+                        },
+                        enterpriseChargePerson : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 50
+                        },
+                        enterpriseChargePhone : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            },
+                            maxlength : 50
+                        },
+                        industryClassification : {
+                            required : function(){
+                                if(status == "DRAFT"){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            }
+                        },
+                        subcontractLeader : {
+                            maxlength : 255
+                        },
+                        subcontractCompany1 : {
+                            maxlength : 255
+                        },
+                        subcontractCompany1Person : {
+                            maxlength : 50
+                        },
+                        subcontractCompany1PersonPhone : {
+                            maxlength : 50
+                        },
+                        subcontractCompany1Contact : {
+                            maxlength : 50
+                        },
+                        subcontractCompany1ContactPhone : {
+                            maxlength : 50
+                        },
+                        subcontractCompany2 : {
+                            maxlength : 255
+                        },
+                        subcontractCompany2Person : {
+                            maxlength : 50
+                        },
+                        subcontractCompany2PersonPhone : {
+                            maxlength : 50
+                        },
+                        subcontractCompany2Contact : {
+                            maxlength : 50
+                        },
+                        subcontractCompany2ContactPhone : {
+                            maxlength : 50
+                        },
+                        subcontractCompany3 : {
+                            maxlength : 255
+                        },
+                        subcontractCompany3Person : {
+                            maxlength : 50
+                        },
+                        subcontractCompany3PersonPhone : {
+                            maxlength : 50
+                        },
+                        subcontractCompany3Contact : {
+                            maxlength : 50
+                        },
+                        subcontractCompany3ContactPhone : {
+                            maxlength : 50
+                        },
+                        questionContent :{
+                            maxlength : 255
+                        }
+                    },
+                    messages : {
+                        projectName: {
+                            required: '项目名称不能为空'
+                        },
+                        projectNumber: {
+                            required: '项目代码不能为空'
+                        },
+                        companyName: {
+                            required: '建设单位不能为空'
+                        },
+                        organizationCode: {
+                            required: '组织机构代码不能为空'
+                        },
+                        totalInvestmentStr: {
+                            required: '总投资不能为空'
+                        },
+                        constructionContentScale: {
+                            required: '建设内容和规模不能为空'
+                        },
+                        enterpriseLegalPerson: {
+                            required: '企业法人不能为空'
+                        },
+                        enterpriseContactPerson: {
+                            required: '企业联系人不能为空'
+                        },
+                        enterpriseContactPhone: {
+                            required: '企业联系人联系方式不能为空'
+                        },
+                        enterpriseChargePerson: {
+                            required: '企业负责人不能为空'
+                        },
+                        enterpriseChargePhone: {
+                            required: '企业负责人联系方式不能为空'
+                        },
+
+                    },
+                    submitHandler : function(form) {
+                        page.doAdd();
+                    }
+                });
+                page.namespace.root.find('#planBeginDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#planBeginDateStr").datetimepicker("setStartDate");
+                    page.namespace.root.find("#planBeginDateStr").datetimepicker("setEndDate", page.namespace.root.find("#planEndDateStr").val());
+                });
+
+                page.namespace.root.find('#planEndDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#planEndDateStr").datetimepicker("setStartDate", page.namespace.root.find("#planBeginDateStr").val());
+                });
+
+                page.namespace.root.find('#actualBeginDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#actualBeginDateStr").datetimepicker("setStartDate");
+                    page.namespace.root.find("#actualBeginDateStr").datetimepicker("setEndDate", page.namespace.root.find("#actualEndDateStr").val());
+                });
+
+                page.namespace.root.find('#actualEndDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#actualEndDateStr").datetimepicker("setStartDate", page.namespace.root.find("#actualBeginDateStr").val());
+                });
+                page.getAllCodes();
+            },
+            doAdd : function() {
+                var projectName = page.namespace.root.find("#projectName").val();
+//                var projectNumber = page.namespace.root.find("#projectNumber").val();
+                //附件上传
+                var $root=page.namespace.root;
+                var attachmentId = "";
+                $root.find('[name="caseImageId"]').each(function (i,obj) {
+                    attachmentId += obj.value + ",";
+                });
+                var attachmentIds = attachmentId.substr(0,attachmentId.length-1);
+
+                page.namespace.root.find("#attachmentIds").val(attachmentIds);
+//                if(projectName == '' ||projectNumber == ''){
+                if(projectName == ''){
+                    alertTool.warning("请填写基础信息！");
+                }else{
+                    if(status =="SAVE"){
+                        if(btnFlag==true) {
+                            btnFlag=false;
+                            $("#save").css("background","#91b1ed");
+                            var submitSysUserForm = {
+                                endpoint: "/project/saveProject",
+                                formObj: $("#addProjectForm"),
+                                success: function (data) {
+                                    alertTool.success("保存成功!");
+                                    page.doCancel();
+                                },
+                                failure: function (data) {
+                                    alertTool.error(data);
+                                }
+                            };
+                            page.namespace.submitForm(submitSysUserForm);
+                        }
+                    }else{
+                        if(btnFlag==true) {
+                            btnFlag = false;
+                            $("#draft").css("background","#91b1ed");
+                            var submitSysUserForm = {
+                                endpoint: "/project/saveDraftProject",
+                                formObj: $("#addProjectForm"),
+                                success: function (data) {
+                                    alertTool.success("草稿保存成功!");
+                                    page.doCancel();
+                                },
+                                failure: function (data) {
+                                    alertTool.error(data);
+                                }
+                            };
+                            page.namespace.submitForm(submitSysUserForm);
+                        }
+                    }
+                }
+            },
+            doCancel : function() {
+                $("body").find(".datetimepicker").remove();
+                page.namespace.skiphtml("/pages/pds/project/project-list.html");
+            },
+            getAllCodes: () => {
+                page.getProjectAttributeList();
+                page.getConstructionNatureList();
+                page.getIndustryClassificationList();
+                page.getImplementScheduleList();
+            },
+            getProjectAttributeList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.projectAttributeList=data;
+                },"PROJECT_ATTRIBUTE");
+            },
+            getConstructionNatureList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.constructionNatureList=data;
+                },"CONSTRUCTION_NATURE");
+            },
+            getIndustryClassificationList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.industryClassificationList=data;
+                },"INDUSTRY_CLASSIFICATION");
+            },
+            getImplementScheduleList : function(){
+                page.namespace.getCodes(function(data){
+                    page.model.vm.implementScheduleList=data;
+                },"IMPLEMENT_SCHEDULE");
+            }
+        }
+
+        page.namespace.root.find('[name="fileUploadDiv"]').each(function(i,e){
+
+            var opt={
+                $fsc : $(e),
+                $fc : page.namespace.root.find('#filesDiv'), // form container
+                added : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val(data.id);
+                    $("#attachmentId").append(
+                        "<input type='hidden' name='caseImageId' id='caseImageId"+data.id+"' value='"+data.id+"'/>");
+                },
+                removed : function(data,obj){
+//                    obj.opt.$fsc.parent().children('input').val('');
+                    $("#caseImageId"+data.id).remove();
+
+                },
+                types : ['image/jpeg','image/jpg','image/png','application/msword','application/pdf',
+                    'application/vnd.ms-powerpoint','application/vnd.ms']
+            }
+            fileAttach(opt,true);
+        });
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+
+        page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+
+        page.namespace.root.find('#save').click(function(){
+            status="SAVE";
+        });
+        page.namespace.root.find('#draft').click(function(){
+            status="DRAFT";
+        });
+
+        $(".pro-add-head").on("click",function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass("active").siblings('.pro-add-bottom').hide();
+            }else{
+                $(this).addClass("active").siblings('.pro-add-bottom').show();
+            }
+        })
+
+        isProblemAction('2');
+    });
+
+    /**
+     * 正数（包括浮点数）
+     * */
+    $.validator.addMethod("myRule", function (value, element) {
+        return this.optional(element) || (/^([1-9]\d*|[0])(\.\d{1,2})?$/.test(value));
+    }, "请填写整数或小数为2位的数字");
+
+    //输入项目代码格式验证
+    $.validator.addMethod("projectNumberCheck", function (value, element, params) {
+        var IDNum = /[【】]/;
+        return this.optional(element) || (!IDNum.test(value));
+    }, "项目代码不可包含【】符号！");
+
+    $.validator.addMethod("projectNumberExists",function(value, element){
+        var existsFlag = false;
+
+        page.namespace.getRequest({
+            endpoint : "/project/getProjectByProjectNumber",
+            data : {"projectNumber":value},
+            async: false,
+            success : function(data) {
+                if(data.length == 0){
+                    existsFlag = true;
+                }else{
+                    existsFlag = false;
+                }
+            },
+        });
+        return existsFlag;
+    },"该项目代码已存在！");
+
+    $(".pro-add-bottom").on("click",".form-group .datatimepicker-wrap",function(){
+        if($(this).children(".form-control").val()){
+            $(this).addClass('cur');
+        }
+        
+    })
+    $(".datetimepicker").on("click",function(){
+        var idx = $(".datetimepicker").eq(0).index();
+        if($(".pro-add-bottom").find(".datatimepicker-wrap").eq($(this).index()-idx).children("input.form-control").val()){
+            $(".pro-add-bottom").find(".datatimepicker-wrap").eq($(this).index()-idx).children(".data-del").show();
+        }
+    })
+
+    $(".data-del").on("click",function(){
+        $(this).siblings('input.form-control').val("");
+        $(this).hide();
+    })
+
+    function isProblemAction(type) {
+        if(type == '2'){
+            $("#questionContentId").hide();
+        }else if(type =='1'){
+            $("#questionContentId").show();
+        }
+    }
+
+</script>

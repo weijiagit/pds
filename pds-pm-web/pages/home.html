@@ -1,0 +1,379 @@
+<meta charset="utf-8">
+<namespace id="pds-home" ms-controller="pds-home">
+    <div class="home-t clearfix">
+        <div class="home-tl" id="workView">
+            <div class="worktrend-wrap">
+                <div class="pds-index-title bb1 clearfix">
+                    <span class="fl">工作动态</span>
+                    <a href="javascript:;" class="more fr" id="workDynamiceMore" ms-click="@more('workDynamice')"></a>
+                </div>
+                <ul class="worktrend-list">
+                    <li ms-for = "(k,el) in @workDynamiceList">
+                        <div class="img"><a href="javascript:;" ms-click="@detail(el.id,'workDynamice')"><img ms-attr="{src:el.imgUrl}" alt=""></a></div>
+                        <div class="cont">
+                            <p class="txt"><a href="javascript:;" ms-click="@detail(el.id,'workDynamice')">{{el.content}}</a></p>
+                            <div class="org">
+                                <span class="fr">{{el.departmentName}}</span>
+                                <span class="fr mr20" style="color:#999;">{{el.createDateFormat}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="home-tr">
+            <div class="notice-wrap" id="noticeView">
+                <div class="pds-index-title bb1 clearfix">
+                    <span class="fl">通知公告</span>
+                    <a href="javascript:;" class="more fr" id="noticeMore" ms-click="@more('notice')"></a>
+                </div>
+                <ul class="notice-list">
+                    <li ms-for = "(k,el) in @noticeList">
+                        <!--<p class="txt"><a href="javascript:;" ms-click="@detail(el.id,'notice')">{{el.content}}</a></p>-->
+                        <p class="txt"><a href="javascript:;" ms-click="@openModal(el.id)">{{el.content}}</a></p>
+                        <span class="icon-new"></span>
+                        <span class="date">{{el.createDateFormat}} </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="message-wrap" id="leadView">
+                <div class="pds-index-title bb1 clearfix">
+                    <span class="fl">领导指示</span>
+                    <a href="javascript:;" class="btn-add" id="addBtn">添加</a>
+                    <a href="javascript:;" class="more fr" id="leadMore" ms-click="@more('leaderMessage')"></a>
+                </div>
+                <ul class="message-list">
+                    <li ms-for = "(k,el) in @leaderMessageList">
+                        <div class="item-t circle">
+                            <div class="title">{{el.userName}}指示</div>
+                            <span class="date">{{el.createDateFormat}}</span>
+                        </div>
+                        <div class="item-t">
+                            <div class="msg">{{el.content}}</div>
+                            <div class="operate" id ="weijia">
+                                <a ms-if="@leadHomeEdit.flag==true && el.delOrUpdateFlag == '1'" href="javascript:;"  ms-click="@doEdit(el.id)" class="modify">修改</a>
+                                <a ms-if="@leadHomeDelete.flag==true && el.delOrUpdateFlag == '1'" href="javascript:;" ms-click="@doDel(el.id)" class="del">删除</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="home-b" id="taskView">
+        <div class="pds-index-title bb1 clearfix">
+            <span class="fl">项目推进</span>
+            <a href="javascript:;" class="btn-search" id="task-search">选择显示列</a>
+            <a href="javascript:;" class="more fr" id="taskMore" ms-click="@more('task')"></a>
+        </div>
+        <div class="works-tab-wrap" style="overflow-x:auto;">
+            <table class="pds-index-works-tab" style="border:1px solid #e8eaf1;">
+                <thead>
+                    <tr>
+                        <th ms-for ="(k,el) in @tableNameList">
+                            {{el.tableName}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-for ="(k,el) in @taskList">
+                        <td ms-if="el.projectName != null">{{el.projectName}}</td>
+                        <td class="content-center" ms-if="el.subcontractLeader !=null">{{el.subcontractLeader}}</td>
+                        <td  ms-if="el.workContent !=null">
+                            <!--{{el.workContent | truncate(15,'...')}}
+                            <div class="tips">{{el.workContent}}</div>-->
+                            <a href="javascript:;" ms-click="@doTaskDetail(el.id)" style="color:#666;">{{el.workContent}}</a>
+                        </td>
+                        <td class="content-center" ms-if="el.responsibleDepartment !=null">{{el.responsibleDepartment}}</td>
+                        <td class="content-center" ms-if="el.responsiblePeople != null">{{el.responsiblePeople}}</td>
+                        <td class="content-center" ms-if="el.endDateFormat !=null">{{el.endDateFormat}}</td>
+                        <td class="content-center" ms-if="el.batch !=null">{{el.batch}}</td>
+                        <td class="content-center" ms-if="el.createDateFormat != null">{{el.createDateFormat}}</td>
+                        <td class="content-center" ms-if="el.isDepartFinish != null && el.isDepartFinish =='0' ">
+                            否
+                        </td>
+                        <td class="content-center" ms-if="el.isDepartFinish != null && el.isDepartFinish =='1' ">
+                            是
+                        </td>
+                        <td class="content-center" ms-if="el.isFinish != null && el.isFinish=='0'">
+                            否
+                        </td>
+                        <td class="content-center" ms-if="el.isFinish != null && el.isFinish=='1'">
+                            是
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#pds-home').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "pds-home",
+                    leaderMessageList: {},
+                    workDynamiceList : {},
+                    noticeList : {},
+                    tableNameList : {},
+                    taskList : {},
+                    leadHomeDelete :{},
+                    leadHomeEdit :{},
+                    doDel:function (id) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/leaderMessage/deleteLeaderMessageForFront",
+                            data : {
+                                'ids' : id
+                            },
+                            success : function(data) {
+                                page.model.vm.leaderMessageList = {};
+                                page.model.vm.leaderMessageList=data.data;
+                            }
+                        };
+                        page.namespace.confirm(function(){
+                            page.namespace.postRequest(HtmlMenuOpt);
+                        });
+                    },
+                    doTaskDetail : function (id) {
+                        page.namespace.modal.open(page,{
+                            id:"viewTask",
+                            title:"",
+                            hidden : function(e,ra){
+                                if(ra && ra.length > 0){
+
+                                }
+                            }
+                        },'/pages/task/task-view-pop.html',{id:id},'550px;');
+                    },
+                    doEdit :function (id) {
+                        page.namespace.modal.open(page,{
+                            id:"editLeaderMessageModal",
+                            title:"修改领导指示",
+                            hidden : function(e,ra){
+                                if(ra && ra.length > 0){
+                                    page.model.vm.leaderMessageList = {};
+                                    page.initLeaderMessage();
+                                }
+                            }
+                        },'/pages/leadermessage/leadermessage-edit-pop.html',{id:id},'550px;');
+                    },
+                    more:function (type) {
+                       if(type == 'leaderMessage'){
+                           page.namespace.skiphtml("/pages/leadermessage/leadermessage-list.html");
+                       }
+                       if(type == 'workDynamice'){
+                           page.namespace.skiphtml("/pages/workdynamice/workdynamice-list.html");
+                       }
+                       if(type == 'notice'){
+                            page.namespace.skiphtml("/pages/notice/notice-list.html");
+                       }
+                       if(type == 'task'){
+                           page.namespace.skiphtml("/pages/task/task-list.html");
+                       }
+                    },
+                    detail :function (id,type) {
+                        if(type == 'workDynamice'){
+                            page.namespace.skiphtml("/pages/workdynamice/workdynamice-view.html?id=" + id +"&type=workDynamice");
+                        }
+                        if(type == 'notice'){
+                            page.namespace.skiphtml("/pages/notice/notice-view.html?id=" + id +"&type=notice");
+                        }
+                    },
+                    openModal :function (id) {
+                        page.namespace.modal.open(page,{
+                            id:"selectNoticeModal",
+                            title:"公告详情",
+                        },'/pages/notice/notice-view-pop.html',{id:id},'550px;');
+                    }
+                })
+            },
+            init :function () {
+                // index.html页面权限添加
+                var workHomeAll = sessionStorage.getItem("work-home-all");
+                if(workHomeAll !=null){
+                    $("#workDynamiceMore").show();
+                }else{
+                    $("#workDynamiceMore").hide();
+                }
+
+                var workHomeView = sessionStorage.getItem("work-home-view");
+                if(workHomeView !=null){
+                    $("#workView").show();
+                }else{
+                    $("#workView").hide();
+                }
+
+                var noticeHomeAll = sessionStorage.getItem("notice-home-all");
+                if(noticeHomeAll!=null){
+                    $("#noticeMore").show();
+                }else{
+                    $("#noticeMore").hide();
+                }
+
+                var noticeHomeView = sessionStorage.getItem("notice-home-view");
+                if(noticeHomeView!=null){
+                    $("#noticeView").show();
+                }else{
+                    $("#noticeView").hide();
+                }
+
+                var leadHomeAll = sessionStorage.getItem("lead-home-all");
+                if(leadHomeAll !=null){
+                    $("#leadMore").show();
+                }else{
+                    $("#leadMore").hide();
+                }
+
+                var leadHomeView = sessionStorage.getItem("lead-home-view");
+                if(leadHomeView !=null){
+                    $("#leadView").show();
+                }else{
+                    $("#leadView").hide();
+                }
+
+                var leadHomeAdd = sessionStorage.getItem("lead-home-add");
+                if(leadHomeAdd !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+
+                var leadHomeDelete = sessionStorage.getItem("lead-home-delete");
+                if(leadHomeDelete !=null){
+                    page.model.vm.leadHomeDelete ={flag:true}
+                }else{
+                    page.model.vm.leadHomeDelete ={flag:false}
+                }
+
+                var leadHomeEdit = sessionStorage.getItem("lead-home-edit");
+                if(leadHomeEdit !=null){
+                    page.model.vm.leadHomeEdit={flag:true}
+                }else{
+                    page.model.vm.leadHomeEdit ={flag:false}
+                }
+
+                var taskHomeView = sessionStorage.getItem("task-home-view");
+                if(taskHomeView !=null){
+                    $("#taskView").show();
+                }else{
+                    $("#taskView").hide();
+                }
+
+                var taskHomeSelection = sessionStorage.getItem("task-home-selection");
+                if(taskHomeSelection !=null){
+                    $("#task-search").show();
+                }else{
+                    $("#task-search").hide();
+                }
+                var taskMore = sessionStorage.getItem("task-home-all");
+                if(taskMore != null){
+                    $("#taskMore").show();
+                }else{
+                    $("#taskMore").hide();
+                }
+
+            },
+            initLeaderMessage:function(){
+                page.namespace.getRequest({
+                    endpoint : "/leaderMessage/queryLeaderMessageFront",
+                    success : function(data) {
+                        page.model.vm.leaderMessageList=data.data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            initWorkDynamice:function(){
+                page.namespace.getRequest({
+                    endpoint : "/workdynamice/queryWorkDynamiceFront",
+                    success : function(data) {
+                        page.model.vm.workDynamiceList=data.data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            initNotice :function(){
+                page.namespace.getRequest({
+                    endpoint : "/notice/queryNoticeFront",
+                    success : function(data) {
+                        page.model.vm.noticeList ={};
+                        page.model.vm.noticeList=data.data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            showTableName : function () {
+                page.namespace.getRequest({
+                    endpoint : "/task/showTableFieldName",
+                    success : function(data) {
+                        page.model.vm.tableNameList=data;
+                        page.initTask();
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            initTask : function () {
+                page.namespace.getRequest({
+                    endpoint : "/task/queryTaskFront",
+                    success : function(data) {
+                        page.model.vm.taskList=data.data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        avalon.scan(page.namespace.root[0], page.model.vm);
+        page.init();
+        page.initLeaderMessage();
+        page.initWorkDynamice();
+        page.initNotice();
+        page.showTableName();
+        page.namespace.root.find('#addBtn').on('click', function () {
+            page.namespace.modal.open(page,{
+                id:"addLeaderMessageModal",
+                title:"请填写指示",
+                hidden : function(e,ra){
+                    if(ra && ra.length > 0){
+                        page.model.vm.leaderMessageList = {};
+                        page.initLeaderMessage();
+                    }
+                }
+            },'/pages/leadermessage/leadermessage-add-pop.html','','550px;');
+        });
+        page.namespace.root.find('#task-search').on('click', function () {
+            page.namespace.modal.open(page,{
+                id:"searchTaskModal",
+                title:"选择列",
+                hidden : function(e,ra){
+                    if(ra && ra.length > 0){
+                        page.model.vm.tableNameList = {};
+                        page.model.vm.taskList = {};
+                        page.showTableName();
+                    }
+                }
+            },'/pages/task/task-search-pop.html','','508px;');
+        });
+
+        $("table.pds-index-works-tab").on("mouseenter","td.workTd",function(){
+            $(this).children(".tips").show();
+        })
+        $("table.pds-index-works-tab").on("mouseleave","td.workTd",function(){
+            $(this).children(".tips").hide();
+        })
+    });
+
+
+
+</script>

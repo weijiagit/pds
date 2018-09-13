@@ -1,0 +1,84 @@
+<namespace id="notice-view-pop" ms-controller="notice_view_pop">
+    <section class="" id="viewNoticePopSection">
+        <form role="form"  id="viewNoticePopForm" class="form-horizontal">
+            <div class="form-group">
+                <label for="value" class="control-label">
+                    公告内容：
+                </label>
+                <div class="con" name="content">
+                    <span id="value" class="textarea1" ms-html="@data.content">
+                    </span>
+                </div>
+            </div>
+            <div class="upload clearfix">
+                <label  class="lab">
+                    附件：
+                </label>
+                <div class="upload-fr" ms-if="@files.length > 0">
+                    <ul class="list">
+                        <li ms-for = "(k,el) in @files">
+                            <span class="name">{{el.name}}.{{el.suffix}}</span>
+                            <a ms-attr="{href:el.uri}" download class="download">下载</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="upload-fr" ms-if="@files.length == 0">
+                    <ul class="list">
+                        <li>
+                           <span class="name">没有相关附件！</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+
+    </section>
+    <div align="center">
+        <button type="button" class="pds-btn" data-dismiss="modal">关闭</button>
+    </div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#notice-view-pop').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "notice_view_pop",
+                    data: {},
+                    files: {},
+                    downLoad :function (path) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/file/downLoad",
+                            data : {
+                                'path' : path
+                            },
+                            success : function(data) {
+
+                            }
+                        };
+                        page.namespace.postRequest(HtmlMenuOpt);
+                    }
+                })
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/notice/notice-list.html");
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/notice/detailNotice",
+                    data : {"id":page.namespace.modal.param(page,"id")},
+                    success : function(data) {
+                        page.model.vm.data ={};
+                        page.model.vm.data=data;
+                        page.model.vm.files=data.attachmentInfoList;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

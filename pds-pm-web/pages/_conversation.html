@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>数据录入系统</title>
+<!-- Tell the browser to be responsive to screen width -->
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<!-- css -->
+<link rel="stylesheet" href="../ui/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href="../ui/plugins/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="../ui/plugins/datatables/dataTables.bootstrap.css">
+<link rel="stylesheet" href="../ui/dist/self/css/ionicons.min.css">
+<link rel="stylesheet" href="../ui/dist/css/AdminLTE.css">
+<link rel="stylesheet" href="../ui/dist/css/skins/_all-skins.min.css">
+<link rel="stylesheet" href="../ui/plugins/iCheck/flat/blue.css">
+<link rel="stylesheet" href="../ui/plugins/iCheck/all.css">
+<link rel="stylesheet" href="../ui/plugins/colorpicker/bootstrap-colorpicker.min.css">
+<link rel="stylesheet" href="../ui/plugins/timepicker/bootstrap-timepicker.min.css">
+<!--<link rel="stylesheet" href="../ui/plugins/datepicker/datepicker3.css}">-->
+<link rel="stylesheet" href="../ui/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+<!--<link rel="stylesheet" href="../ui/plugins/bootstrap-datetimepicker/css/datetimepicker.css}">-->
+
+
+
+<link rel="stylesheet" href="../ui/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+<link rel="stylesheet" href="../ui/dist/self/css/webshowcase.css">
+<link rel="stylesheet" href="../ui/plugins/blueimp-gallery/blueimp-gallery.min.css">
+<link rel="stylesheet" href="../ui/plugins/toast/jquery.toast.min.css">
+<link rel="stylesheet" href="../ui/plugins/jquery-confirm/jquery-confirm.css">
+<link rel="stylesheet" href="../ui/plugins/jstree/themes/default/style.min.css">
+
+<link rel="stylesheet" href="../ui/dist/core/core.css">
+<link rel="stylesheet" href="../ui/dist/core/animation.css">
+
+
+
+<!-- js -->
+<script type="text/javascript" src="../ui/dist/self/js/config.js"></script>
+<script type="text/javascript" src="../ui/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/blueimp-gallery/blueimp-gallery.min.js"></script>
+<script type="text/javascript" src="../ui/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../ui/dist/self/js/jquery.form.js"></script>
+<script type="text/javascript" src="../ui/plugins/jquery-validation/jquery.validate.js"></script>
+<script type="text/javascript" src="../ui/plugins/jquery-validation/additional-methods.js"></script>
+<script type="text/javascript" src="../ui/plugins/jquery-confirm/jquery-confirm.js"></script>
+<script type="text/javascript" src="../ui/plugins/datatables/jquery.dataTables.js"></script>
+<script type="text/javascript" src="../ui/plugins/datatables/dataTables.bootstrap.js"></script>
+<!--<script type="text/javascript" src="../ui/plugins/datepicker/bootstrap-datepicker.js"></script>-->
+<!--<script type="text/javascript" src="../ui/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js"></script>-->
+
+<script type="text/javascript" src="../ui/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="../ui/plugins/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script type="text/javascript" src="../ui/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/toast/jquery.toast.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/toast/alertTool.js"></script>
+<script type="text/javascript" src="../ui/plugins/jstree/jstree.js"></script>
+<script type="text/javascript" src="../ui/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/fastclick/fastclick.js"></script>
+<script type="text/javascript" src="../ui/dist/js/app.min.js"></script>
+<script type="text/javascript" src="../ui/dist/js/demo.js"></script>
+<script type="text/javascript" src="../ui/plugins/select2/select2.full.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/input-mask/jquery.inputmask.js"></script>
+<script type="text/javascript" src="../ui/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script type="text/javascript" src="../ui/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<script type="text/javascript" src="../ui/plugins/iCheck/icheck.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/colorpicker/bootstrap-colorpicker.min.js"></script>
+<script type="text/javascript" src="../ui/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<script type="text/javascript" src="../ui/dist/self/js/httpservice.js"></script>
+<script type="text/javascript" src="../ui/dist/self/js/util.js"></script>
+<script type="text/javascript" src="../ui/dist/self/js/datatables.js"></script>
+<script type="text/javascript" src="../ui/dist/self/js/validate_zh.js"></script>
+<script type="text/javascript" src="../ui/plugins/avalon/avalon.js"></script>
+
+</head>
+
+<body class="sidebar-mini wysihtml5-supported skin-green-light fixed">
+	<div class="wrapper">
+		<header class="main-header">
+			<!-- Logo -->
+			<a href="index.html" class="logo"> <!-- mini logo for sidebar mini 50x50 pixels --> <span class="logo-mini">数据录入系统</span> <!-- logo for regular state and mobile devices -->
+				<span class="logo-lg"><b>数据录入系统</b></span>
+			</a>
+			<!-- Header Navbar: style can be found in header.less -->
+			<nav class="navbar navbar-static-top">
+				<!-- Sidebar toggle button-->
+				<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"> <span class="sr-only">Toggle navigation</span>
+				</a>
+
+				<div class="navbar-custom-menu">
+					<ul class="nav navbar-nav">
+						<li class="dropdown user user-menu"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> <!--               <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> -->
+								<span class="hidden-xs" th:text="${user.userName}"></span>
+						</a>
+							<ul class="dropdown-menu">
+
+							</ul></li>
+						<li><a href="javascript:void(0)"   id="updatePassword_link">
+						<i class="fa fa-key"></i> 修改密码</a></li>
+						<li><a href="javascript:void(0)"  id="loginout_link"> <i class="fa fa-sign-out"></i>退出
+						</a></li>
+					</ul>
+				</div>
+			</nav>
+		</header>
+
+		<namespace id="main-siderbar">
+		<aside class="main-sidebar skin-blue-light left-side">
+			<section class="sidebar" id="sidebar" style="height: 873px; overflow: hidden; width: auto;">
+				<ul class="sidebar-menu" id="sidebar-menu">
+				<li class=" treeview active"><a href="javascript:void(0)" class="active">
+					<i class="fa fa-folder"></i> <span>系统管理</span> <i class="fa fa-angle-left pull-right"></i></a>
+					<ul class="treeview-menu">
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/sysparam/sysparam-list.html"
+									href-layoutid="main-bodyindex" ><i class="fa fa-files-o"></i> 系统参数管理</a>
+						</li>
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/sys/user/sysuser-list.html"
+							href-layoutid="main-bodyindex" onclick="page.menuhref(this)"><i class="fa fa-files-o"></i> 用户管理</a>
+						</li>
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/sys/role/sysrole-list.html"
+							href-layoutid="main-bodyindex" onclick="page.menuhref(this)"><i class="fa fa-files-o"></i> 角色管理</a>
+						</li>
+
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/menu/menu-list.html"
+							 href-layoutid="main-bodyindex" onclick="page.menuhref(this)"><i class="fa fa-files-o"></i> 菜单管理</a>
+						 </li>
+
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/dictionary/dictionary-list.html"
+								href-layoutid="main-bodyindex" onclick="page.menuhref(this)">
+								<i class="fa fa-files-o"></i> 字典类型管理</a>
+						</li>
+						<li style="border-top:1px dotted #ccc; line-height:30px;">
+							<a href="javascript:void(0)" href-htmlurl="/pages/dictionary/dictionaryData-list.html"
+							 href-layoutid="main-bodyindex" onclick="page.menuhref(this)">
+								<i class="fa fa-files-o"></i> 字典明细管理</a>
+						</li>
+					</ul>
+			</section>
+		</aside>
+		</namespace>
+
+		<script type="text/javascript">
+			var page = {
+				namespace : $('#main-siderbar').namespace(),
+				init : function() {
+
+				},
+				menuhref : function(obj) {
+					$(obj).parent().addClass("active")
+					$(obj).parent().siblings().removeClass("active");
+					var url = $(obj).attr("href-htmlUrl");
+					var layoutId = $(obj).attr("href-layoutId");
+					page.namespace.skiphtml(url)
+				}
+			}
+
+			page.init();
+
+			$('#loginout_link').on('click',function(){
+
+				var HtmlMenuOpt = {
+						endpoint : "/login/loginout",
+						success : function(data) {
+							httpservice.token.remove();
+							window.location.href ="login.html";
+						}
+					};
+					page.namespace.postRequest(HtmlMenuOpt);
+
+			});
+
+			$('#updatePassword_link').on('click',function(){
+
+				page.namespace.modal.open(page,
+						{	id:"updatePasswordModal",
+							title:"密码修改",
+							hidden : function(e,ra){
+								//alert("hide modal  "+ JSON.stringify(ra[0]) );
+							}
+						},'/pages/updatePassword.html',{});
+
+
+
+
+			});
+
+			$('a').on('click',function(e){
+				page.menuhref(e.target);
+			})
+
+
+		</script>
+
+		<div class="content-wrapper-boot">
+			<div id="rightRefreshDiv" class="content-wrapper"></div>
+		</div>
+
+		<!--<footer class="main-footer">-->
+		<!--<div class="pull-right hidden-xs">-->
+		<!--<b>Version</b> 0.0.1-->
+		<!--</div>-->
+		<!--<strong>Copyright &copy; 2016-2020 Admin Console</strong> All rights reserved.-->
+		<!--</footer>-->
+
+		<aside class="control-sidebar control-sidebar-dark">
+			<!-- Create the tabs -->
+			<ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+
+				<li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+
+			</ul>
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<!-- Home tab content -->
+				<div class="tab-pane" id="control-sidebar-home-tab">
+					<!-- /.control-sidebar-menu -->
+					<!-- /.control-sidebar-menu -->
+				</div>
+			</div>
+		</aside>
+	</div>
+</body>
+
+<script type="text/javascript">
+	$(function() {
+		$.validator.addMethod("valueNotEquals", function(value, element, arg) {
+			return arg != value;
+		}, "This field is required.");
+	});
+</script>
+</html>

@@ -1,0 +1,279 @@
+<namespace id="workdynamice-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">工作动态管理</span>
+        </div>
+        <section class="content" id="searchWorkdynamiceSection" ms-controller="workdynamice-list">
+            <div class="">
+                <form class="form-horizontal" id="searchWorkdynamiceForm">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">工作内容</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="content" id="content" placeholder="请输入所需要查询的工作内容" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix rel">
+                        <label class="filed-label fl">部门</label>
+                        <div class="pro-search-wrap rel">
+                            <div id="department" class="filter-item clearfix department">
+                                <input id="departmentName" name="departmentName" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                                <input id="departmentId" name="departmentId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix" style="margin-bottom: 6px;">
+                        <div class="fl clearfix">
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl mr20" id="reset">重置</a> -->
+                            <a href="javascript:;" class="pds-btn fl pds-add" id="addBtn" func="task-add">新增</a>
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label">工作动态</div>
+                        </div> -->
+                        <div class="pro-table" id="workdynamiceList" style="margin-top: -10px;">
+                            <table id="workdynamiceListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0" width="100%">
+                                <thead>
+                                <tr>
+                                    <th class="content-center">序号</th>
+                                    <th>部门</th>
+                                    <th>工作内容</th>
+                                    <th>图片</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    var viewFlag =false;
+    var editFlag =false;
+    var delFlag =false;
+
+    $(function() {
+        var page = {
+            namespace : $('#workdynamice-list').namespace(),
+            init : function () {
+                // 查询
+                var query = sessionStorage.getItem("work-query");
+                if(query !=null){
+                    $("#queryBtn").show();
+                }else{
+                    $("#queryBtn").hide();
+                }
+                // 新增
+                var add = sessionStorage.getItem("work-add");
+                if(add !=null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+                // 详情
+                var view = sessionStorage.getItem("work-view");
+                if(view != null){
+                    viewFlag = true;
+                }
+                // 修改
+                var edit = sessionStorage.getItem("work-edit");
+                if(edit !=null){
+                    editFlag = true;
+                }
+                // 删除
+                var del= sessionStorage.getItem("work-delete");
+                if(del !=null){
+                    delFlag =true;
+                }
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchWorkdynamiceForm')[0].reset();
+                $('#departmentId').val("");
+                page.listTable.ajax.reload();
+            },
+            doAdd : function() {
+                page.namespace.modal.open(page,{
+                    id:"addWorkdynamiceModal",
+                    title:"新增工作动态",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchWorkdynamiceForm')[0].reset();
+                            $('#departmentId').val("");
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/workdynamice/workdynamice-add-pop.html','','550px;');
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/workdynamice/workdynamice-view.html?id=" + id);
+            },
+            doEdit : function(id) {
+                page.namespace.modal.open(page,{
+                    id:"editWorkdynamiceModal",
+                    title:"修改工作动态",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            $('#searchWorkdynamiceForm')[0].reset();
+                            $('#departmentId').val("");
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/workdynamice/workdynamice-edit-pop.html',{id:id},'550px;');
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/workdynamice/deleteWorkDynamice",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:300px; border:1px solid #d2d6de; overflow:auto;margin-top: 30px;margin-left: 2px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+                page.namespace.root.find('#departmentTree').parent(".pro-search-wrap").on('mouseleave', function(){
+                    page.namespace.root.find('#departmentTree').remove();
+                });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+//
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+
+                    $('#departmentName').val(node[0].text);
+                    $('#departmentId').val(node[0].id);
+
+                    $('#departmentTree').remove();
+                });
+            }
+        };
+        page.init();
+        page.listTable = $('#workdynamiceListTable').initDataTable({
+            url : "/workdynamice/getWorkDynamicePage",
+            urlDataFn : function() {
+                var searchForm = $("#searchWorkdynamiceForm").serializeJson();
+                return searchForm;
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : viewFlag,
+            editFlag : editFlag,
+            delFlag : delFlag,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                },
+                edit : function(id, rowData) {
+                    page.doEdit(id);
+                }
+            },
+            columns : [
+                {
+                    "data" : "departmentName",
+                    "width" : "6%",
+                    "class" : "content-center",
+                    "render" :function (val) {
+                        if(val != null){
+                            return val;
+                        }else{
+                            return "/";
+                        }
+                    }
+                },{
+                    "data" : "content",
+                    "width" : "23%",
+                    "render" :function (val) {
+                        var newContent = avalon.filters.truncate(val, 162, '...');
+                        return newContent;
+                    }
+                },{
+                    "data" : "imgUrl",
+                    "class" : "content-center",
+                    "width" : "8%",
+                    "render":function(val){
+                        return '<img style="width:138px;height:86px" src="'+val+'"/>';
+                    }
+                }, {
+                    "data" : "createDateFormat",
+                    "class" : "content-center",
+                    "width" : "6%"
+                }
+            ]
+        });
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+    });
+</script>

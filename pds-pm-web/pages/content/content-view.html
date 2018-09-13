@@ -1,0 +1,87 @@
+<namespace id="content-view"   ms-controller="content_view">
+<ol class="breadcrumb">
+    <li><a href="#">通知</a></li>
+    <li><a href="#">明细</a></li>
+</ol>
+<section class="content" id="viewContentSection"   >
+    <div class="box box-info">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+        <form role="form" id="viewContentForm" class="form-horizontal">
+            <div class="form-group">
+                <label for="code" class="col-sm-1 control-label input-sm">标题</label>
+                <div class="col-sm-5">
+                    <span id="code" class="form-control label-form-control input-sm"  >{{@data.title}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="desc" class="col-sm-1 control-label input-sm">发布时间</label>
+                <div class="col-sm-5">
+                    <span id="desc" class="form-control label-form-control input-sm"  >{{@data.releaseDateStr}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="desc" class="col-sm-1 control-label input-sm">截止时间</label>
+                <div class="col-sm-5">
+                    <span id="desc" class="form-control label-form-control input-sm"  >{{@data.invalidDateStr}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="value" class="col-sm-1 control-label input-sm">内容</label>
+                <div class="col-sm-5">
+                    <span id=value class="form-control label-form-control input-sm"  >{{@data.txt}}</span>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#content-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "content_view",
+    		        data: {}
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/content/content-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/content/getContById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+
+	});
+</script>

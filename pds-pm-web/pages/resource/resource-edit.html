@@ -1,0 +1,174 @@
+<namespace id="resource-edit" ms-controller="resource_edit">
+    <ol class="breadcrumb">
+        <li><a href="#">资源维护</a></li>
+        <li><a href="#">修改</a></li>
+    </ol>
+    <section class="content">
+        <div class="box box-info">
+            <form role="form" id="editForm"  class="form-horizontal">
+                <div class="row ">
+                    <div class="col-sm-12">
+                        <!-- 右对齐的 btn-group -->
+                        <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa fa-floppy-o"></i> 提交
+                            </button>
+                            <a class="btn btn-sm btn-default" id="btnCancel">
+                                <i class="fa fa-align-justify"> 返回</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-1 control-label requiredMask input-sm">姓名</label>
+                        <div class="col-sm-5">
+                            <input name="name" type="text" class="form-control input-sm" ms-attr="{value:@resource.resource.name}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dept" class="col-sm-1 control-label requiredMask input-sm">部门</label>
+                        <div class="col-sm-5">
+                            <input name="dept" type="text" class="form-control input-sm" ms-attr="{value:@resource.resource.dept}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dept" class="col-sm-1 control-label requiredMask input-sm">生成账号</label>
+                        <div class="col-sm-5">
+                            <select id="generateAccount" name="generateAccount" class="form-control select2 input-sm" ms-duplex="@resource.resource.generateAccount">
+                                <option ms-for="el in @accountOptions" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="title" class="col-sm-1 control-label requiredMask input-sm">职位</label>
+                        <div class="col-sm-5">
+                            <select id="title" name="title" class="form-control select2 input-sm" ms-duplex="@resource.resource.title">
+                                <option ms-for="el in @titleOptions" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender" class="col-sm-1 control-label requiredMask input-sm">性别</label>
+                        <div class="col-sm-5">
+                            <select id="gender" name="gender" class="form-control select2 input-sm" ms-duplex="@resource.resource.gender">
+                                <option ms-for="el in @genderOptions" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cost" class="col-sm-1 control-label requiredMask input-sm">成本</label>
+                        <div class="col-sm-5">
+                            <input name="cost" type="text" class="form-control input-sm" ms-attr="{value:@resource.resource.cost}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="col-sm-1 control-label requiredMask input-sm">电话</label>
+                        <div class="col-sm-5">
+                            <input name="phone" type="text" class="form-control input-sm" ms-attr="{value:@resource.resource.phone}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-1 control-label requiredMask input-sm">email</label>
+                        <div class="col-sm-5">
+                            <input name="email" disabled type="text" class="form-control input-sm" ms-attr="{value:@resource.resource.email}">
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" ms-attr="{value:@resource.resource.id}" style="width: 100%" />
+            </form>
+        </div>
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#resource-edit').namespace(),
+            model:{
+				vm:avalon.define({
+			        $id: "resource_edit",
+			        accountOptions: [],
+			        titleOptions: [],
+			        genderOptions: [],
+			        resource: {}
+			    })
+			},
+            init : function() {
+                $("#editForm").validate({
+                    rules : {
+                        'name' : {
+                            required : true,
+                            maxlength : 10
+                        },
+                        'dept' : {
+                            required : true,
+                            maxlength : 100
+                        },
+                        'generateAccount' : {
+                            required : true
+                        },
+                        'title' : {
+                            required : true
+                        },
+                        'gender' : {
+                            required : true
+                        },
+                        'cost' : {
+                            required : true,
+                            decimal:true
+                        },
+                        'phone' : {
+                            required : true,
+                            isPhone:true
+                        },
+                        'email' : {
+                            required : true,
+                            alnum:true,
+                            maxlength : 100
+                        }
+                    },submitHandler : function(form) {
+                        page.doEdit();
+                    }
+                });
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/resource/resource-list.html");
+            },
+            initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/pms/resource/getBaseResourceById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.resource=data;
+						 page.model.vm.accountOptions=data.generateAccount ;
+						 page.model.vm.titleOptions=data.title ;
+						 page.model.vm.genderOptions=data.gender ;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			},
+            doEdit : function() {
+                var submitForm = {
+                    endpoint : "/pms/resource/editResource",
+                    formObj : $("#editForm"),
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        page.doCancel();
+                    },
+                    failure:function(data) {
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.submitForm(submitForm);
+            }
+        }
+        
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+		page.initView();
+        page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+    });
+</script>

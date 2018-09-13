@@ -1,0 +1,259 @@
+<namespace id="business-edit"  ms-controller="business_edit">
+<ol class="breadcrumb">
+    <li><a href="#">数据录入</a></li>
+    <li><a href="#">数据录入</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="editBusinessSection">
+    <div class="box box-info">
+	    <form role="form" id="editBusinessForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                  <button type="submit" name="submit" class="btn btn-sm btn-primary">
+                      <i class="fa fa-floppy-o"></i> 提交
+                  </button>
+                  <button type="submit" name="save"  class="btn btn-sm btn-primary">
+                      <i class="fa fa-floppy-o"></i> 保存
+                  </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="box-body">
+
+			</div>
+	</form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#business-edit').namespace(),
+      model:{
+    			vm:avalon.define({
+    		        $id: "business_edit",
+    		        data: {},
+                defaults : {}
+    		    })
+    		},
+			doEdit : function(endpoint) {
+
+        var $root=page.namespace.root;
+        var HtmlMenuOpt = {
+          endpoint : endpoint,
+          data : {
+            'modelId' : modelId,
+            'projectId' : projectId,
+            'businessId' : businessId,
+            'dataSource' : $root.find('form').serializeJson(),
+          },
+          success : function(data) {
+            alertTool.success("操作成功!");
+						page.doCancel();
+          },
+          failure : function(data) {
+						alertTool.error(data);
+					}
+        };
+
+        page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/business/business-list.html?modelId='+modelId+"&projectId="+projectId);
+			}
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+    avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+
+    var modelId=page.namespace.getParam("modelId");
+    var projectId=page.namespace.getParam("projectId");
+    var businessId=page.namespace.getParam("id");
+    var schema;
+
+    function fill(schema,data){
+      var autoFill=new AutoFill();
+      var fillData={
+        data : [],
+        $form : page.namespace.root.find('form'),
+        $root : page.namespace.root.find('.box-body'),
+        submit : function(submitButton,form,event){
+          var type=$(submitButton).attr('name');
+          if('submit'==type){
+            console.log('submit------------>');
+            page.doEdit("/business/submitUpdateBusiness");
+          }else{
+            console.log('save------------>');
+            page.doEdit("/business/saveUpdateBusiness");
+          }
+
+        }
+
+      };
+
+      function _gd(key){
+        return data[key];
+      }
+
+      //var property,name,type,required,val,length;
+      for(var i=0;i<schema.length;i++){
+        var _data=schema[i];
+        var meta=new Meta();
+        if('creator_id'==_data.fieldEnName
+          ||'create_date'==_data.fieldEnName
+          ||'modifier_id'==_data.fieldEnName
+          ||'modify_date'==_data.fieldEnName
+          ||'version'==_data.fieldEnName
+          ||'status'==_data.fieldEnName
+          ||'is_available'==_data.fieldEnName ){
+          continue;
+        }
+
+        meta.property=_data.fieldEnName;
+        meta.name=_data.fieldChName;
+        meta.required=false;
+        meta.length=new Number(_data.fieldLen);
+        if('INT'==_data.fieldType){
+          meta.type='int';
+        }
+        if('VARCHAR'==_data.fieldType){
+          meta.type='shorttext';
+        }
+        if('FLOAT'==_data.fieldType){
+          meta.type='number';
+        }
+        if('LONGTEXT'==_data.fieldType){
+          meta.type='longtext';
+        }
+        if('DATETIME'==_data.fieldType){
+          meta.type='date';
+        }
+        meta.val=_gd(meta.property);
+        fillData.data.push(meta);
+      }
+      autoFill.fill(fillData);
+      page.namespace.root.find('[name="id"]').parents('.form-group').toggle();
+
+    }
+
+    page.namespace.getRequest({
+      endpoint : "/formModel/getAllDisplayFormFramework",
+      data : {modelId :modelId}, // 906e9f7d-c70b-49ee-b950-ea126ecbd4ba
+      //data : {modelId :"906e9f7d-c70b-49ee-b950-ea126ecbd4ba"},
+      success : function(data) {
+        console.log(data);
+        schema=data;
+        page.namespace.getRequest({
+          endpoint : "/business/getBusiness",
+          data : {
+            'modelId' : modelId,
+            'projectId' : projectId,
+            'businessId' : businessId,
+          },
+					success : function(data) {
+            console.log(data);
+            fill(schema,data);
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+      },
+      failure : function(data) {
+        alertTool.error(data);
+      }
+    });
+
+    function Meta(){
+      var property,name,type,required,val,length;
+    }
+
+/*
+    var autoFill=new AutoFill();
+    autoFill.fill({
+      data : [
+        {
+          property : 'name',
+          name : '名称',
+          type : 'shorttext',
+          required : true,
+          val : 'LUS',
+          length : 10
+        },
+        {
+          property : 'age',
+          name : '年龄',
+          type : 'int',
+          required : true,
+          val : '2'
+        },
+        {
+          property : 'height',
+          name : '身高',
+          type : 'number',
+          required : true,
+          val : '1.89'
+        },
+        {
+          property : 'birthday',
+          name : '出生时间',
+          type : 'date',
+          required : true,
+          val : '1999-11-11'
+        },
+        {
+          property : 'desc',
+          name : '备注',
+          type : 'longtext',
+          required : true,
+          val : '来自SHANGHAI',
+          length : 30
+        }
+      ],
+      $form : page.namespace.root.find('form'),
+      $root : page.namespace.root.find('.box-body'),
+      submit : function(){console.log('submit------>');}
+
+    });
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	});
+</script>

@@ -1,0 +1,140 @@
+<div id="casemag-list">
+	<ol class="breadcrumb">
+		<li><a href="#">案例</a></li>
+		<li><a href="#">列表</a></li>
+	</ol>
+	<section class="content" id="searchCaseMagSection" ms-controller="casemag_view">
+
+		<div class="box box-info">
+			<!-- form start -->
+			<form class="form-horizontal" id="searchCaseMagForm">
+				<div class="box-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="btn-group">
+								<a class="btn btn-success btn-sm" id="addBtn" func="casemag-add"> <span class="glyphicon glyphicon-plus"></span> 添加
+								</a>
+								<button class="btn btn-danger btn-sm" type="button" id="deleteBtn" func="casemag-delete">
+									<span class="glyphicon glyphicon-minus"></span> 删除
+								</button>
+							</div>
+						</div>
+
+						<div class="col-sm-9">
+							<div class="input-group">
+								<span class="input-group-addon">标题</span> <input type="text" name="desc" class="form-control input-sm" id="desc" placeholder="描述"> <span
+									class="input-group-btn">
+									<button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+										<i class="fa fa-search"></i> 查询
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-body" id="casemagList" style="margin-top: -10px;">
+				<table id="casemagListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>案例标题</th>
+							<th>案例类型</th>
+							<th>所属标签</th>
+							<th>状态</th>
+							<th>顺序</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</div>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#casemag-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml("/pages/casemag/casemag-add.html");
+			},
+			doView : function(id) {
+				page.namespace.skiphtml("/pages/casemag/casemag-view.html?id=" + id);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml("/pages/casemag/casemag-edit.html?id=" + id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/casemag/deleteCase",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#casemagListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			}
+		};
+
+		page.listTable = $('#casemagListTable').initDataTable({
+			url : "/casemag/getCasesPage",
+			urlDataFn : function() {
+				return $("#searchCaseMagForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "title",
+				"width" : "10%"
+			}, {
+				"data" : "categoryNames",
+				"width" : "15%"
+			}, {
+				"data" : "labelNames",
+				"width" : "15%"
+			}, {
+				"data" : "upDownName",
+				"width" : "15%"
+			}, {
+				"data" : "order",
+				"width" : "15%"
+			} ]
+		});
+
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+		page.namespace.root.find('#refreshCacheBtn').on('click', page.doRefreshCache);
+	});
+</script>

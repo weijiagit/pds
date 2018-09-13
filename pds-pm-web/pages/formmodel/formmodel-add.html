@@ -1,0 +1,415 @@
+<namespace id="formmodel-add" ms-controller="formmodel-add">
+<ol class="breadcrumb">
+	<li><a href="#">模板</a></li>
+	<li><a href="#">新增</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addFormModelSection">
+	<div class="box box-info">
+		<form role="form" id="addFormModelForm" class="form-horizontal">
+			<div class="row ">
+				<div class="col-sm-12">
+					<!-- 右对齐的 btn-group -->
+					<div class="btn-group pull-left"
+						style="margin-top: 20px; margin-left: 28px;">
+						<button  id="save" class="btn btn-sm btn-primary">
+							<i class="fa fa-floppy-o"></i> 提交
+						</button>
+						<a class="btn btn-sm btn-default" id="btnCancel"> <i
+							class="fa fa-align-justify"> 返回</i>
+						</a>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="box-body">
+				<div class="form-group">
+					<label for="modelName"
+						class="col-sm-1 control-label requiredMask input-sm">模板名称</label>
+					<div class="col-sm-4">
+						<input name="modelName" id="modelName" type="text"
+							class="form-control input-sm" placeholder="">
+					</div>
+					<label for="modelCode"
+						class="col-sm-1 control-label requiredMask input-sm">模板编码</label>
+					<div class="col-sm-4">
+						<input name="modelCode" id="modelCode" type="text"
+							class="form-control input-sm" placeholder="">
+					</div>
+				</div>
+				
+				<!--动态新增  -->
+				<div class="add-box">
+					<div id="newTem" class="add-content">
+						<div class="form-group">
+							<label for="fieldChName"
+								class="col-sm-1 control-label requiredMask input-sm">字段中文名称</label>
+							<div class="col-sm-4">
+								<input name="fieldChName" id="fieldChName" type="text"
+									class="form-control input-sm" placeholder="">
+							</div>
+							
+							<label for="fieldType"
+								class="col-sm-1 control-label requiredMask input-sm">字段类型</label>
+							<div class="col-sm-4">
+								<select name="fieldType" id="fieldType" class="form-control input-sm select2">
+	                            	<option selected="selected" value="">请选择</option>
+	                            	<option ms-for="el in @fieldType" ms-attr="{value:el.value}">{{el.name}}</option>
+	                        	</select>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="fieldEnName"
+								class="col-sm-1 control-label requiredMask input-sm">字段英文名称</label>
+							<div class="col-sm-4">
+								<input name="fieldEnName" id="fieldEnName" type="text"
+									class="form-control input-sm" placeholder="">
+							</div>
+							
+							<label for="fieldLen"
+								class="col-sm-1 control-label requiredMask input-sm">字段长度</label>
+							<div class="col-sm-4">
+								<input name="fieldLen" id="fieldLen" type="text"
+									class="form-control input-sm" placeholder="">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="isDisplay"
+								class="col-sm-1 control-label requiredMask input-sm">是否展示</label>
+							<div class="col-sm-4">
+								<select name="isDisplay" id="isDisplay" class="form-control input-sm select2">
+	                            	<option selected="selected" value="">请选择</option>
+	                            	<option ms-for="el in @isDisplay" ms-attr="{value:el.value}">{{el.name}}</option>
+	                        	</select>
+							</div>
+							
+							<label for="sequence"
+								class="col-sm-1 control-label requiredMask input-sm">字段顺序</label>
+							<div class="col-sm-4">
+								<input name="sequence" id="sequence" type="text"
+									class="form-control input-sm" placeholder="">
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- 右对齐的 btn-group -->
+				<div class="btn-group pull-right"
+					style="margin-top: 20px; margin-left: 28px;">
+					<a class="btn btn-sm btn-default" id="newBtn"> <i
+						class="fa fa-align-right"> 新建</i>
+					</a>
+				</div>
+				
+				
+				<div class="form-group" style="margin-top: 40px;">
+				    <label for="isDisplay"
+								class="col-sm-1 control-label input-sm"></label>
+	
+					<div class="col-sm-1">
+						<input class="minimal" id="creator_date_flag" name="push" value="0"
+							type="checkbox" />创建时间</>
+					</div>
+					
+					
+					<div class="col-sm-1">
+						<input class="minimal" id="modifier_date_flag" name="push" value="0"
+							type="checkbox" />修改时间</>
+					</div>
+					
+					<!-- <div class="col-sm-1">
+						<input class="minimal" id="status_flag" name="push" value="0"
+							type="checkbox" >状态</>
+					</div> -->
+				</div>
+				
+			</div>
+		</form>
+		
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-body" id="fieldList" style="margin-top: -10px;">
+				<table id="fieldListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>字段英文名称</th>
+							<th>字段中文名称</th>
+							<th>字段类型</th>
+							<th>字段长度</th>
+							<th>字段顺序</th>
+							<th>是否显示</th>
+						</tr>
+						<tr ms-for="el in @data"
+						ms-if="el.fieldEnName != 'id' && el.fieldEnName != 'version' && el.fieldEnName != 'creator_id' && el.fieldEnName != 'modifier_id' && el.fieldEnName != 'create_date' && el.fieldEnName != 'modify_date' && el.fieldEnName != 'is_available'">
+			                <td><span class="form-control label-form-control input-sm">{{el.fieldEnName}}</span></td>
+			                <td><span class="form-control label-form-control input-sm">{{el.fieldChName}}</span></td>
+			                <td><span class="form-control label-form-control input-sm">{{el.fieldTypeName}}</span></td>
+			                <td><span class="form-control label-form-control input-sm">{{el.fieldLen}}</span></td>
+			                <td><span class="form-control label-form-control input-sm">{{el.sequence}}</span></td>
+			                <td><span class="form-control label-form-control input-sm">{{el.isDisplayName}}</span></td>
+			            </tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+		
+		<div>
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="主键"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="VARCHAR"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="id"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="36"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="0"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="版本号"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="INT"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="version"> 
+				<input name="fieldLenGeneral" style="display:none;" value="11"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="1"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="是否有效"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="INT"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="is_available"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="11"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="2"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="创建人"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="VARCHAR"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="creator_id"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="36"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="3"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="创建时间"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="DATETIME"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="create_date"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="36"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="4"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="修改人"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="VARCHAR"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="modifier_id"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="36"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="5"></input>
+			</div>	
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="修改时间"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="DATETIME"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="modify_date"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="36"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="N"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="6"></input>
+			</div>
+			
+			<div class="general">
+				<input name="fieldChNameGeneral" style="display:none;" value="状态"></input> 
+				<input name="fieldTypeGeneral" style="display:none;" value="VARCHAR"></input> 
+				<input name="fieldEnNameGeneral" style="display:none;" value="status"></input> 
+				<input name="fieldLenGeneral" style="display:none;" value="10"></input> 
+				<input name="isDisplayGeneral" style="display:none;" value="Y"></input> 
+				<input name="sequenceGeneral" style="display:none;" value="7"></input>
+			</div>
+			
+		</div>
+		
+		
+		
+		
+		
+	</div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#formmodel-add').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "formmodel-add",
+    		        fieldType: [],
+    		        isDisplay: [],
+    		        data:[]
+    		    })
+    		},
+			init : function() {
+				$('#addFormModelForm').validate({
+					ignore : '',
+					rules : {
+						 'modelName' : {
+							required : true,
+							maxlength : 36
+						},
+						 'modelCode' : {
+							required : true,
+							maxlength : 36,
+							alnum : true
+						},
+						'fieldChName' : {
+							required : true,
+							maxlength : 36,
+							chinese : true
+						},
+						'fieldType' : {
+							required : true,
+							maxlength : 36
+						},
+						'fieldEnName' : {
+							required : true,
+							maxlength : 36,
+							string : true
+						},
+						'fieldLen' : {
+							required : true,
+							maxlength : 36,
+							positiveNum : true
+						},
+						'isDisplay' : {
+							required : true,
+							maxlength : 36
+						},
+						'sequence' : {
+							required : true,
+							maxlength : 8,
+							positiveNum : true
+						} 
+					}
+				});
+
+			},
+			doAdd : function() {
+				var $root = page.namespace.root;
+				var formJson = {
+						modelName: $('#addFormModelForm').find("#modelName").val(),
+						modelCode: $('#addFormModelForm').find("#modelCode").val()
+				};
+				$(".general").each(function () {
+				    /* 下面是一个对象，注意对象中是不能有if等表达式	 */
+		            var formFrameworkInVOs = {
+		            	fieldChName: $(this).find("input[name='fieldChNameGeneral']").val(),
+		            	fieldType: $(this).find("input[name='fieldTypeGeneral']").val(),
+		            	fieldEnName: $(this).find("input[name='fieldEnNameGeneral']").val(),
+		            	fieldLen: $(this).find("input[name='fieldLenGeneral']").val(),
+		            	isDisplay:$(this).find("input[name='isDisplayGeneral']").val(),
+		            	sequence: $(this).find("input[name='sequenceGeneral']").val()
+
+		            };
+		            if((formFrameworkInVOs.fieldEnName=="create_date")&&($("#creator_date_flag").is(':checked'))){
+	            		formFrameworkInVOs.isDisplay='Y';
+	            	}else if((formFrameworkInVOs.fieldEnName=="modify_date")&&($("#modifier_date_flag").is(':checked'))){
+	            		formFrameworkInVOs.isDisplay='Y';
+	            	}else{
+	            		formFrameworkInVOs.isDisplay= $(this).find("input[name='isDisplayGeneral']").val();
+	            	}
+		            page.model.vm.data.push(formFrameworkInVOs);
+		    	});
+				
+			    var list = page.model.vm.data;
+			    formJson["formFrameworkInVOs"] = JSON.stringify(list);
+				
+				var HtmlMenuOpt = {
+					endpoint : "/formModel/save",
+					data : formJson,
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+						return;
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/formmodel/formmodel-list.html');
+			}
+		};
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		page.namespace.root.find('#save').on('click', function(){
+			var modelName = page.namespace.root.find('#modelName');
+			var modelCode = page.namespace.root.find('#modelCode');
+			
+			if(!page.namespace.root.find('#modelName').valid() || !page.namespace.root.find('#modelCode').valid() || page.model.vm.data.length <=0){
+				return;
+			}else{
+				page.doAdd();
+			}
+			
+		});
+		
+		/*新增template*/
+		page.namespace.root.find('#newBtn').on('click', function(event){
+	        //拿到新增的当前数据
+	        if(!$('#addFormModelForm').valid()){
+	        	return;
+	        }
+	        var fieldEnName = page.namespace.root.find("input[name='fieldEnName']").val();
+	        /*  输入的字段名称不能为如下公共字段  */
+	        if(fieldEnName == 'id' 
+	        		|| fieldEnName == 'version' 
+	        		|| fieldEnName == 'creator_id' 
+	        		|| fieldEnName == 'modifier_id' 
+	        		|| fieldEnName == 'create_date' 
+	        		|| fieldEnName == 'modify_date' 
+	        		|| fieldEnName == 'is_available'
+	        		|| fieldEnName == 'status'){
+	        	return;
+	        }
+	        
+	        var formFrameworkInVO = {
+	            	fieldChName: page.namespace.root.find("input[name='fieldChName']").val(),
+	            	fieldType: page.namespace.root.find("select[name='fieldType']").val(),
+	            	fieldTypeName: page.namespace.root.find("select[name='fieldType'] option:selected").text(),
+	            	fieldEnName: page.namespace.root.find("input[name='fieldEnName']").val(),
+	            	fieldLen: page.namespace.root.find("input[name='fieldLen']").val(),
+	            	isDisplay: page.namespace.root.find("select[name='isDisplay']").val(),
+	            	isDisplayName: page.namespace.root.find("select[name='isDisplay'] option:selected").text(),
+	            	sequence: page.namespace.root.find("input[name='sequence']").val()
+	            };
+	        page.model.vm.data.push(formFrameworkInVO);
+	        //清空数据
+	        refresh();
+		});
+		
+		var refresh = function(){
+			$(".add-content").each(function () {
+				$(this).find('input').val("");
+				$(this).find('select').each(function(){
+					$(this).find('option:first').prop("selected", "selected");
+				});
+			});
+		} 
+		
+ 		avalon.scan(page.namespace.root[0], page.model.vm); 
+		
+		page.namespace.getCodes(function(data){
+			page.model.vm.fieldType=data;
+		},"FIELD_TYPE");
+		
+		page.namespace.getCodes(function(data){
+			page.model.vm.isDisplay=data;
+		},"IS_DISPLAY");
+		
+		});
+
+	
+	
+	
+
+</script>

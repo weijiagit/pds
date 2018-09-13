@@ -1,0 +1,90 @@
+<namespace id="dictionary-edit"  ms-controller="dictionary_edit">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改字典</span>
+		</div>
+		<section class="content" id="editDictionarySection" ms-controller="dictionary_edit">
+			<form role="form" id="editDictionaryForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>字典名称：</label>
+					<div class="col-sm-4">
+						 <input name="name" type="text" class="form-control input-sm" 
+                        placeholder=""  ms-attr="{value:@data.name}">
+					</div>
+					<label for="code1" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>字典代码：</label>
+					<div class="col-sm-4">
+						<span id="code"  class="form-control label-form-control input-sm" 
+                        >{{@data.code}}</span>
+					</div>
+				</div>
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#dictionary-edit').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "dictionary_edit",
+    		        data: {}
+    		    })
+    		},
+			init : function() {
+				$('#editDictionaryForm').validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						}
+					},submitHandler : function(form) {
+						page.doEdit();
+					}
+				});
+			},
+			doEdit : function() {
+				var submitSysUserForm = {
+						endpoint : "/dictionary/editDictionary",
+						formObj : $("#editDictionaryForm"),
+						success : function(data) {
+							alertTool.success("操作成功!");
+							page.doCancel();
+						},
+						failure:function(data) {
+							alertTool.error(data);
+						}
+					};
+					
+					page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/dictionary/dictionary-list.html");
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/dictionary/getDictionaryById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+		
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+	});
+</script>

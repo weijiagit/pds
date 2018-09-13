@@ -1,0 +1,142 @@
+<namespace id="dictionary-list">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">字典类型管理</span>
+        </div>
+		<section class="content" id="searchSysUserSection" ms-controller="dictionary-list">	
+			<div class="">
+				<form class="form-horizontal" id="searchDictionaryForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">字典名称</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								<input type="text" name="name" id="name" placeholder="请输入所需要查询的字典名称" class="ipt-txt"></input>
+							</div>
+						</div>
+					</div>
+
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a>
+							<a href="javascript:;" class="pds-btn fl" id="deleteBtn" func="task-add">删除</a>
+							<a href="javascript:;" class="pds-btn fl" id="refreshCacheBtn" func="task-add">刷新缓存</a>
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+								<table id="dictionaryListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th style="width: 18px;"></th>
+										<th>序号</th>
+										<th>字典名称</th>
+										<th>字典代码</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#dictionary-list').namespace(),
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doReset : function() {
+				 $('#searchDictionaryForm')[0].reset();
+                page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				
+				page.namespace.skiphtml("/pages/dictionary/dictionary-add.html");
+			},
+			doView : function(id) {
+				page.namespace.skiphtml("/pages/dictionary/dictionary-view.html?id=" + id);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml("/pages/dictionary/dictionary-edit.html?id=" + id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/dictionary/deleteDictionaryById",
+					data : {
+						'ids' : id
+					},
+					success : function(data) {
+						page.listTable.ajax.reload();
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#dictionaryListTable').getSelectedRow();
+
+				if (selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doRefreshCache : function() {
+				var HtmlMenuOpt = {
+					endpoint : "/dictionary/loadCache"
+				};
+				page.namespace.getRequest(HtmlMenuOpt);
+			}
+		};
+
+		page.listTable = $('#dictionaryListTable').initDataTable({
+			url : "/dictionary/getDictionaryByName",
+			urlDataFn : function() {
+				return $("#searchDictionaryForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "code",
+				"width" : "15%"
+			} ]
+		});
+
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+		page.namespace.root.find('#refreshCacheBtn').on('click', page.doRefreshCache);
+	});
+</script>

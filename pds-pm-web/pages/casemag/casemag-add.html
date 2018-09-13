@@ -1,0 +1,314 @@
+<namespace id="casemag-add">
+<ol class="breadcrumb">
+    <li><a href="#">案例</a></li>
+    <li><a href="#">新增</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addCaseMagSection">
+    <div class="box box-info">
+	    <form role="form" id="addCaseMagForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 提交
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="box-body">
+				<div class="form-group">
+					<label for="title" class="col-sm-1 control-label requiredMask input-sm">案例标题</label>
+					<div class="col-sm-9">
+						<input name="title" id="title" type="text" class="form-control input-sm" placeholder="">
+					</div>
+				</div>
+        <div class="form-group">
+					<label for="userName" class="col-sm-1 control-label requiredMask input-sm">所属大咖</label>
+          <div class="col-sm-6">
+          <div class="input-group">
+            <input name="userName" id="userName" type="text"  class="form-control input-sm">
+            <span class="input-group-btn">
+              <button name="selectUserBtn" class="btn btn-primary btn-sm" type="button">
+                <i class="fa"></i>选择用户
+              </button>
+            </span>
+          </div>
+          <input name="userId" type="hidden"  readOnly  /><span id='userNameSpan'></span>
+          </div>
+
+          <!--
+					<div class="col-sm-6" style="display:inline">
+						<input name="userName" type="text" class="form-control input-sm" placeholder="">
+            <input name="userId" type="text"  readOnly  /><span id='userNameSpan'></span>
+					</div>
+          <button type="button" class="btn btn-sm btn-primary"  name="selectUserBtn" >
+              <i class="fa "></i>选择用户
+          </button>
+        -->
+				</div>
+
+        <div class="form-group">
+					<label for="categoryIdsSpan" class="col-sm-1 control-label requiredMask input-sm">案例分类</label>
+					<div  class="col-sm-9">
+            <span id="categoryIdsSpan"></span>
+            <input id="categoryIds" name="categoryIds"  value=""  type="hidden"  readOnly    />
+					</div>
+
+				</div>
+
+				<div class="form-group">
+					<label for="content" class="col-sm-1 control-label requiredMask input-sm">案例内容</label>
+					<div class="col-sm-9">
+						<textarea name="content" id="content" class="form-control input-sm" rows="5" placeholder=""></textarea>
+					</div>
+				</div>
+        <div class="form-group">
+					<label for="caseImage1" class="col-sm-1 control-label input-sm">图片1</label>
+					<div class="col-sm-5">
+            <div name="fileUploadDiv" id="caseImage1"></div>
+
+            <input readOnly name="caseImageId1"  id="caseImageId1" type="hidden" class="form-control input-sm" placeholder="">
+
+					</div>
+        </div>
+        <div class="form-group">
+					<label for="caseImage2" class="col-sm-1 control-label input-sm">图片2</label>
+					<div class="col-sm-5">
+
+            <div name="fileUploadDiv" id="caseImage2"></div>
+
+            <input readOnly name="caseImageId2"  id="caseImageId2" type="hidden" class="form-control input-sm" placeholder="">
+
+					</div>
+        </div>
+        <div class="form-group">
+					<label for="push" class="col-sm-1 control-label input-sm">推送至首页</label>
+					<div class="col-sm-3">
+            <input class="minimal" id="push" name="push" value="0" type="checkbox" />
+					</div>
+          <label for="order" class="col-sm-1 control-label requiredMask input-sm">排序</label>
+					<div class="col-sm-3">
+            <input name="order" id="order" type="text" class="form-control input-sm" placeholder="">
+					</div>
+				</div>
+			</div>
+
+
+
+	</form>
+
+
+
+  <div id="filesDiv"  style="display:none;">
+  </div>
+
+
+
+
+
+
+
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#casemag-add').namespace(),
+
+      styleCheckbox : function($cks){
+        if($cks)
+        $cks.iCheck({
+          checkboxClass: 'icheckbox_minimal-blue',
+          radioClass: 'iradio_minimal-blue'
+        });
+      },
+
+			init : function() {
+
+				$('#addCaseMagForm').validate({
+          ignore : '',
+					rules : {
+						'title' : {
+							required : true,
+							maxlength : 255
+						},
+						'content' : {
+							required : true,
+							maxlength : 2000
+						},
+            'order' : {
+							required : true,
+							number : true
+						},
+            'userId' : {
+							required : true
+						},
+						'categoryIds' : {
+							required : true
+						}
+
+					},
+					submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+
+        page.styleCheckbox(page.namespace.root.find('[name="push"]'));
+
+        page.namespace.getRequest({
+          endpoint : "/casecategory/getCaseCategorysByPage",
+          data : {},
+          page : 1,
+          size : 1000000,
+          success : function(data) {
+            if(data.data.length>0){
+              var str=''; //<input class="minimal" name="categoryIds" value="0" type="checkbox"  />
+              for(var i =0;i<data.data.length;i++){
+                var d=data.data[i];
+                str=str+'<input class="minimal" name="categoryId" value="'+d.id+'" type="checkbox"  />'+d.name
+                    +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+              }
+              page.namespace.root.find('#categoryIdsSpan').html(str);
+              var $cks=page.namespace.root.find('[name="categoryId"]');
+              var $cs=page.namespace.root.find('#categoryIds');
+              page.styleCheckbox($cks);
+
+              $cks.on('ifChecked', function(event){
+                var val=$(event.target).val()+',';
+                var al=$cs.val()?$cs.val():'';
+                if(al.indexOf(val)==-1){
+                  $cs.val(al+val);
+                }
+              });
+              $cks.on('ifUnchecked', function(event){
+                var val=$(event.target).val()+',';
+                if($cs.val().indexOf(val)>=0){
+                  $cs.val($cs.val().replace(val,''));
+                }
+              });
+            }
+
+          },
+          failure : function(data) {
+            alertTool.error(data);
+          }
+        });
+
+			},
+			doAdd : function() {
+        var $root=page.namespace.root;
+        var HtmlMenuOpt = {
+          endpoint : "/casemag/saveCase",
+          data : {
+            'title' : $root.find('[name="title"]').val(),
+            'content' : $root.find('[name="content"]').val(),
+            'userId' : $root.find('[name="userId"]').val(),
+            'push' : $root.find('[name="push"]').is(':checked'),
+            'order' : $root.find('[name="order"]').val(),
+            'categoryIds' : $root.find('[name="categoryIds"]').val(),
+            'labelIds' : $root.find('[name="labelIds"]').val(),
+            'imageIds' : $root.find('[name="caseImageId2"]').val()
+                          + ','
+                          + $root.find('[name="caseImageId1"]').val(),
+          },
+          success : function(data) {
+            alertTool.success("操作成功!");
+						page.doCancel();
+          },
+          failure : function(data) {
+						alertTool.error(data);
+					}
+        };
+
+        page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/casemag/casemag-list.html');
+			}
+		};
+
+		page.init();
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+    page.namespace.root.find('[name="userName"]').on('change',function(e){
+
+
+      //init context
+      var $i=page.namespace.root.find('[name="userId"]');
+      var $n=page.namespace.root.find('#userNameSpan');
+      $i.val('');
+      $n.text('');
+
+      if($(e.target).val().trim()!=''){
+        page.namespace.getRequest({
+          endpoint : "/sysuser/getSysUserByAccount",
+          data : {"account": $(e.target).val()},
+          success : function(data) {
+            if(data){
+              $i.val(data.id);
+              $n.text(data.name);
+            }else{
+              $n.text('用户不存在');
+            }
+
+
+          },
+          failure : function(data) {
+            alertTool.error(data);
+          }
+        });
+      }
+
+
+
+    });
+
+
+
+    page.namespace.root.find('[name="fileUploadDiv"]').each(function(i,e){
+
+      var opt={
+        $fsc : $(e),
+        $fc : page.namespace.root.find('#filesDiv'), // form container
+        added : function(data,obj){
+          obj.opt.$fsc.parent().children('input').val(data.id);
+        },
+        removed : function(data,obj){
+          obj.opt.$fsc.parent().children('input').val('');
+        },
+        types : ['image/jpeg','image/jpg','image/png']
+      }
+      fileAttach(opt);
+    });
+
+
+    page.namespace.root.find('[name="selectUserBtn"]').on('click',function(e){
+
+      page.namespace.modal.open(page,
+          {	id:"selectUserModal",
+            title:"选择用户",
+            hidden : function(e,ra){
+              if(ra&&ra.length>0&&ra[0].records.length>0){
+                var r=ra[0].records[0];
+                page.namespace.root.find('[name="userName"]').val(r.userAccount);
+                page.namespace.root.find('[name="userId"]').val(r.id);
+                page.namespace.root.find('#userNameSpan').text(r.name);
+              }
+
+            }
+          },'/pages/sys/user/sysuser-select-pop.html',{id : '090909' , name : 'passwordAgain' });
+
+
+    });
+
+	});
+</script>

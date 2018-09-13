@@ -1,0 +1,7 @@
+spring : 
+    application:
+        name: xmgl
+    profiles : 
+        active : 
+           - dev
+           - dev-error

@@ -1,0 +1,122 @@
+<namespace id="sysproject-add">
+<ol class="breadcrumb">
+	<li><a href="#">栏目模板</a></li>
+	<li><a href="#">分配</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addProjectMenuUserSection">
+	<div class="box box-info">
+		<form role="form" class="form-horizontal" id="addProjectMenuUser">
+			<div class="box box-info">
+			<form class="form-horizontal" id="searchSysRoleForm">
+				<div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="btn-group">
+
+                            <button id="assignModel" type="button" class="btn btn-primary btn-sm" func="sysrole-assignmenu">栏目模板分配</button>
+
+                        </div>
+                        </div>
+                    </div>
+				</div>
+			</form>
+		</div>
+
+
+			<div class="form-group">
+				<div class="col-sm-5">
+					<label for="projectName"
+						class="col-sm-5 control-label requiredMask input-sm">栏目菜单</label>
+					<div id="menuTree"></div>
+				</div>
+			</div>
+		</form>
+</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+
+			namespace : $('#sysproject-add').namespace(),//当前页面的命名空间
+
+
+
+			init : function() {
+				var labelTree = $('#menuTree').jstree({
+					core : {
+						"animation" : 0,
+						"check_callback" : true,
+						"themes" : {
+							"stripes" : true,
+							"responsive" : false
+						},
+						data : function(obj, callback) {
+							var opt = {};
+							opt = {
+								success : function(msg) {
+									callback.call(this, msg);
+								},
+								data : {},
+								endpoint : "/project/loadMenuTreeOfProject"
+							};
+
+							page.namespace.getRequest(opt);
+						}
+					},
+					"types" : {
+						"default" : {
+							"draggable" : false,
+							"icon" : "fa fa-folder icon-state-warning icon-lg"
+						}
+					},
+					"plugins" : [ "types", "wholerow", "dnd"]
+				}).on("load_node.jstree", function() {
+					$('#menuTree').jstree("open_all");
+					});
+				},
+
+			doModelAssign:function(){
+				/* 弹出模板列表框  */
+				var $root = page.namespace.root;
+
+				var $jstree = $('#menuTree').jstree(true);
+				var selected =[];
+			    selected = $jstree.get_selected(true);/* 选择单选框树  */
+				/* var selected = $jstree.get_checked(true); *//* 选择复选框树  */
+				var data = [];
+				var i=0;
+				if(selected.length == 0) {
+					alertTool.info("请选择要分配模板的栏目!");
+					return;
+				}
+
+				if(selected.length>1){
+					alertTool.warning("只能选择一条记录进行操作!");
+					return;
+				}
+
+				if(selected[0].children.length>0){
+					alertTool.warning("请选择叶子栏目!");
+					return;
+				}
+
+
+				/* if(selected.children.length>1){
+					alertTool.warning("请选择叶子栏目!");
+					return;
+				} */
+
+
+				var id=selected[0].id;
+				page.namespace.skiphtml('/pages/columnmodel/column-menu-assignmodel.html?id='+id);
+
+			}
+		};
+
+		page.init();
+		page.namespace.root.find("#assignModel").on('click',page.doModelAssign);
+
+	});
+</script>

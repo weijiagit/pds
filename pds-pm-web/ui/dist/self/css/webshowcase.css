@@ -1,0 +1,152 @@
+.error{
+	color: red;
+}
+.requiredMask:AFTER{
+	content: "*" ;
+	color: red;
+}
+
+ .ta_custom+.col-sm-5+.col-sm-7{margin-top: -13px;text-align: end;}
+ .ta_custom+.col-sm-5{margin-top: 10px;}
+ .b_custom{margin-left: 10px;}
+    .label-form-control{
+    	border: 0 ;
+    
+    }
+    /*--------------------------------------------图片上传模块-----------------------------------------------*/
+    
+    .links a img {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #1C9FF7;
+}
+
+.links>li {
+	float: left;
+	display: block;
+	position: relative;
+	overflow: hidden;
+	margin: 2px;
+}
+
+.links>li>.tools {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.55);
+	text-align: center;
+	vertical-align: middle;
+	-webkit-transition: all .2s ease;
+	transition: all .2s ease;
+}
+
+.links>li:hover>.tools.tools-top {
+	bottom: auto;
+	top: 0;
+}
+
+.links>li:hover>.tools {
+	left: 0;
+}
+
+.links>li:hover>.tools.tools-top {
+	bottom: auto;
+  	left: 115px;
+	height: 30px;
+	width: 35px;
+}
+
+.links>li:hover>.tools {
+	left: 0;
+}
+
+.links>li>.tools.tools-top {
+    width: 35px;
+    left: 115px;
+    height: 40px;
+    top: -40px;
+    bottom: auto;
+}
+
+.icon-remove {
+	display: inline;
+	width: auto;
+	height: auto;
+	line-height: normal;
+	vertical-align: baseline;
+	background-image: none;
+	background-position: 0% 0%;
+	background-repeat: repeat;
+	margin-top: 10px;
+	display: inline;
+	width: auto;
+	color: #dd5a43 !important;
+	display: inline-block;
+	text-align: center;
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	text-decoration: inherit;
+	-webkit-font-smoothing: antialiased;
+}
+
+.icon-remove:before {
+	content: "\f00d";
+	text-decoration: inherit;
+	display: inline-block;
+	speak: none;
+}
+
+.links .formsumitButton {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #1C9FF7;
+	display: none;
+	float: left;
+    margin: 2px;
+  	background: url(../img/fileuploadButton.png) no-repeat;
+    background-size: 100% 100%;
+    cursor:pointer;
+}
+
+.table_btn{
+	margin-left: 5px;
+}
+/* .table.dataTable tbody tr.selected {
+	background-color: #B0BED9;
+} */
+
+td.details-control {
+	background: url('../img/details_open.png') no-repeat center center;
+	cursor: pointer;
+}
+.shown{
+	
+}
+tr.shown td.details-control {
+	background: url('../img/details_close.png') no-repeat center center;
+}
+.hidden{
+	display: none;
+}
+.trodd{
+	/*background-color:#ecf0f5 ;*/
+}
+.treven{
+	
+}
+
+.codetable{
+	
+}
+
+
+
+
+
+
+
+
+
+
+

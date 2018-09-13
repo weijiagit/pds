@@ -1,0 +1,207 @@
+<namespace id="workdynamice-add">
+    <section class="" id="workdynamiceAddSection">
+        <form role="form" id="addWorkdynamiceForm" class="form-horizontal">
+            <div class="">
+                <div class="form-group">
+                    <label for="content" class="control-label">
+                        <span class="star">*</span>工作内容：</label>
+                    <div class="con">
+                            <textarea name="content" id="content" class="textarea1" placeholder=""  ></textarea>
+                    </div>
+                </div>
+                <div class="form-group pds-layer">
+                    <label for="content" class="control-label">
+                        <span class="star">*</span>部门：</label>
+                    <div class="con rel">
+                        <div id="department" class="filter-item clearfix department">
+                            <div class="pro-search-wrap">
+                                <input id="departmentName" name="departmentName" type="text" class="ipt-txt" placeholder="请选择" readonly />
+                                <input id="departmentId" name="departmentId" type="hidden" class="form-control input-sm" placeholder="" >
+                                <span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="fileCount">
+                    <label class="control-label">
+                        <span class="star">*</span>图片：
+                    </label>
+                    <div class="con" id="attachmentIds">
+                        <div name="fileUploadDiv" class="fileUploadDiv"></div>
+                        <input readOnly name="caseImageId"  id="caseImageId" type="hidden" class="form-control input-sm" placeholder="">
+                    </div>
+                </div>
+                <!--<div class="upload clearfix">-->
+                    <!--<label for="" class="lab" style="line-height: 22px;"><span class="star">*</span>图片：</label>-->
+                    <!--<div class="upload-fr">-->
+                        <!--<div class="upload-box">-->
+                            <!--<a href="javascript:;" class="btn">上传</a>-->
+                            <!--<input type="file" class="ipt-file">-->
+                        <!--</div> -->
+                        <!--<div class="error-txt">单个文件大小不超过500M</div>-->
+                        <!--<ul class="list">-->
+                            <!--<li>-->
+                                <!--<span class="name">图片名字.jpg</span>-->
+                                <!--<a ms-attr="{href:el.uri}" download class="download">下载</a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+            <div class="btn-wrap">
+                <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#workdynamice-add').namespace(),
+            init : function() {
+                $('#addWorkdynamiceForm').validate({
+                    ignore: '',
+                    rules : {
+                        content : {
+                            required : true,
+                            maxlength : 1000
+                        },
+                        departmentName : {
+                            required : true
+                        },
+                        caseImageId :{
+                            required : true
+                        }
+                    },messages:{
+                        content :{
+                            required :"工作内容不能为空",
+                            maxlength :"最多输入1000个字"
+                        },
+                        departmentName : {
+                            required :"部门不能为空",
+                        },
+                        caseImageId :{
+                            required :"图片不能为空"
+                        }
+                    },submitHandler : function(form) {
+                        $("#saveBtn").prop("disabled",true);
+                        page.doAdd();
+                    }
+                });
+            },
+            doAdd : function() {
+                var $root=page.namespace.root;
+                var HtmlMenuOpt = {
+                    endpoint : "/workdynamice/saveWorkDynamice",
+                    data : {
+                        'content' : $root.find('[name="content"]').val(),
+                        'imageId' : $root.find('[name="caseImageId"]').val(),
+                        'departmentId' : $root.find('[name="departmentId"]').val()
+                    },
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure : function(data) {
+                        $("#saveBtn").prop("disabled",false);
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='background-color:#FFFFFF;position:absolute;z-index:999;height:150px; border:1px solid #d2d6de; overflow:auto;margin-top: 30px;margin-left: 2px;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+                page.namespace.root.find('.pds-layer #departmentTree').parent(".con").on('mouseleave', function(){
+                    page.namespace.root.find('#departmentTree').remove();
+                });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+//
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+                    $('.pds-layer #departmentName').val(node[0].text);
+                    $('.pds-layer #departmentId').val(node[0].id);
+
+                    $("#departmentName-error").remove();
+                    $(".pds-layer #departmentName").removeClass();
+                    $(".pds-layer #departmentName").addClass("ipt-txt");
+
+                    $('#departmentTree').remove();
+                });
+            }
+        };
+
+        page.namespace.root.find('[name="fileUploadDiv"]').each(function(i,e){
+
+            var opt={
+                $fsc : $(e),
+                $fc : page.namespace.root.find('#fileUploadDiv'), // form container
+                added : function(data,obj){
+                    obj.opt.$fsc.parent().children('input').val(data.id);
+                    $("#caseImageId-error").remove();
+                },
+                removed : function(data,obj){
+                    obj.opt.$fsc.parent().children('input').val('');
+                },
+                types : ['image/jpeg','image/jpg','image/png']
+            }
+            fileAttach(opt);
+        });
+
+
+        page.init();
+        page.namespace.root.find("#btnSelect").on('click', page.doSelect);
+    });
+</script>

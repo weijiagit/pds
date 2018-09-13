@@ -1,0 +1,98 @@
+<namespace id="task-search-add" ms-controller="task-search-add">
+	<section class="" id="taskSearchSection">
+		<form role="form" id="taskSearchForm"  class="form-horizontal">
+			<div class="task-search-wrap">
+				<ul class="task-search-list clearfix">
+					<li ms-for ="(k,el) in @tableNamesList">
+						<label ms-if="el.isChk=='0'">
+							<input type="checkbox" name="checkbox" ms-attr="{value:el.id}" class="ipt-check">
+							{{el.tableName}}
+						</label>
+						<label ms-if="el.isChk=='1'">
+							<input type="checkbox" name="checkbox"  checked="checked" ms-attr="{value:el.id}" class="ipt-check">
+							{{el.tableName}}
+						</label>
+					</li>
+
+				</ul>
+				<div class="btn-wrap tc">
+					<button type="submit" class="pds-btn btn-save mr15" value="" id="saveBtn">保存</button>
+                	<button type="button" class="pds-btn-border btn-cancel" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</form>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#task-search-add').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "task-search-add",
+                    tableNamesList : {}
+
+                })
+            },
+            init : function() {
+                $('#taskSearchForm').validate({
+                    submitHandler : function(form) {
+                        page.doEdit();
+                    }
+                });
+            },
+            doEdit : function() {
+
+                var selectedList = "";
+                var unSelectedList = "";
+                $("input:checkbox").each(function () {
+                    var val = $(this).val();
+                    if($(this).is(":checked")){
+                        selectedList += val + ",";
+                    }else{
+                        unSelectedList += val + ",";
+					}
+                });
+
+                var HtmlMenuOpt = {
+                    endpoint : "/task/addTableField",
+                    data : {
+                        'selectedList' : selectedList.substr(0,selectedList.length-1),
+                        'unSelectedList' : unSelectedList.substr(0,unSelectedList.length-1)
+                    },
+                    success : function(data) {
+                        $("#saveBtn").prop("disabled",true);
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure:function(data) {
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.getRequest(HtmlMenuOpt);
+            },
+            initTableNames : function () {
+                page.namespace.getRequest({
+                    endpoint : "/task/queryTaskTableFieldName",
+                    success : function(data) {
+                        page.model.vm.tableNamesList=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        page.init();
+        avalon.scan(page.namespace.root[0], page.model.vm);
+        page.initTableNames();
+
+    });
+
+</script>

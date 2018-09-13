@@ -1,0 +1,96 @@
+<namespace id="urlresources-add">
+    <ol class="breadcrumb">
+        <li><a href="#">资源管理</a></li>
+        <li><a href="#">新增</a></li>
+    </ol>
+	<section class="content" id="addURLResourcesSection" ms-controller="urlresources_add">
+        <div class="box box-info">
+		    <form role="form" id="addURLResourcesForm" class="form-horizontal">
+            <div class="row ">
+                <div class="col-sm-12">
+                    <!-- 右对齐的 btn-group -->
+                    <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fa fa-floppy-o"></i> 提交
+                        </button>
+                        <a class="btn btn-sm btn-default" id="btnCancel">
+                            <i class="fa fa-align-justify"> 返回</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+      		<div class="box-body">
+      			<div class="form-group">
+      				<label for="name" class="col-sm-1 input-sm control-label requiredMask">URL名称</label>
+   			 		<div class="col-sm-5">
+   			 			<input name="name" type="text" class="form-control input-sm" placeholder="" >
+   			 		</div>
+      			</div>
+      			<div class="form-group">
+   			 		<label for="url" class="col-sm-1 control-label requiredMask input-sm">URL路径</label>
+   			 		<div class="col-sm-5">
+   			 			<input name="url" type="text" class="form-control input-sm" placeholder="" >
+   			 		</div>
+   			 	</div>
+   			 	<div class="form-group">
+   			 		<label for="description" class="col-sm-1 control-label input-sm">URL描述&nbsp;&nbsp;</label>
+   			 		<div class="col-sm-5">
+   			 			<textarea name="description" rows="3" class="form-control input-sm" placeholder=""></textarea>
+   			 		</div>
+   			 	</div>
+      		</div>
+		</form>
+        </div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#urlresources-add').namespace(),
+			init : function() {
+				$("#addURLResourcesForm").validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 255
+						},
+						'url' : {
+							required : true,
+							maxlength : 255
+						},
+						'description' : {
+							required : false,
+							maxlength : 255
+						}
+					},submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+			},
+			doAdd : function() {
+				var submitSysUserForm = {
+					endpoint : "/urlresources/saveUrlResources",
+					formObj : $("#addURLResourcesForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure:function(data) {
+						alertTool.error(data);
+					}
+				};
+				
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/urlresources/urlresources-list.html");
+			}
+		}
+		
+		page.init();
+		
+		page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+		page.namespace.root.find('#btnSelect').on('click', page.doSelect);
+	});
+</script>

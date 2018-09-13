@@ -1,0 +1,31 @@
+<meta charset="utf-8">
+<namespace id="projectform-select-pop" ms-controller="projectform_select_pop">
+
+
+
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        $(function() {
+            var page = {
+                namespace : $('#sysuser-select-pop').namespace(),
+                model:{
+                    vm:avalon.define({
+                        $id: "sysuser_select_pop",
+                        status: {}
+                    })
+                },
+                doQuery : function() {
+                    page.listTable.ajax.reload();
+                },
+                getStatus : function(){
+                    page.namespace.getCodes(function(data){
+                        page.model.vm.status=data;
+                    },"USER_DISABLED");
+                }
+            }
+
+
+        })
+
+</script>

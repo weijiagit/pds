@@ -1,0 +1,146 @@
+<namespace id="project-menu-assignmodel-add"
+	ms-controller="project-menu-assignmodel-add">
+<ol class="breadcrumb">
+	<li><a href="#">栏目</a></li>
+	<li><a href="#">模板分配</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addCaseMagSection">
+	<div class="box box-info">
+		<form role="form" id="addCaseMagForm" class="form-horizontal">
+			<div class="row ">
+				<div class="col-sm-12">
+					<!-- 右对齐的 btn-group -->
+					<div class="btn-group pull-left"
+						style="margin-top: 20px; margin-left: 28px;">
+	
+						<a class="btn btn-sm btn-default" id="submit"> <i
+							class="fa fa-align-justify"> 提交</i>
+						</a>
+						<a class="btn btn-sm btn-default" id="btnCancel"> <i
+							class="fa fa-align-justify"> 返回</i>
+						</a>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="box-body">
+				<div class="form-group">
+					<label for="name"
+						class="col-sm-1 input-sm control-label requiredMask">栏目名称</label>
+					<div class="col-sm-3">
+						<input name="name" type="text" disabled="false"
+							class="form-control input-sm" ms-attr="{value:@data.name}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="userName"
+						class="col-sm-1 control-label requiredMask input-sm">绑定的模板</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<input name="url" id="url" type="text"
+								class="form-control input-sm" ms-attr="{value:@data.url}" disabled="false">
+							<span class="input-group-btn">
+								<button name="selectUserBtn" id="selectUserBtn" class="btn btn-primary btn-sm"
+									type="button">
+									<i class="fa"></i>选择模板
+								</button>
+							</span>
+						</div>
+						
+						<!-- <input name="userId" type="hidden" readOnly /><span
+							id='userNameSpan'></span> -->
+							
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#project-menu-assignmodel-add').namespace(),
+
+			model : {
+				vm : avalon.define({
+					$id : "project-menu-assignmodel-add",
+					data : []
+				})
+			},
+
+			init : function() {
+				
+				var menuId = page.namespace.getParam("id");
+
+				var HtmlMenuOpt = {
+					endpoint : "/sysmenu/getMenuById",
+					data : {
+						"id" : menuId
+					},
+					success : function(data) {
+						page.model.vm.data = data;
+					}
+				};
+
+				page.namespace.getRequest(HtmlMenuOpt);
+			},
+	
+			doAdd : function() {
+				var $root = page.namespace.root;
+				var HtmlMenuOpt = {
+					endpoint : "/sysmenu/colomnModelAssign",
+					data : {
+						'id' : page.namespace.getParam("id"),
+						'url' : $root.find('#url').val()
+					},
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/columnmodel/column-menu-list.html');
+			}
+		};
+		
+		
+		 page.namespace.root.find('[name="selectUserBtn"]').on('click',function(e){
+			 
+			  var a = $("#url").val();
+			  if($("#url").val()){
+				  alert("已经添加过模板，不允许修改");
+				  return;
+			  } 
+
+		      page.namespace.modal.open(page,
+		          {	id:"selectUserModal",
+		            title:"选择模板",
+		            hidden : function(e,ra){
+		              if(ra&&ra.length>0&&ra[0].records.length>0){
+		                var r=ra[0].records[0];
+		                page.namespace.root.find('#url').val(r.id);
+		              }
+
+		            }
+		          },'/pages/columnmodel/columnmodel-select-pop.html',{id : '090909' , name : 'passwordAgain' });
+
+
+		    });
+		 
+		 
+		avalon.scan(page.namespace.root[0], page.model.vm); // void braces
+		page.init();
+		page.namespace.root.find("#submit").on('click',page.doAdd);
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+	});
+</script>

@@ -1,0 +1,150 @@
+<namespace id="sysrole-menu">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">分配菜单</span>
+        </div>
+        <section class="content">
+            <div class="">
+                <div class="pds-pro-item clearfix">
+                    <div class="fl clearfix">
+						<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">提交</a>
+						<a href="javascript:;" class="pds-btn fl" id="cancel" func="task-add">返回</a>
+                    </div>
+                </div>
+                <div class="basic-pro-wrap">
+                    <div class="pro-table">
+                         <div id="menuTree"></div>
+                    </div>
+                </div>
+			</div>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysrole-menu').namespace(),
+			init : function() {
+				var roleId = page.namespace.getParam("id");
+				var HtmlMenuOpt = {
+					endpoint : "/sysrole/getAssignRoleMenu",
+				  	data : {"roleId" : roleId},
+				  	success : function(data) {
+				  		page.initTree(data);
+				  	}		
+				};
+				
+				page.namespace.getRequest(HtmlMenuOpt);
+			},
+			initTree : function(selectNodes) {
+				var labelTree = $('#menuTree').jstree({
+					core : {
+						"animation" : 0,
+						"check_callback" : true,
+						"themes" : {
+							"stripes" : true,
+							"responsive" : false
+						},
+						data : function(obj, callback) {
+							var opt = {};
+							opt = {
+								success : function(msg) {
+									callback.call(this, msg);
+								},
+								data : {},
+								endpoint : "/sysmenu/loadMenuTree"
+							};
+							
+							page.namespace.getRequest(opt);
+						}
+					},
+					"types" : {
+						"default" : {
+							"draggable" : false,
+							"icon" : "fa fa-folder icon-state-warning icon-lg"
+						}
+					},
+					"plugins" : [ "types", "wholerow", "dnd", "checkbox" ]
+				}).on("load_node.jstree", function() {
+					$('#menuTree').jstree("open_all");
+					
+					var arr = [];
+					$.each(selectNodes, function(i, node) {
+						if(node.checkState == "SELECTED") {
+							arr.push(node.menuId);
+						} 
+					});
+					
+					$('#menuTree').jstree(true).check_node(arr);
+				});
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sys/role/sysrole-list.html');
+			},
+			doAdd : function() {
+				var $jstree = $('#menuTree').jstree(true);
+				var selected = $jstree.get_checked(true);
+				
+				var hash_select = {};
+				var selectNode = [];
+				var hash = {};
+				var superNode = [];
+				
+				// 
+				$.each(selected, function(j, node) {
+					selectNode.push(node.id);
+					hash_select[node.id] = true;
+					
+					for(var i = 0; i < node.parents.length; i++) {
+						// jstreed的根节点ID为#
+						if(node.parents[i] != '#') {
+							if(!hash[node.parents[i]] && !hash_select[node.parents[i]]) {
+								hash[node.parents[i]] = true;
+								superNode.push(node.parents[i]);
+							}
+						}
+					}
+				});
+				
+				// 遍历完成后,superNode 为半选状态节点, selected为选中节点
+				var selectedIds = selectNode.join(",");
+				var undeterminedIds = superNode.join(",");
+				
+				var roleId = page.namespace.getParam("id");;
+				
+				var HtmlMenuOpt = {
+					endpoint : "/sysrole/assignMenu",
+				  	data : {"roleId" : roleId, "selected" : selectedIds, "undetermined" : undeterminedIds},
+				  	success : function(data) {
+						page.doCancel();
+				  		alertTool.success("操作成功");
+						  
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			}
+		};
+		
+		page.init();
+		
+		page.namespace.root.find('#cancel').on('click', page.doCancel);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

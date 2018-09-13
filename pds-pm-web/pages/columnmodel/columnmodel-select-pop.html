@@ -1,0 +1,145 @@
+<meta charset="utf-8">
+<namespace id="sysuser-select-pop" ms-controller="sysuser_select_pop">
+	<section class="content" id="searchSysUserSection" >
+		<div class="box box-info">
+			<form class="form-horizontal" id="searchFormModelForm">
+				<div class="box-body">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="btn-group">
+								<a class="btn btn-success btn-sm" id="addBtn" func="formmodel-add"> <span class="glyphicon glyphicon-plus"></span> 添加
+								</a>
+								<!-- <button class="btn btn-danger btn-sm" type="button" id="deleteBtn" func="formmodel-delete">
+									<span class="glyphicon glyphicon-minus"></span> 删除
+								</button> -->
+							</div>
+						</div>
+
+						<div class="col-sm-9">
+							<div class="input-group">
+								<span class="input-group-addon">标题</span> <input type="text" name="modelName" class="form-control input-sm" id="modelName" placeholder="模板名称"> <span
+									class="input-group-btn">
+									<button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+										<i class="fa fa-search"></i> 查询
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-body" id="formmodelList" style="margin-top: -10px;">
+				<table id="formmodelListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>ID</th>
+							<th>模板名称</th>
+							<th>模板编码</th>
+							<th>更新时间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysuser-select-pop').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysuser_select_pop",
+			        status: {}
+			    })
+			},
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			getStatus : function(){
+				page.namespace.getCodes(function(data){
+					page.model.vm.status=data;
+				},"USER_DISABLED");
+			}
+		}
+
+		page.listTable = $('#formmodelListTable').initDataTable({
+			url : "/formModel/page",
+			urlDataFn : function() {
+				return $("#searchFormModelForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "id",
+				"width" : "10%"
+			}, 
+			{
+				"data" : "modelName",
+				"width" : "15%"
+			}, 
+			{
+				"data" : "modelCode",
+				"width" : "15%"
+			}, 
+			{
+				"data" : "modifyDateFormat",
+				"width" : "15%"
+			} ]
+		});
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.getStatus() ;
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+
+		//register parent
+		page.namespace.modal.registerParent(page);
+
+		page.namespace.root.find("#addBtn").on('click',function(e){
+			
+			var selectRows = page.namespace.root.find('#formmodelListTable').getSelectedRow();
+
+			if(selectRows.length == 0) {
+				alertTool.warning("没有选择任何模板?");
+				return;
+			}
+			
+			if(selectRows.length > 1) {
+				alertTool.warning("只能选择一个模板");
+				return;
+			}
+			
+			page.namespace.modal.close(page,{
+				returnFn : function(){
+					var selectRows = page.namespace.root.find('#formmodelListTable').getSelectedRow();
+					var selectRowData = page.namespace.root.find('#formmodelListTable').getAllClickedRowData();
+					return {
+						'ids' : selectRows,
+						'records' : selectRowData
+					};
+					
+				}
+			});
+
+		})
+
+
+
+	});
+</script>

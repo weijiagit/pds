@@ -1,0 +1,95 @@
+.backdrop{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    opacity: .9;
+    z-index: 10000;
+}
+
+.loading_backDrop{
+    background-color: #1d2433;
+}
+
+.overflow-hidden{
+    overflow: hidden;
+}
+
+.loading-font{
+    font-size: 20px;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    width: 88px;
+    margin-top: -230px;
+}
+
+.loadingImg{
+    margin: 30px auto;
+    position: relative;
+}
+
+.imgContainer{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 10020;
+}
+
+.imgContainerBody{
+    margin: 30px auto;
+    position: relative;
+}
+
+@media (min-width:768px) {
+    .imgContainerBody{
+        width: 600px;
+    }
+}
+
+@media (min-width: 992px) {
+    .imgContainerBody {
+        width: 800px;
+    }
+}
+@media (min-width: 1200px) {
+    .imgContainerBody {
+        width: 1000px;
+    }
+}
+
+.imgContainerBody img{
+    width: 100%;
+    height: 100%;
+}
+
+.imgContainerBody .imgMagnify_clsBtn{
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: white;
+    background-color: black;
+    padding: 5px;
+    -moz-border-radius: 100%;
+    -webkit-border-radius: 100%;
+    border-radius: 100%;
+    cursor:default;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    font-weight: bold;
+    font-size: 25px;
+    text-align: center;
+}
+
+.imgCut{
+    width: 128px;
+    height: 128px;
+    background-position: 50% 50%;
+}

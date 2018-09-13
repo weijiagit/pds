@@ -1,0 +1,661 @@
+<namespace id="project-list">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">基础项目库</span>
+		</div>
+		<section class="content" id="searchProjectSection" ms-controller="project_list">
+			<div class="">
+				<!-- form start -->
+				<form class="form-horizontal" id="searchProjectForm">
+					<div class="form-group pds-group-radio">
+						<label for="importentProjectIds" class="filed-label">是否重点项目</label>
+						<div  class="filter-item clearfix">
+							<div id="importentProjectIdsSpan"></div>
+							<input id="importentProjectIds" name="importentProjectIds"  value=""  type="hidden"  readOnly    />
+						</div>
+					</div>
+					<div class="form-group pds-group-radio">
+						<label for="implementScheduleIds" class="filed-label">实施进度</label>
+						<div  class="filter-item clearfix">
+							<div id="implementScheduleIdsSpan"></div>
+							<input id="implementScheduleIds" name="implementScheduleIds"  value=""  type="hidden"  readOnly    />
+						</div>
+					</div>
+					<div class="form-group pds-group-radio">
+						<label for="industryClassificationIds" class="filed-label">行业分类</label>
+						<div  class="filter-item clearfix">
+							<div id="industryClassificationIdsSpan"></div>
+							<input id="industryClassificationIds" name="industryClassificationIds"  value=""  type="hidden"  readOnly    />
+						</div>
+					</div>
+					<div class="form-group pds-group-radio">
+						<label for="projectFillStatusIds" class="filed-label">项目填写进度</label>
+						<div  class="filter-item clearfix">
+							<div id="projectFillStatusIdsSpan"></div>
+							<input id="projectFillStatusIds" name="projectFillStatusIds"  value=""  type="hidden"  readOnly    />
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">项目名称</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								<input type="text" name="projectName" id="projectName" placeholder="请填写所需要查询的项目名称" class="ipt-txt"></input>
+								<!-- <a href="javascript:;" class="btn-search" id="queryBtn"></a> -->
+							</div>
+						</div>
+					</div>
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl mr20" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl" id="reset">重置</a>
+                        </div>
+                        <!-- <div class="btn-wrap clearfix">
+                            <a href="javascript:;" class="pds-btn fl ml20" id="addBtn">新增</a>
+                            <a href="javascript:;" class="pds-btn fl ml20" id="batchUpdateBtn">批量修改</a>
+                            <a href="javascript:;" class="pds-btn fl ml20" id="export">导出</a>
+                        </div> -->
+                    </div>
+					<div class="pds-pro-item clearfix">
+						<!-- <div class="fl clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl" id="reset">重置</a>
+                        </div> -->
+						<div class="btn-wrap clearfix" style="float:left;">
+							<a href="javascript:;" class="pds-btn fl pds-add" id="addBtn">新增</a>
+							<a href="javascript:;" class="pds-btn fl ml20 pds-edit" id="batchUpdateBtn">批量修改</a>
+							<a href="javascript:;" class="pds-btn fl ml20 pds-export" id="exportBtn">导出</a>
+						</div>
+					</div>
+
+					<!-- 招商前期项目 -->
+					<div class="invest-pro-wrap mb10">
+						<div class="pro-head clearfix">
+							<div class="label" id="attractProjectBtn">招商前期项目</div>
+
+						</div>
+						<div class="pro-table" id="attractProjectList"  style="display:none">
+							<table class="table table-striped pds-index-works-tab" style="border-left: 1px solid #e8eaf1;">
+								<thead>
+								<tr>
+									<th style="width:5%">序号</th>
+									<th style="width:10%">拟项目名称</th>
+									<th style="width:10%">项目简介</th>
+									<th style="width:10%">征地</th>
+									<th style="width:10%">占地面积</th>
+									<th style="width:10%">总投资(元)</th>
+									<th style="width:10%">投资单位</th>
+									<th style="width:12%">操作</th>
+								</tr>
+								</thead>
+								<tr ms-if="@attract_project_list.length >= 1" class="" role="row" ms-for="(k,el) in @attract_project_list">
+									<td>{{el.sequence}}</td>
+									<td>{{el.projectName}}</td>
+									<td>{{el.projectDescribe}}</td>
+									<td>{{el.landAcquisition}}</td>
+									<td>{{el.floorSpace}}</td>
+									<td>{{el.totalInvestment}}</td>
+									<td>{{el.investmentCompany}}</td>
+									<td>
+										<a style="margin-right: 15px;"  ms-click="@toAttractProjectSummary(el)" class="col-blue" name="view" ms-attr="{id:'view_'+k}">
+											详情
+										</a>
+										<!--<a ms-attr="{style:el.backFlag==1?'display:none':'display:true;margin-right: 15px;'}" ms-click="@toAttractProjectBack(el)" class="col-blue">-->
+											<!--退回-->
+										<!--</a>-->
+										<a ms-if="el.backFlag == '0'" style="margin-right: 15px;" class="col-blue" ms-click="@toAttractProjectBack(el)" name="back" ms-attr="{id:'back_'+k}">
+										退回
+										</a>
+										<span ms-if="el.backFlag == '1'" style="margin-right: 15px;" class="col-blue" name="backed" ms-attr="{id:'backed_'+k}">
+										已退回
+										</span>
+										<a ms-click="@toAttractProjectDelete(el)" class="col-red" name="del" ms-attr="{id:'del'+k}">
+											删除
+										</a>
+									</td>
+								</tr>
+								<tr ms-if="@attract_project_list.length == 0" class="" role="row">
+									<td colspan="8" style="text-align:center">无查询结果</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<!-- 基础项目 -->
+					<div class="basic-pro-wrap">
+						<div class="pro-head clearfix">
+							<div class="label" id="baseProjectBtn">基础项目</div>
+						</div>
+						<div class="pro-table" id="projectList">
+							<table id="projectsListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+								<tr>
+									<th></th>
+									<th>序号</th>
+									<th>项目代码</th>
+									<th>项目名称</th>
+									<th>行业分类</th>
+									<th>实施进度</th>
+									<th>项目创建时间</th>
+									<th>项目流程显示</th>
+									<th>操作</th>
+								</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</section>
+
+	</div>
+
+
+</namespace>
+
+<script type="text/javascript">
+	var viewFlag = false;
+	var editFlag = false;
+	var delFlag = false;
+	var projectFlowFlag = false;
+
+    $(function() {
+        var page = {
+            namespace : $('#project-list').namespace(),
+
+            model: {
+                vm: avalon.define({
+                    $id: "project_list",
+                    attract_project_list: {},
+                    toAttractProjectSummary:function (el) {
+                        var id = el.id;
+                        page.namespace.skiphtml("/pages/pds/project/attract-project-view.html?id=" + id);
+                    },
+                    toAttractProjectBack:function (el) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/project/backAttractProject",
+                            data : {
+                                'id' : el.id
+                            },
+                            success : function(data) {
+                                page.model.vm.attract_project_list={};
+                                page.model.vm.attract_project_list=data;
+                                page.doAttractProjectShowAuthority();
+                            }
+                        };
+
+                        var jc = $.confirm({
+                            title : false,
+                            content : '确定退回？',
+                            confirm : function() {
+                                page.namespace.getRequest(HtmlMenuOpt);
+                            },
+                            cancel : function() {
+                            },
+                            confirmButton : '确定',
+                            cancelButton : '取消',
+                            onOpen : function() {
+                            }
+                        });
+                    },
+                    toAttractProjectDelete:function (el) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/project/deleteAttractProject",
+                            data : {
+                                'id' : el.id
+                            },
+                            success : function(data) {
+                                page.model.vm.attract_project_list={};
+                                page.model.vm.attract_project_list=data;
+                                page.doAttractProjectShowAuthority();
+                            }
+                        };
+                        page.namespace.confirm(function(){
+                            page.namespace.getRequest(HtmlMenuOpt);
+                        });
+                    }
+                })
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                page.namespace.root.find('#importentProjectIds').val('');
+                page.namespace.root.find('#implementScheduleIds').val('');
+                page.namespace.root.find('#industryClassificationIds').val('');
+                page.namespace.root.find('#projectFillStatusIds').val('');
+                $(".form-group .filter-item").find("span.all").addClass('active').siblings('.list').removeClass('active');
+                $('#searchProjectForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+            doAdd : function() {
+                page.namespace.skiphtml("/pages/pds/project/project-add.html");
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/pds/project/project-view.html?id=" + id);
+            },
+            doEdit : function(id) {
+                page.namespace.skiphtml("/pages/pds/project/project-edit.html?id=" + id);
+            },
+            doUpdate : function(ids) {
+                page.namespace.skiphtml("/pages/pds/project/project-choise-column.html?ids=" + ids);
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/project/deleteProjectById",
+                    data : {
+                        'id' : id
+                    },
+                    success : function() {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.getRequest(HtmlMenuOpt);
+            },
+            doExport: function () {
+                var HtmlMenuOpt = {
+                    endpoint : "/project/validExportExcel",
+                    data : {
+                        'projectName' : $("#projectName").val(),
+                        'importentProjectIds':$("#importentProjectIds").val(),
+                        'implementScheduleIds':$("#implementScheduleIds").val(),
+                        'industryClassificationIds':$("#industryClassificationIds").val(),
+                        'projectFillStatusIds':$("#projectFillStatusIds").val()
+                    },
+                    success : function(data) {
+                        if(data){
+                            var form = $("<form>");
+                            form.attr('style', 'display:none');
+                            form.attr('target', '');
+                            form.attr('method', 'post');
+                            form.attr('action', '/api/project/projectExportExcel');
+                            // 查询条件
+                            var projectName = $('<input>');
+                            projectName.attr('type', 'hidden');
+                            projectName.attr('name', 'projectName');
+                            projectName.attr('value', $("#projectName").val());
+
+                            var importentProjectIds = $('<input>');
+                            importentProjectIds.attr('type', 'hidden');
+                            importentProjectIds.attr('name', 'importentProjectIds');
+                            importentProjectIds.attr('value', $("#importentProjectIds").val());
+
+                            var implementScheduleIds = $('<input>');
+                            implementScheduleIds.attr('type', 'hidden');
+                            implementScheduleIds.attr('name', 'implementScheduleIds');
+                            implementScheduleIds.attr('value', $("#implementScheduleIds").val());
+
+                            var industryClassificationIds = $('<input>');
+                            industryClassificationIds.attr('type', 'hidden');
+                            industryClassificationIds.attr('name', 'industryClassificationIds');
+                            industryClassificationIds.attr('value', $("#industryClassificationIds").val());
+
+                            var projectFillStatusIds = $('<input>');
+                            projectFillStatusIds.attr('type', 'hidden');
+                            projectFillStatusIds.attr('name', 'projectFillStatusIds');
+                            projectFillStatusIds.attr('value', $("#projectFillStatusIds").val());
+
+                            $('body').append(form);
+                            form.append(projectName);
+                            form.append(importentProjectIds);
+                            form.append(implementScheduleIds);
+                            form.append(industryClassificationIds);
+                            form.append(projectFillStatusIds);
+                            form.submit();
+                        }
+                    },error :function (data) {
+                        alertTool.error(data.message);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doBatchUpdate : function() {
+                var selectRows = $('#projectsListTable').getSelectedRow();
+
+                if (selectRows.length == 0) {
+                    alertTool.warning("请选择要批量修改的记录!");
+                    return;
+                }
+                var ids = selectRows.join(",");
+
+                var HtmlMenuOpt = {
+                    endpoint : "/project/checkDraftProject",
+                    data : {
+						ids :ids
+                    },
+                    success : function(data) {
+                        if(data.length > 0){
+                            alertTool.warning("请不要选择草稿状态的的项目!");
+						}else{
+                            var jc = $.confirm({
+                                title : false,
+                                content : '确定批量修改？',
+                                confirm : function() {
+                                    page.doUpdate(ids);
+                                },
+                                cancel : function() {
+                                },
+                                confirmButton : '确定',
+                                cancelButton : '取消',
+                                onOpen : function() {
+                                }
+                            });
+						}
+
+                    },error :function (data) {
+                        alertTool.error(data.message);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+
+            },
+            doAttractProjectShow : function() {
+                page.namespace.root.find('#attractProjectList').show();
+                var HtmlMenuOpt = {
+                    endpoint : "/project/getAttractProjectsPage",
+                    success : function(data) {
+                        page.model.vm.attract_project_list = {};
+                        page.model.vm.attract_project_list = data;
+                        page.doAttractProjectShowAuthority();
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.getRequest(HtmlMenuOpt);
+            },
+			doAttractProjectShowAuthority : function(){
+                var businessView = sessionStorage.getItem("business-view");
+                page.namespace.root.find('[name="view"]').each(function (i,obj) {
+                    var id = obj.id;
+                    if(businessView != null){
+                        $("#"+id).show();
+                    }else{
+                        $("#"+id).hide();
+                    }
+                });
+
+                var businessBack = sessionStorage.getItem("business-back");
+                page.namespace.root.find('[name="back"]').each(function (i,obj) {
+                    var id = obj.id;
+                    if(businessBack != null){
+                        $("#"+id).show();
+                    }else{
+                        $("#"+id).hide();
+                    }
+                });
+
+                page.namespace.root.find('[name="backed"]').each(function (i,obj) {
+                    var id = obj.id;
+                    if(businessBack != null){
+                        $("#"+id).show();
+                    }else{
+                        $("#"+id).hide();
+                    }
+                });
+
+                var businessDel = sessionStorage.getItem("business-delete");
+                page.namespace.root.find('[name="del"]').each(function (i,obj) {
+                    var id = obj.id;
+                    if(businessDel != null){
+                        $("#"+id).show();
+                    }else{
+                        $("#"+id).hide();
+                    }
+                });
+			},
+            init : function() {
+                var projectAdd = sessionStorage.getItem("project-add");
+                if(projectAdd != null){
+                    $("#addBtn").show();
+                }else{
+                    $("#addBtn").hide();
+                }
+
+                var projectListAdd = sessionStorage.getItem("project-list-add");
+                if(projectListAdd != null){
+                    $("#batchUpdateBtn").show();
+                }else{
+                    $("#batchUpdateBtn").hide();
+                }
+
+                var projectExport = sessionStorage.getItem("project-export");
+                if(projectExport != null){
+                    $("#exportBtn").show();
+                }else{
+                    $("#exportBtn").hide();
+                }
+
+                var projectView = sessionStorage.getItem("project-view");
+                if(projectView != null){
+                    viewFlag = true;
+                }else{
+                    viewFlag = false;
+                }
+
+                var projectEdit = sessionStorage.getItem("project-edit");
+                if(projectEdit != null){
+                    editFlag = true;
+                }else{
+                    editFlag = false;
+                }
+
+                var projectDelete = sessionStorage.getItem("project-delete");
+                if(projectDelete != null){
+                    delFlag = true;
+                }else{
+                    delFlag = false;
+                }
+
+                var projectProcess = sessionStorage.getItem("project-process");
+                if(projectProcess != null){
+                    projectFlowFlag = true;
+                }else{
+                    projectFlowFlag = false;
+                }
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getCheckBoxByPageCode",
+                    data : {'code':'IMPORTENT_PROJECT'},
+                    page : 1,
+                    size : 1000000,
+                    success : function(data) {
+                        if(data.data.length>0){
+                            var str = '<span class="list all active" value="">'+'全部'+'</span>';
+                            for(var i =0;i<data.data.length;i++){
+                                var d=data.data[i];
+                                str = str + '<span class="list" name="importentProjectId" value="'+d.value+' ">'+ d.name + '</span>';
+                            }
+                            var $importentProjectIdsSpan=page.namespace.root.find('#importentProjectIdsSpan');
+                            $importentProjectIdsSpan.html(str);
+                        }
+
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getCheckBoxByPageCode",
+                    data : {'code':'IMPLEMENT_SCHEDULE'},
+                    page : 1,
+                    size : 1000000,
+                    success : function(data) {
+                        if(data.data.length>0){
+                            var str = '<span class="list all active" value="">'+'全部'+'</span>';
+                            for(var i =0;i<data.data.length;i++){
+                                var d=data.data[i];
+                                str = str + '<span class="list" name="implementScheduleId" value="'+d.value+' ">'+ d.name + '</span>';
+                            }
+                            var $implementScheduleIdsSpan=page.namespace.root.find('#implementScheduleIdsSpan');
+                            $implementScheduleIdsSpan.html(str);
+                        }
+
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getCheckBoxByPageCode",
+                    data : {'code':'INDUSTRY_CLASSIFICATION'},
+                    page : 1,
+                    size : 1000000,
+                    success : function(data) {
+                        if(data.data.length>0){
+                            var str = '<span class="list all active" value="">'+'全部'+'</span>';
+                            for(var i =0;i<data.data.length;i++){
+                                var d=data.data[i];
+                                str = str + '<span class="list" name="industryClassificationId" value="'+d.value+' ">'+ d.name + '</span>';
+                            }
+                            var $industryClassificationIdsSpan=page.namespace.root.find('#industryClassificationIdsSpan');
+                            $industryClassificationIdsSpan.html(str);
+                        }
+
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+
+                page.namespace.getRequest({
+                    endpoint : "/project/getCheckBoxByPageCode",
+                    data : {'code':'PROJECTFILL_STATUS'},
+                    page : 1,
+                    size : 1000000,
+                    success : function(data) {
+                        if(data.data.length>0){
+                            var str = '<span class="list all active" value="">'+'全部'+'</span>';
+                            for(var i =0;i<data.data.length;i++){
+                                var d=data.data[i];
+                                str = str + '<span class="list" name="projectFillStatusId" value="'+d.value+' ">'+ d.name + '</span>';
+                            }
+                            var $projectFillStatusIdsSpan=page.namespace.root.find('#projectFillStatusIdsSpan');
+                            $projectFillStatusIdsSpan.html(str);
+                        }
+
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+
+
+        page.listTable = $('#projectsListTable').initDataTable({
+
+            url : "/project/getProjectsPage",
+            urlDataFn : function() {
+                return $("#searchProjectForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : true,
+            index : true,
+			viewFlag:viewFlag,
+            editFlag:editFlag,
+            delFlag:delFlag,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                },
+                edit : function(id, rowData) {
+                    page.doEdit(id);
+                }
+            },
+            columns : [ {
+                "data" : "projectNumber",
+                "width" : "5%"
+            }, {
+                "data" : "projectName",
+                "width" : "5%"
+            }, {
+                "data" : "industryClassificationStr",
+                "width" : "5%",
+                "class" : "content-center"
+            }, {
+                "data" : "implementScheduleStr",
+                "width" : "5%",
+                "class" : "content-center"
+            }, {
+                "data" : "actualBeginDateStr",
+                "width" : "5%",
+                "class" : "content-center"
+            }, {"data" : null,
+                "width" : "5%",
+                "class" : "content-center",
+                "render" : function(data) {
+                    var id = data.id;
+                    if(data.projectFillStatus == '1'){
+                        if(projectFlowFlag){
+                            return "<a class=\"btn btn-success btn-xs\" onclick=\"toProjectSummary('"+id+"');\">项目流程</a>";
+                        }else{
+                            return "<span class=\"btn-draft\" style=\"cursor:default;\">项目流程</span>";
+                        }
+                    }else{
+                        return "<span class=\"btn-draft\" style=\"cursor:default;\">草稿</span>";
+					}
+                }}
+                ]
+        });
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#batchUpdateBtn').on('click', page.doBatchUpdate);
+        page.namespace.root.find("#attractProjectBtn").on('click',page.doAttractProjectShow);
+        page.namespace.root.find('#exportBtn').on('click', page.doExport);
+    });
+
+    function toProjectSummary(id) {
+        page.namespace.skiphtml("/pages/pds/project/project-flow-list.html?id=" + id);
+    }
+
+    $(".pds-group-radio .filter-item").on("click","span.list",function(el){
+        if($(this).hasClass("all")){
+            $(this).siblings('.list').removeClass('active');
+            $(this).addClass("active");
+        }else{
+            $(this).siblings('.all').removeClass("active");
+            if($(this).hasClass("active")){
+                $(this).removeClass("active");
+            }else{
+                $(this).addClass("active");
+            }
+        }
+        setAgentTechCode(this);
+    })
+
+    function setAgentTechCode(event) {
+        var temparr = [];
+        var tempstr = '';
+        $(event).parents(".filter-item").find(".list").each(function(index, el) {
+            if($(el).hasClass('active')){
+                temparr.push($(el).attr("value"));
+            }
+        });
+        tempstr = temparr.join(",");
+        console.log(tempstr);
+        $(event).parents(".filter-item").find("input[type='hidden']").val(tempstr);
+    }
+
+
+    $("#attractProjectBtn").on("click",function(){
+        if($(this).hasClass("active")){
+            $(this).removeClass("active");
+            $(this).parent(".pro-head").siblings(".pro-table").hide();
+        }else{
+            $(this).addClass("active");
+            $(this).parent(".pro-head").siblings(".pro-table").show();
+        }
+    })
+
+</script>

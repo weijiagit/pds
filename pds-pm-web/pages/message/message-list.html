@@ -1,0 +1,112 @@
+<div id="casemag-list">
+    <ol class="breadcrumb">
+        <li><a href="#">案例</a></li>
+        <li><a href="#">列表</a></li>
+    </ol>
+    <section class="content" id="searchCaseMagSection" ms-controller="casemag_view">
+
+        <div class="box box-info">
+            <!-- form start -->
+            <form class="form-horizontal" id="searchCaseMagForm">
+                <div class="box-body">
+                    <div class="row">
+
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">是否发送</span>
+
+                                <select name="hasSend" class="form-control input-sm select2" >
+                                    <option selected="selected" value="true">已发送</option>
+                                    <option  value="false">未发送</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">业务类型</span>
+
+                                <select name="serveType" class="form-control input-sm select2" >
+                                    <option selected="selected" value="">请选择</option>
+                                    <option  value="saveParty">用户注册</option>
+                                    <option value="getPassWord">找回密码</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">标题</span> <input type="text" name="desc" class="form-control input-sm" id="phoneNum" placeholder="手机号"> <span
+                                    class="input-group-btn">
+									<button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+										<i class="fa fa-search"></i> 查询
+									</button>
+								</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="box box-info" style="border-top: 0px;">
+            <div class="box-body" id="casemagList" style="margin-top: -10px;">
+                <table id="casemagListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>手机号</th>
+                        <th>验证码</th>
+                        <th>业务类型</th>
+                        <th>数据来源</th>
+                        <th>有效时间</th>
+                        <th>操作结果</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#casemag-list').namespace(),
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+        };
+
+        page.listTable = $('#casemagListTable').initDataTable({
+            url : "/message/getMessagePages",
+            urlDataFn : function() {
+                return $("#searchCaseMagForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : true,
+            columns : [ {
+                "data" : "phoneNum",
+                "width" : "10%"
+            }, {
+                "data" : "code",
+                "width" : "15%"
+            }, {
+                "data" : "serveType",
+                "width" : "15%"
+            }, {
+                "data" : "formSource",
+                "width" : "15%"
+            }, {
+                "data" : "expireDateForMat",
+                "width" : "15%"
+            }, {
+                "data" : "sendResult",
+                "width" : "15%"
+            }  ]
+        });
+
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+
+        page.namespace.root.find('#refreshCacheBtn').on('click', page.doRefreshCache);
+    });
+</script>

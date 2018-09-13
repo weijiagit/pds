@@ -1,0 +1,150 @@
+<meta charset="utf-8">
+<namespace id="sysuser-select-pop" ms-controller="sysuser_select_pop">
+	<section class="content" id="searchSysUserSection" >
+		<div class="box box-info">
+			<form class="form-horizontal" id="searchSysUserForm">
+				<div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-3 ">
+                            <div class="input-group">
+                                <span class="input-group-addon">名称</span>
+                                <input type="text" name="name" id="name" class="form-control input-sm" placeholder="用户名称">
+                            </div>
+                        </div>
+                        <div class="col-sm-3 ">
+                            <div class="input-group">
+                                <span class="input-group-addon">账号</span>
+                                <input type="text" name="userAccount" id="code" class="form-control input-sm" placeholder="用户账号">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">描述</span>
+                                <input type="text" name="description" class="form-control input-sm" placeholder="用户描述">
+                            </div>
+                        </div>
+                        <div class="col-sm-3 pull-right">
+                            <div class="input-group">
+                                <span class="input-group-addon">状态</span>
+                                <select name="disabled" class="form-control input-sm select2" >
+                                    <option selected="selected" value="">请选择</option>
+                                    <option ms-for="el in @status" ms-attr="{value:el.value}" ms-text="el.name"></option>
+                                </select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+				</div>
+			</form>
+		</div>
+		<div class="box box-info" style="border-top: 0px;">
+			<div class="box-header with-border">
+                <div class="btn-group">
+                    <a class="btn btn-success btn-sm" id="addBtn" func="sysuser-select-pop-add">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        添加
+                    </a>
+                </div>
+			</div>
+			<div class="box-body " id="sysuserList" style="margin-top: -15px;">
+				<table id="sysuserListTable"
+					class="table dataTable row-border cell-border" cellspacing="0"
+					width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>用户账号</th>
+							<th>用户名称</th>
+							<th>用户描述</th>
+							<th>是否启用</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysuser-select-pop').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysuser_select_pop",
+			        status: {}
+			    })
+			},
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			getStatus : function(){
+				page.namespace.getCodes(function(data){
+					page.model.vm.status=data;
+				},"USER_DISABLED");
+			}
+		}
+
+		page.listTable = $('#sysuserListTable').initDataTable({
+			url : "/sysuser/getSysUserPage",
+			urlDataFn : function() {
+				return $("#searchSysUserForm").serializeJson();
+			},
+			checkbox : true,
+			paging:true,
+			columns : [ {
+				"data" : "userAccount",
+				"orderable" : false,
+				"width" : "15%"
+			}, {
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "description",
+				"width" : "15%"
+			}, {
+				"data" : "disabled",
+				"width" : "10%",
+				"render" : function(data, type, row, meta) {
+					return data == 1 ? '<label class="label label-success">是</label>' :'<label class="label label-danger">否</label>';
+				}
+			} ]
+		});
+
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.getStatus() ;
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+
+		//register parent
+		page.namespace.modal.registerParent(page);
+
+		page.namespace.root.find("#addBtn").on('click',function(e){
+			var selectRows = page.namespace.root.find('#sysuserListTable').getSelectedRow();
+
+			if(selectRows.length == 0) {
+				alertTool.warning("没有选择任何用户?");
+			}
+			page.namespace.modal.close(page,{
+				returnFn : function(){
+					var selectRows = page.namespace.root.find('#sysuserListTable').getSelectedRow();
+					var selectRowData = page.namespace.root.find('#sysuserListTable').getAllClickedRowData();
+					return {
+						'ids' : selectRows,
+						'records' : selectRowData
+					};
+					
+				}
+			});
+
+
+		})
+
+
+
+	});
+</script>

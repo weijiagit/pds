@@ -1,0 +1,69 @@
+<namespace id="element-view">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">查看元素明细</span>
+		</div>
+		<section class="content" id="viewElementSection" ms-controller="element_view">
+			<form role="form" id="viewElementForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm">元素名称：</label>
+					<div class="col-sm-4">
+						<span id="name" class="form-control label-form-control input-sm">{{@data.name}}</span>
+					</div>
+					<label for="funcId" class="col-sm-2 control-label requiredMask input-sm">元素标识：</label>
+					<div class="col-sm-4">
+						<span id="funcId"  class="form-control label-form-control input-sm">{{@data.funcId}}</span>
+					</div>
+				</div>
+                <div class="form-group">
+					<label for="menuName" class="col-sm-2 control-label requiredMask input-sm">所属菜单：</label>
+					<div class="col-sm-4">
+						<span id="menuName" class="form-control label-form-control input-sm">{{@data.menuName}}</span>
+					</div>
+					<label for="description" class="col-sm-2 control-label requiredMask input-sm">元素描述：</label>
+					<div class="col-sm-4">
+						<span id="description"  class="form-control label-form-control input-sm">{{@data.description}}</span>
+					</div>
+				</div>     
+				<div class="btn-wrap">
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				<input type="hidden" name="id"   ms-attr="{value:@data.id}" style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#element-view').namespace(),
+			model : {
+				vm : avalon.define({
+				    $id : "element_view",
+					data : {}
+				})
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/element/element-list.html");
+			},
+			initView : function () {
+				page.namespace.getRequest({
+				    endpoint : "/element/getElementById",
+					data : {id : page.namespace.getParam("id")},
+					success : function (data) {
+						page.model.vm.data = data;
+                    },
+					failure : function (data) {
+						alertTool.error(data);
+                    }
+				})
+            }
+		}
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);
+		page.initView();
+	});
+</script>

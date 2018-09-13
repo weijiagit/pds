@@ -1,0 +1,96 @@
+<namespace id="department_edit">
+    <div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">修改部门</span>
+		</div>
+		<section class="content" id="editDepartmentSection" ms-controller="department_edit">
+			<form role="form" id="editDepartmentForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>菜单名称：</label>
+					<div class="col-sm-4">
+						<input name="name" id="name" type="text" class="form-control input-sm"
+                                   placeholder="" ms-attr="{value:@department.name}">
+					</div>
+				</div>
+				
+                        
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >提交</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">返回</a>
+				</div>
+				 <input type="hidden" name="id" ms-attr="{value:@department.id}"
+                       style="width: 100%" />
+			</form>
+		</section>
+	</div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#department_edit').namespace(),
+            model : {
+                vm : avalon.define({
+                    $id : "department_edit",
+                    department : {},
+                    defaults : []
+                })
+            },
+            init : function() {
+                $("#editDepartmentForm").validate({
+                    rules : {
+                        'name' : {
+                            required : true,
+                            maxlength : 255
+                        }
+                    },
+                    submitHandler : function(form) {
+
+                        page.doEdit();
+                    }
+                });
+
+                page.namespace.getCodes(function(data) {
+                    page.model.vm.defaults = data;
+                }, "DEPARTMENT_TYPE");
+
+            },
+            doCancel : function() {
+                page.namespace.skiphtml('/pages/department/department-list.html');
+            },
+            initView : function() {
+                page.namespace.getRequest({
+                    endpoint : "/department/getDepartmentById",
+                    data : {
+                        "id" : page.namespace.getParam("id")
+                    },
+                    success : function(data) {
+                        page.model.vm.department = data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            doEdit : function() {
+                var submitSysUserForm = {
+                    endpoint : "/department/editDepartment",
+                    formObj : $("#editDepartmentForm"),
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        page.doCancel();
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.submitForm(submitSysUserForm);
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm); // void braces
+        page.init();
+        page.initView();
+        page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+    });
+</script>

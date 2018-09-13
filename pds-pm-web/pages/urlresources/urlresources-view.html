@@ -1,0 +1,75 @@
+<namespace id="urlresources-view">
+    <ol class="breadcrumb">
+        <li><a href="#">资源管理</a></li>
+        <li><a href="#">明细</a></li>
+    </ol>
+	<section class="content" id="viewURLResourcesSection" ms-controller="urlresources_view">
+        <div class="box box-info">
+            <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="box-body">
+            <form role="form"  id="viewElementForm" class="form-horizontal">
+                <div class="form-group">
+                    <label for="name" class="col-sm-1 control-label input-sm">URL名称</label>
+                    <div class="col-sm-5">
+                        <span id="name" class="form-control label-form-control input-sm">{{@data.name}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="url" class="col-sm-1 control-label input-sm">URL路径</label>
+                    <div class="col-sm-5">
+                        <span id="url"  class="form-control label-form-control input-sm">{{@data.url}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description" class="col-sm-1 control-label input-sm">URL描述</label>
+                    <div class="col-sm-5">
+                        <span id="description"  class="form-control label-form-control input-sm">{{@data.description}}</span>
+                    </div>
+                </div>
+            </form>
+         </div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#urlresources-view').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "urlresources_view",
+                    data: {}
+                })
+            },
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/urlresources/urlresources-list.html");
+			},
+            initView : function() {
+			    page.namespace.getRequest({
+			        endpoint : "/urlresources/getUrlResourcesById",
+                    data : {"id":page.namespace.getParam("id")},
+                    success : function (data) {
+                        page.model.vm.data = data;
+                    },
+                    failure : function (data) {
+                        alertTool.error(data);
+                    }
+                })
+            }
+		}
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+
+		avalon.scan(page.namespace.root[0], page.model.vm);
+		page.initView();
+	});
+</script>

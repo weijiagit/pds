@@ -1,0 +1,81 @@
+<namespace id="project-flow-view-close-pop">
+    <section class="content" id="projectFlowClosePopSection" ms-controller="project_flow_view_close_pop">
+        <form role="form" id="projectFlowClosePopForm"  class="form-horizontal">
+            <div class="">
+                <div class="form-group">
+                    <label  class="col-sm-1 control-label input-sm">附件：</label>
+                    <div class="col-sm-1 control-label input-sm" name="attachment" style="width: auto;">
+                        <!--<p ms-for="el in @files">-->
+                        <!--相关文件下载：<a ms-attr="{href:el.ftpPath}" class="hd-detail">{{el.name}}</a>-->
+                        <!--</p>-->
+                        <ul class="worktrend-list">
+                            <li ms-for = "(k,el) in @files">
+                                <!--<div ms-if ="el.suffix == 'jpg' || el.suffix == 'png' || el.suffix =='jpeg' ">-->
+                                <!--<img style="width: 120px;height: 120px;" ms-attr="{src:el.uri}" alt="">-->
+                                <!--&lt;!&ndash;<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>&ndash;&gt;-->
+                                <!--<a ms-attr="{href:el.uri}" download >下载 </a>-->
+                                <!--</div>-->
+                                {{el.name}}.{{el.suffix}}
+                                <!--<a href="javascript:;" ms-click="@downLoad(el.path)">下载</a>-->
+                                <a ms-attr="{href:el.uri}"  download >下载 </a>
+                                <!--</p>-->
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">
+                        备注：
+                    </label>
+                    <div class="con">
+                        <textarea name="remark" readonly class="textarea1" placeholder="" ms-html="@data.remark"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-wrap">
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">关闭</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-view-close-pop').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "project_flow_view_close_pop",
+                    data: {},
+                    files: {},
+                    downLoad :function (path) {
+                        var HtmlMenuOpt = {
+                            endpoint : "/file/downLoad",
+                            data : {
+                                'path' : path
+                            },
+                            success : function(data) {
+
+                            }
+                        };
+                        page.namespace.postRequest(HtmlMenuOpt);
+                    }
+                })
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/project/viewProjectFlowInfoByid",
+                    data : {"id":page.namespace.modal.param(page,"id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                        page.model.vm.files=data.attachmentInfoList;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

@@ -1,0 +1,86 @@
+<namespace id="personWork-add-pop">
+	<div class="pro-add-wrap">
+		<section class="content" id="personWorkAddSection">
+			<form role="form" id="addPersonWorkForm" class="form-horizontal">
+				<div class="form-group">
+                    <label for="taskDateStr" class="col-sm-2 control-label requiredMask input-sm">
+                        <span class="star">*</span>任务时间：</label>
+                    <div class="col-sm-4">
+                        <input type="text" readonly class="form-control datatimepicker" style="width:150px;" name="taskDateStr" id="taskDateStr">
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label for="taskContent" class="col-sm-2 control-label requiredMask input-sm">
+                        <span class="star">*</span>任务内容：</label>
+                    <div class="col-sm-4">
+                            <textarea name="taskContent" id="taskContent" class="form-control input-sm" style="width:375px;height: 158px;resize:none;" placeholder=""  ></textarea>
+                    </div>
+                </div>
+                <div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                    <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+                </div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#personWork-add-pop').namespace(),
+            init : function() {
+                $('#addPersonWorkForm').validate({
+                    rules : {
+                        taskContent : {
+                            required : true,
+                            maxlength : 1000
+                        },
+                        taskDateStr: {
+                            required : true
+                        }
+                    },messages:{
+                        content :{
+                            required :"个人任务不能为空",
+                            maxlength :"最多输入1000个字"
+                        },
+                        taskDateStr :{
+                            required :"任务时间不能为空",
+                        }
+                    }
+                    ,submitHandler : function(form) {
+                        page.doAdd();
+                    }
+                });
+            },
+            doAdd : function() {
+                var $root=page.namespace.root;
+                var HtmlMenuOpt = {
+                    endpoint : "/personWork/savePersonWork",
+                    data : {
+                        'taskContent' : $root.find('[name="taskContent"]').val(),
+                        'taskDateStr' : $root.find('[name="taskDateStr"]').val()
+                    },
+                    success : function(data) {
+                        $("#saveBtn").prop("disabled",true);
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure : function(data) {
+                        $("#saveBtn").prop("disabled",false);
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.postRequest(HtmlMenuOpt);
+            }
+        };
+        page.init();
+        page.namespace.root.find('#taskDateStr').autoBSNyr().on("click", function(ev){
+            page.namespace.root.find("#taskDateStr").datetimepicker("setStartDate", new Date());
+        });
+    });
+</script>

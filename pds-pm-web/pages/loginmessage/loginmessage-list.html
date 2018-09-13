@@ -1,0 +1,178 @@
+<namespace id="loginMessage-list">
+    <div class="pds-basic-project-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">日志管理</span>
+        </div>
+        <section class="content" id="searchoginMessageSection" ms-controller="loginMessage-list">
+            <div class="">
+                <form class="form-horizontal" id="searchLoginMessageForm" onkeydown="if(event.keyCode==13)return false;">
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">用户账号</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="loginAccount" id="loginAccount" placeholder="请输入所需要查询的登录账号" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">操作内容</label>
+                        <div class="filter-item clearfix">
+                            <div class="pro-search-wrap">
+                                <input type="text" name="projectObject" id="projectObject" placeholder="请输入所需要查询的项目主题" class="ipt-txt"></input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">日志类型</label>
+                        <div class="filter-item clearfix">
+                            <div class="" style="width: 400px;">
+                                <select name="logType" id="logType" class="form-control input-sm select2" >
+                                    <option selected="selected" value="">全部</option>
+                                    <option value="0">登录日志</option>
+                                    <option value="1">删除日志</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pds-pro-item clearfix">
+                        <div class="fr clearfix">
+                            <a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+                            <a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+                            <!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+                        </div>
+                    </div>
+                    <div class="basic-pro-wrap">
+                        <!-- <div class="pro-head clearfix">
+                            <div class="label">通知公告</div>
+                        </div> -->
+                        <div class="pro-table" id="loginMessageList">
+                            <table id="loginMessageListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th class="content-center">序号</th>
+                                    <th>日志类型</th>
+                                    <th>用户账号</th>
+                                    <th>用户名称</th>
+                                    <th>登录时间</th>
+                                    <th>登出时间</th>
+                                    <th>操作时间</th>
+                                    <th>操作内容</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#loginMessage-list').namespace(),
+            init :function () {
+
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchLoginMessageForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/loginmessage/loginmessage-view.html?id=" + id);
+            }
+        };
+        page.init();
+        page.listTable = $('#loginMessageListTable').initDataTable({
+            url : "/loginMessage/getLoginMessagePage",
+            urlDataFn : function() {
+                return $("#searchLoginMessageForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag:true,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+            },
+            columns : [ {
+                "data" : "logType",
+                "width" : "5%",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    if(data =="0"){
+                        return "登录日志";
+                    }else{
+                        return "删除日志" ;
+                    }
+                }
+            },{
+                "data" : "loginAccount",
+                "width" : "10%",
+                "class" : "content-center"
+            }, {
+                "data" : "loginName",
+                "width" : "10%",
+                "class" : "content-center"
+            }, {
+                "data" : "signInTimeStr",
+                "width" : "10%",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    if(data != null){
+                        return data;
+                    }else{
+                        return "/";
+                    }
+                }
+            },
+            {
+                "data" : "signOutTimeStr",
+                "width" : "10%",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    if(data != null){
+                        return data;
+                    }else{
+                        return "/";
+                    }
+                }
+            },
+            {
+                "data" : "operateTimeStr",
+                "width" : "10%",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    if(data != null){
+                        return data;
+                    }else{
+                        return "/";
+                    }
+                }
+            },
+            {
+                "data" : "projectObject",
+                "width" : "10%",
+                "render" :function (data, type, row) {
+                    if(data != null){
+                        return data;
+                    }else{
+                        return "/";
+                    }
+                }
+            }
+            ]
+        });
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+
+    });
+</script>

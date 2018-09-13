@@ -1,0 +1,170 @@
+<namespace id="dictionaryData-list" ms-controller="dictionaryData_list">
+    <div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">字典明细管理</span>
+        </div>
+		<section class="content" id="searchDictionaryDataSection" >	
+			<div class="">
+				<form class="form-horizontal" id="searchDictionaryDataForm">
+ 					<div class="pds-pro-item clearfix">
+                        <label class="filed-label fl">字典名称</label>
+                        <div class="filter-item clearfix">
+                            <div class="" style="width: 400px;">
+                                <select id="code" name="code" class="form-control input-sm select2">
+										<option value="">全部</option>
+										<option  ms-for="el in @dicNames"  ms-attr="{value:el.code}">
+											{{el.name}}
+										</option>
+								</select>
+                            </div>
+                        </div>
+                    </div>
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a>
+							<a href="javascript:;" class="pds-btn fl" id="deleteBtn" func="task-add">删除</a>
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+								<table id="dictionaryDataListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>字典类型</th>
+										<th>描述</th>
+										<th>键值</th>
+										<th>排序</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#dictionaryData-list').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "dictionaryData_list",
+    		        dicNames:{},
+    		        data: {}
+    		    })
+    		},
+			init : function() {
+				
+			},
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doReset : function() {
+				$('#searchDictionaryDataForm')[0].reset();
+				page.listTable.ajax.reload();
+			},
+			doView : function(id) {
+				page.namespace.skiphtml("/pages/dictionary/dictionaryData-view.html?id=" + id);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml("/pages/dictionary/dictionaryData-edit.html?id=" + id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/dictionary/deleteDictionaryData",
+				  	data : {'ids' : id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doBatchDel : function() {
+				var selectRows = $('#dictionaryDataListTable').getSelectedRow();
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要删除的记录!");
+					return;
+				}
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doAdd : function() {
+				page.namespace.skiphtml("/pages/dictionary/dictionaryData-add.html");
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/dictionary/getAllDictionarys",
+					data : {},
+					success : function(data) {
+						 page.model.vm.dicNames=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+		
+		page.listTable = $('#dictionaryDataListTable').initDataTable({
+			url : "/dictionary/getDictionaryDataPage",
+			urlDataFn : function() {
+				return $("#searchDictionaryDataForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [{
+				"data" : "dictName",
+				"orderable" : false,
+				"width" : "10%"
+			}, {
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "value",
+				"width" : "7%"
+			}, {
+				"data" : "sequence",
+				"width" : "7%"
+			} ]
+		});
+		
+		page.init();
+		
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+		page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+	});
+</script>

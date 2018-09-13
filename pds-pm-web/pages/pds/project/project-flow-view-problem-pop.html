@@ -1,0 +1,53 @@
+<namespace id="project-flow-view-problem-pop">
+    <section class="" id="projectFlowProblemSection" ms-controller="project_flow_view_problem_pop">
+        <form role="form" id="projectFlowProblemForm"  class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label">
+                    问题描述：
+                </label>
+                <div class="con">
+                    <textarea name="problemDescribe" readonly class="textarea1" placeholder="" ms-html="@data.problemDescribe"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">
+                    处理人：
+                </label>
+                <div class="con">
+                    <span id="leaderName" class="form-control label-form-control input-sm" style="width:100%;" >{{@data.leaderName}}</span>
+                </div>
+            </div>
+            <div class="btn-wrap tc">
+                <button type="button" class="pds-btn-border btn-cancel" data-dismiss="modal">关闭</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-view-problem-pop').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "project_flow_view_problem_pop",
+                    data: {}
+                })
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/project/viewProjectFlowInfoByid",
+                    data : {"id":page.namespace.modal.param(page,"id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

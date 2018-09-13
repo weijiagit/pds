@@ -1,0 +1,264 @@
+<namespace id="departproject-add">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">新增部门上报项目</span>
+		</div>
+		<section class="content" id="departProjectSection" ms-controller="departproject_add">
+			<form role="form" id="departProjectForm"  class="form-horizontal">
+				<div class="form-group">
+					<label for="projectName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>项目名称：</label>
+					<div class="col-sm-4">
+						<input name="projectName" id="projectName" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+					<label for="companyName" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>建设单位：</label>
+					<div class="col-sm-4">
+						<input name="companyName" id="companyName" type="text" class="form-control input-sm" placeholder="" >
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="planBeginDateStr" class="col-sm-2 control-label input-sm requiredMask"><span class="star">*</span>计划开工日期：</label>
+					<div class="col-sm-4">
+						<div class="datatimepicker-wrap rel">
+							<input name="planBeginDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="planBeginDateStr" >
+							<span class="data-del"><i class="fa fa-close"></i></span>
+						</div>
+					</div>
+					<label for="planEndDateStr" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>计划竣工日期：</label>
+					<div class="col-sm-4">
+						<div class="datatimepicker-wrap rel">
+							<input name="planEndDateStr" readonly type="text" class="form-control input-sm" placeholder="" id="planEndDateStr" >
+							<span class="data-del"><i class="fa fa-close"></i></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="totalInvestmentStr" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>总投资(元)：</label>
+					<div class="col-sm-4">
+						<input name="totalInvestmentStr" id="totalInvestmentStr" type="text" class="form-control input-sm" placeholder="" maxlength="15">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="constructionContentScale" class="col-sm-2 control-label requiredMask input-sm"><span class="star">*</span>建设内容和规模：</label>
+					<div class="col-sm-10">
+						<textarea name="constructionContentScale" id="constructionContentScale" rows="3" class="form-textarea" placeholder=""></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="deptName" class="col-sm-2 control-label requiredMask input-sm">
+						<span class="star">*</span>填报部门：</label>
+					<div class="con rel col-sm-4">
+						<div id="department" class="filter-item clearfix department" style="width:80%;">
+							<div class="pro-search-wrap rel">
+								<input id="deptName" name="deptName" type="text" class="form-control" placeholder="请选择" readonly />
+								<input id="departId" name="departId" type="hidden" class="form-control input-sm" placeholder="" >
+								<span class="input-group-addon"><i id="btnSelect" class="fa fa-search" style="cursor:pointer;"></i></span>
+							</div>
+						</div>
+					</div>
+					<label class="col-sm-2 control-label requiredMask input-sm">
+						<span class="star">*</span>部门联系人：
+					</label>
+					<div class="con col-sm-4">
+						<select id="userId" name="userId" class="select1 form-control">
+							<option ms-for="el in @userNames"  ms-attr="{value:el.id}">
+								{{el.name}}
+							</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="btn-wrap">
+                    <button type="submit" class="btn btn-save" >保存</button>
+                    <a href="javascript:;" class="btn btn-cancel" id="btnCancel">取消</a>
+                </div>
+			</form>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#departproject-add').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "departproject_add",
+                    userNames:{}
+                })
+            },
+			init : function() {
+				$("#departProjectForm").validate({
+					rules : {
+						projectName : {
+							required : true,
+							maxlength : 255
+						},
+						companyName : {
+							required : true,
+							maxlength : 255
+						},
+                        planBeginDateStr : {
+                            required : true
+                        },
+                        planEndDateStr : {
+                            required : true
+                        },
+                        totalInvestmentStr : {
+                            required : true,
+                            myRule : true
+                        },
+                        constructionContentScale : {
+                            required : true,
+                            maxlength : 1000
+                        },
+                        deptName : {
+							required : true
+						},
+                        userId : {
+							required : true
+						}
+					},
+                    messages : {
+                        projectName: {
+                            required: '项目名称不能为空'
+                        },
+                        companyName: {
+                            required: '建设单位不能为空'
+                        },
+                        totalInvestmentStr: {
+                            required: '总投资不能为空'
+                        },
+                        constructionContentScale: {
+                            required: '建设内容和规模不能为空'
+                        }
+                    },
+					submitHandler : function(form) {
+						page.doAdd();
+					}
+				});
+                page.namespace.root.find('#planBeginDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#planBeginDateStr").datetimepicker("setStartDate");
+                    page.namespace.root.find("#planBeginDateStr").datetimepicker("setEndDate", page.namespace.root.find("#planEndDateStr").val());
+                });
+
+                page.namespace.root.find('#planEndDateStr').autoBSNyr().on("click", function(ev){
+                    page.namespace.root.find("#planEndDateStr").datetimepicker("setStartDate", page.namespace.root.find("#planBeginDateStr").val());
+                });
+			},
+            doSelect : function() {
+                if(!!page.namespace.root.find('#departmentTree')) {
+                    page.namespace.root.find('#departmentTree').remove();
+                }
+
+                var html = "<div id='departmentTree' class='departmentTree' style='z-index:999;position:absolute;margin-top:1px;height:150px; border:1px solid #d2d6de; overflow:auto;margin-top: 0px!important;margin-left: 15px!important;MARGIN-RIGHT: 4PX;'></div>";
+                page.namespace.root.find('#department').after(html);
+
+               page.namespace.root.find('.con').on('mouseleave', function(){
+                   page.namespace.root.find('#departmentTree').remove();
+               });
+
+                var labelTree = $('#departmentTree').jstree({
+                    core : {
+                        'multiple':false,
+                        "animation" : 0,
+                        "check_callback" : true,
+                        "themes" : {
+                            "stripes" : false,
+                            "responsive" : false
+                        },
+                        data : function(obj, callback) {
+                            var opt = {};
+                            opt = {
+                                success : function(msg) {
+                                    callback.call(this, msg);
+                                },
+                                data : {},
+                                endpoint : "/department/loadDepartmentTree"
+                            };
+
+                            page.namespace.getRequest(opt);
+                        }
+                    },
+                    "types" : {
+                        "default" : {
+                            "draggable" : false,
+                            "icon" : "fa fa-folder icon-state-warning icon-lg"
+                        }
+                    },
+                    "plugins" : [ "types", "dnd" ]
+                }).on("load_node.jstree", function() {
+                    $('#departmentTree').jstree("open_all");
+                }).on("select_node.jstree", function() {
+                    var node = $('#departmentTree').jstree(true).get_selected(true);
+
+//                    if(node.length > 1) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+//
+//                    if(node[0].children.length > 0) {
+//                        alertTool.warning("只能选择一个菜单叶子节点");
+//                        return;
+//                    }
+                    console.log(node[0].text);
+                    $("#deptName").val(node[0].text);
+                    $('#departId').val(node[0].id);
+
+                    // 去掉必填项
+                    $("#deptName-error").remove();
+                    $("#deptName").removeClass();
+                    $("#deptName").addClass("form-control");
+
+                    $('#departmentTree').remove();
+                    page.namespace.getRequest({
+                        endpoint : "/departproject/selectUserInfoByDepart",
+                        data : {departId:$('#departId').val()},
+                        success : function(data) {
+                            page.model.vm.userNames=data;
+                        },
+                        failure : function(data) {
+                            alertTool.error(data);
+                        }
+                    });
+
+
+                });
+            },
+			doAdd : function() {
+				var submitSysUserForm = {
+					endpoint : "/departproject/saveDepartProject",
+					formObj : $("#departProjectForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure:function(data) {
+						alertTool.error(data);
+					}
+				};
+				
+				page.namespace.submitForm(submitSysUserForm);
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/pds/departproject/departproject-list.html");
+			},
+		}
+		
+		page.init();
+        avalon.scan(page.namespace.root[0], page.model.vm);
+
+		page.namespace.root.find("#btnCancel").on('click', page.doCancel);
+		page.namespace.root.find('#btnSelect').on('click', page.doSelect);
+	});
+
+    /**
+     * 正数（包括浮点数）
+     * */
+    $.validator.addMethod("myRule", function (value, element) {
+        return this.optional(element) || (/^([1-9]\d*|[0])(\.\d{1,2})?$/.test(value));
+    }, "请填写整数或小数为2位的数字");
+</script>

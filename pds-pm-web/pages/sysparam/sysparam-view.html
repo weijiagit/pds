@@ -1,0 +1,92 @@
+<namespace id="sysparam-view"   ms-controller="sysparam_view">
+<ol class="breadcrumb">
+    <li><a href="#">系统参数</a></li>
+    <li><a href="#">明细</a></li>
+</ol>
+<section class="content" id="viewSysParamSection"   >
+    <div class="box box-info">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+        <form role="form" id="viewSysParamForm" class="form-horizontal">
+            <div class="form-group">
+                <label for="code" class="col-sm-1 control-label input-sm">编码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <div class="col-sm-5">
+                    <span id="code" class="form-control label-form-control input-sm"  >{{@data.code}}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="value" class="col-sm-1 control-label input-sm">参数值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <div class="col-sm-5">
+                    <span id=value class="form-control label-form-control input-sm"  >{{@data.value}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="desc" class="col-sm-1 control-label input-sm">详情描述</label>
+                <div class="col-sm-5">
+                    <span id="desc" class="form-control label-form-control input-sm"  >{{@data.desc}}</span>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$_ready(function() {
+		var page = {
+			namespace : $('#sysparam-view').namespace(),
+			model:{
+    			vm:avalon.define({
+    		        $id: "sysparam_view",
+    		        data: {}
+    		    })
+    		},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/sysparam/sysparam-list.html');
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sysparam/getSysParamById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+ 					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+			}
+		};
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView();
+		
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

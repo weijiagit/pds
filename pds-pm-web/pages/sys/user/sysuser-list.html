@@ -1,0 +1,287 @@
+<meta charset="utf-8">
+<namespace id="sysuser-list" ms-controller="sysuser_list">
+	<div class="pds-basic-project-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">用户管理</span>
+		</div>
+		<section class="content" id="searchSysUserSection" ms-controller="sysuser_list">
+			<div class="">
+				<form class="form-horizontal" id="searchSysUserForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">用户名称</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								 <input type="text" name="name" class="ipt-txt" id="name" placeholder="用户名称">
+							</div>
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">用户账号</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								  <input type="text" name="userAccount" id="code" class="ipt-txt"  placeholder="用户账号">
+							</div>
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">用户描述</label>
+						<div class="filter-item clearfix">
+							<div class="pro-search-wrap">
+								  <input type="text" name="description" class="ipt-txt"  placeholder="用户描述">
+							</div>
+						</div>
+					</div>
+
+
+					<div class="pds-pro-item clearfix">
+						<div class="fr clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+							<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">新增</a> -->
+						</div>
+					</div>
+					<div class="pds-pro-item clearfix">
+						<div class="fl clearfix">
+							<a href="javascript:;" class="pds-btn fl" id="addBtn" func="task-add">添加用户</a>
+							<a href="javascript:;" class="pds-btn fl" id="deleteBtn" func="task-add">删除用户</a>
+							<a href="javascript:;" class="pds-btn fl" id="assignBtn" func="task-add">分配角色</a>
+							<!-- <a href="javascript:;" class="pds-btn fl" id="assignDept" func="task-add">分配部门</a> -->
+						</div>
+					</div>
+					<div class="basic-pro-wrap">
+						<div class="pro-table">
+							<table id="sysuserListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+								<thead>
+									<tr>
+										<th></th>
+										<th>序号</th>
+										<th>用户账号</th>
+										<th>用户名称</th>
+										<th>用户描述</th>
+										<th>是否启用</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sysuser-list').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sysuser_list",
+			        status: {}
+			    })
+			},
+            doReset : function() {
+                $('#searchSysUserForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+			doQuery : function() {
+				page.listTable.ajax.reload();
+			},
+			doAdd : function() {
+				page.namespace.skiphtml('/pages/sys/user/user-remote-add.html');
+			},
+			doBatchDel : function() {
+				var selectRows = $('#sysuserListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要撤销的记录!");
+					return;
+				}
+				
+				page.namespace.confirm(function(){
+					page.doDel(selectRows.join(","));
+				});
+			},
+			doAssignRole : function() { // 分配角色
+				var selectRows = $('#sysuserListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择一条记录进行授权角色!");
+					return;
+				} else if (selectRows.length > 1) {
+					alertTool.warning("只能选择一条记录进行授权角色!");
+					return;
+				}
+				
+				page.namespace.skiphtml("/pages/sys/user/sysuser-role.html?id="+selectRows[0]);
+			},
+            doAssignDept : function() { // 分配部门
+                var selectRows = $('#sysuserListTable').getSelectedRow();
+
+                if(selectRows.length == 0) {
+                    alertTool.warning("请选择一条记录进行分配部门!");
+                    return;
+                } else if (selectRows.length > 1) {
+                    alertTool.warning("只能选择一条记录进行分配部门!");
+                    return;
+                }
+
+                page.namespace.skiphtml("/pages/sys/user/sysuser-dept.html?id="+selectRows[0]);
+            },
+			doResetPwd : function() {
+				var selectRows = $('#sysuserListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要重置密码的用户!");
+					return;
+				}
+				
+				selectRows.join(",");
+				
+				var HtmlMenuOpt = {
+					endpoint : "/sysuser/resetPassword",
+				  	data : {'ids' : selectRows.join(",")},
+				  	success : function(data) {
+				  		alertTool.success("操作成功,重置密码为:" + data);
+				  		page.listTable.ajax.reload();
+				  	}
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doDisable : function() {
+				var selectRows = $('#sysuserListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要禁用的用户!");
+					return;
+				}
+				
+				var HtmlMenuOpt = {
+					endpoint : "/sysuser/disableSysUser",
+				  	data : {'userId' : selectRows.join(",")},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doEnable : function() {
+				var selectRows = $('#sysuserListTable').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请选择要启用的用户!");
+					return;
+				}
+				
+				var HtmlMenuOpt = {
+					endpoint : "/sysuser/enableSysUser",
+				  	data : {'userId' : selectRows.join(",")},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doView : function(id) {
+				page.namespace.skiphtml('/pages/sys/user/sysuser-view.html?id='+id);
+			},
+			doDel : function(id) {
+				var HtmlMenuOpt = {
+					endpoint : "/sysuser/removeSysUser",
+				  	data : {'userId' : id},
+				  	success : function(data) {
+				  		page.listTable.ajax.reload();
+				  	}		
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doEdit : function(id) {
+				page.namespace.skiphtml('/pages/sys/user/sysuser-edit.html?id='+id);
+			},
+			doReset : function() {
+				$('#searchSysUserForm')[0].reset();
+				page.listTable.ajax.reload();
+			},
+			getStatus : function(){
+				page.namespace.getCodes(function(data){
+					page.model.vm.status=data;
+				},"USER_DISABLED");
+				/*
+				page.namespace.getRequest({
+					endpoint : "/dictionary/getDictionaryByCode",
+					data : {"code":"USER_DISABLED"},
+					success : function(data) {
+						 page.model.vm.data=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+				*/
+			}
+		}
+		
+		page.listTable = $('#sysuserListTable').initDataTable({
+			url : "/sysuser/getSysUserPage",
+			urlDataFn : function() {
+				return $("#searchSysUserForm").serializeJson();
+			},
+			lengthChange : false,
+			checkbox : true,
+            viewFlag:true,
+            editFlag:true,
+            delFlag:true,
+			ops : {
+				view : function(id, rowData) {
+					page.doView(id);
+				},
+				del : function(id, rowData) {
+					page.doDel(id);
+				},
+				edit : function(id, rowData) {
+					page.doEdit(id);
+				}
+			},
+			columns : [ {
+				"data" : "userAccount",
+				"orderable" : false,
+				"width" : "7%",
+				"class" : "content-center"
+			}, {
+				"data" : "name",
+				"width" : "7%",
+				"class" : "content-center"
+			}, {
+				"data" : "description",
+				"width" : "10%",
+				"class" : "content-center"
+			}, {
+				"data" : "disabled",
+				"width" : "5%",
+                "class" : "content-center",
+				"render" : function(data, type, row, meta) {
+					return data == 1 ? '<label class="label label-success">是</label>' :'<label class="label label-danger">否</label>';
+				}
+			} ]
+		});
+		
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.getStatus() ;
+		page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+		page.namespace.root.find('#reset').on('click', page.doReset);
+		page.namespace.root.find("#addBtn").on('click', page.doAdd);
+		page.namespace.root.find("#deleteBtn").on('click', page.doBatchDel);
+		page.namespace.root.find("#assignBtn").on('click', page.doAssignRole);
+        // page.namespace.root.find("#assignDept").on('click', page.doAssignDept);
+		page.namespace.root.find("#resetBtn").on('click', page.doResetPwd);
+		page.namespace.root.find("#disableBtn").on('click', page.doDisable);
+		page.namespace.root.find("#enableBtn").on('click', page.doEnable);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+			
+	});
+</script>

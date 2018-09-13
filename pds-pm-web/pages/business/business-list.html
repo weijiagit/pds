@@ -1,0 +1,201 @@
+<div id="business-list">
+    <ol class="breadcrumb">
+        <li><a href="#">数据录入</a></li>
+        <li><a href="#">列表</a></li>
+    </ol>
+    <section class="content" id="searchCaseMagSection" ms-controller="casemag_view">
+
+        <div class="box box-info">
+            <!-- form start -->
+            <form class="form-horizontal" id="searchCaseMagForm">
+                <input type="text" name="modelId" class="form-control input-sm" id="modelId" style="display:none">
+                <input type="text" name="projectId" class="form-control input-sm" id="projectId" style="display:none">
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="btn-group">
+                                <a class="btn btn-success btn-sm" id="addBtn" func="casemag-add"> <span class="glyphicon glyphicon-plus"></span> 添加
+                                </a>
+                                <button class="btn btn-danger btn-sm" type="button" id="deleteBtn" func="casemag-delete">
+                                    <span class="glyphicon glyphicon-minus"></span> 删除
+                                </button>
+                            </div>
+                        </div>
+
+                    <!--    <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-addon">标题</span> <input type="text" name="desc" class="form-control input-sm" id="desc" placeholder="描述"> <span
+                                    class="input-group-btn">
+									<button class="btn btn-primary btn-sm" id="queryBtn" type="button">
+										<i class="fa fa-search"></i> 查询
+									</button>
+								</span>
+                            </div>
+                        </div>-->
+
+                    <div class="col-sm-9">
+                            <div class="input-group">
+									<button class="btn btn-primary btn-sm" id="exculeBtn" type="button">
+										<i class="fa fa-search"></i> 导出
+									</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="box box-info" style="border-top: 0px;">
+            <div class="box-body" id="casemagList" style="margin-top: -10px;">
+                <table id="ListTable" class="table dataTable row-border cell-border " cellspacing="0" width="100%">
+                    <thead>
+                    <tr id="FormFrameworks">
+
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace: $('#business-list').namespace(),
+            doQuery: function () {
+                page.listTable.ajax.reload();
+            },
+            doAdd: function () {
+                page.namespace.skiphtml("/pages/business/business-add.html?projectId="+page.namespace.getParam("projectId")+"&modelId="+page.namespace.getParam("modelId"));
+            },
+            doView: function (id) {
+                page.namespace.skiphtml("/pages/business/business-view.html?id=" + id+"&projectId="+page.namespace.getParam("projectId")+"&modelId="+page.namespace.getParam("modelId"));
+            },
+            doEdit: function (id) {
+                page.namespace.skiphtml("/pages/business/business-edit.html?id=" + id+"&projectId="+page.namespace.getParam("projectId")+"&modelId="+page.namespace.getParam("modelId"));
+            },
+            doDel: function (id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/business/deleteBusiness",
+                    data : {
+                    'businessIds' : id,
+                          modelId : page.namespace.getParam("modelId"),
+                        projectId : page.namespace.getParam("projectId")
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.getRequest(HtmlMenuOpt);
+
+            },
+            exculeSorce :function(){
+
+
+                mask.show();
+                var HtmlMenuOpt = {
+                    endpoint : "/business/excelBusinesss",
+                    data : {
+                        modelId : page.namespace.getParam("modelId"),
+                        projectId : page.namespace.getParam("projectId")
+                    },
+                    success : function(data) {
+                        debugger
+                        console.log(data)
+                        var  url = window.location.origin +"/file-store/"+data.uri+"?n="+data.name;
+                        mask.remove();
+                        window.open(url);
+
+                    },
+                    failure : function(data) {
+                        mask.remove();
+                        alertTool.error(data);
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+
+
+        },
+            doBatchDel: function () {
+                var selectRows = $('#ListTable').getSelectedRow();
+
+                if (selectRows.length == 0) {
+                    alertTool.warning("请选择要删除的记录!");
+                    return;
+                }
+                page.namespace.confirm(function () {
+                    page.doDel(selectRows.join(","));
+                });
+            },
+           createDisplayFormFramework : function (){
+               page.namespace.getRequest({
+                   endpoint : "/formModel/getDisplayFormFrameworkByModel",
+                   data : {modelId :page.namespace.getParam("modelId")},
+                   success : function(data) {
+                       var column =[];
+                    $("#FormFrameworks").append("<th></th>"); //开头
+                       for(var o in data){
+                           $("#FormFrameworks").append("<th>"+data[o].fieldChName+"</th>");
+                           column.push({"data":data[o].fieldEnName,"width":"10%"})
+                       }
+                       $("#FormFrameworks").append(" <th>操作</th>");//结束
+
+                       page.listTable = $('#ListTable').initDataTable({
+                           url : "/business/getBusinessPages",
+                           urlDataFn : function() {
+                               return $("#searchCaseMagForm").serializeJson();
+                           },
+                           lengthChange : false,
+                           checkbox : true,
+                           ops : {
+                               view : function(id, rowData) {
+                                   page.doView(id);
+                               },
+                               del : function(id, rowData) {
+                                   page.doDel(id);
+                               },
+                               edit : function(id, rowData) {
+                                   page.doEdit(id);
+                               }
+                           },
+                           columns :column,
+                           createdRow : function(row, data,index){
+                               if(data.status!='SAVE'){
+                                 row.children[row.children.length-1].removeChild(row.children[row.children.length-1].children[1]);
+                                 row.children[row.children.length-1].removeChild(row.children[row.children.length-1].children[1]);
+                               }
+                           }
+                       });
+                   },
+                   failure : function(data) {
+                       alertTool.error(data);
+                   }
+               });
+
+           }
+        };
+
+
+
+        page.namespace.root.find('#modelId').val(page.namespace.getParam("modelId"));
+        page.namespace.root.find('#projectId').val(page.namespace.getParam("projectId"));
+
+        page.createDisplayFormFramework();
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+        page.namespace.root.find('#deleteBtn').on('click', page.doBatchDel);
+        page.namespace.root.find('#refreshCacheBtn').on('click', page.doRefreshCache);
+        page.namespace.root.find('#exculeBtn').on('click',page.exculeSorce);
+
+    })
+
+
+
+
+</script>

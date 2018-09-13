@@ -1,0 +1,235 @@
+<namespace id="project-flow-history">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+			<span class="fl">项目历史记录</span>
+		</div>
+		<section class="content" id="searchProjectHistorySection" ms-controller="project_flow_history">
+			<div class="">
+				<!-- form start -->
+				<form class="form-horizontal" id="searchProjectHistoryForm">
+					<div class="pds-pro-item clearfix">
+						<label class="filed-label fl">项目名称：</label>
+						<div class="filter-item fl">
+							<span name="projectName" class="tit"  ms-html="@data.projectName"></span>
+						</div>
+					</div>
+					<ul class="pro-flow-histroy-item pro-flow-histroy-item1 clearfix">
+						<li ms-for="(k1,el1) in @all_project_list_one" ms-attr="{class:'status'+el1.approveStatus}">
+							<div class="item">
+								<span class="txt">{{el1.imageText}}</span>
+							</div>
+							<div class="pro-flow-history-wrap">
+								<table class="tab">
+									<thead>
+									<tr>
+										<th width="112">姓名</th>
+										<th width="100">时间</th>
+										<th width="100">状态</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ms-for="(m1,ep1) in @all_project_list_one[k1].projectDepartmentHistoryList">
+										<td>{{ep1.name}}</td>
+										<td>{{ep1.createDate|date}}</td>
+										<td ms-if="ep1.approveStatus == '1'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep1.approveStatus}">无需办理</a></td>
+										<td ms-if="ep1.approveStatus == '2'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep1.approveStatus}">未开始</a></td>
+										<td ms-if="ep1.approveStatus == '3'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep1.approveStatus}">受理中</a></td>
+										<td ms-if="ep1.approveStatus == '4'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep1.approveStatus}" ms-click="@toViewProjectFlowProblemInfo(ep1)">存在问题</a></td>
+										<td ms-if="ep1.approveStatus == '5'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep1.approveStatus}" ms-click="@toViewProjectFlowCloseInfo(ep1)">完结</a></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+					<ul class="pro-flow-histroy-item pro-flow-histroy-item2 clearfix">
+						<li ms-for="(k2,el2) in @all_project_list_two" ms-attr="{class:'status'+el2.approveStatus}">
+							<div class="item">
+								<span class="txt">{{el2.imageText}}</span>
+							</div>
+							<div class="pro-flow-history-wrap">
+								<table class="tab">
+									<thead>
+									<tr>
+										<th width="112">姓名</th>
+										<th width="100">时间</th>
+										<th width="100">状态</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ms-for="(m2,ep2) in @all_project_list_two[k2].projectDepartmentHistoryList">
+										<td>{{ep2.name}}</td>
+										<td>{{ep2.createDate|date}}</td>
+										<td ms-if="ep2.approveStatus == '1'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep2.approveStatus}">无需办理</a></td>
+										<td ms-if="ep2.approveStatus == '2'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep2.approveStatus}">未开始</a></td>
+										<td ms-if="ep2.approveStatus == '3'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep2.approveStatus}">受理中</a></td>
+										<td ms-if="ep2.approveStatus == '4'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep2.approveStatus}" ms-click="@toViewProjectFlowProblemInfo(ep2)">存在问题</a></td>
+										<td ms-if="ep2.approveStatus == '5'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep2.approveStatus}" ms-click="@toViewProjectFlowCloseInfo(ep2)">完结</a></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+					<ul class="pro-flow-histroy-item pro-flow-histroy-item3 clearfix">
+						<li ms-for="(k3,el3) in @all_project_list_three" ms-attr="{class:'status'+el3.approveStatus}">
+							<div class="item">
+								<span class="txt">{{el3.imageText}}</span>
+							</div>
+							<div class="pro-flow-history-wrap">
+								<table class="tab">
+									<thead>
+									<tr>
+										<th width="112">姓名</th>
+										<th width="100">时间</th>
+										<th width="100">状态</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ms-for="(m3,ep3) in @all_project_list_three[k3].projectDepartmentHistoryList">
+										<td>{{ep3.name}}</td>
+										<td>{{ep3.createDate|date}}</td>
+										<td ms-if="ep3.approveStatus == '1'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep3.approveStatus}">无需办理</a></td>
+										<td ms-if="ep3.approveStatus == '2'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep3.approveStatus}">未开始</a></td>
+										<td ms-if="ep3.approveStatus == '3'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep3.approveStatus}">受理中</a></td>
+										<td ms-if="ep3.approveStatus == '4'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep3.approveStatus}" ms-click="@toViewProjectFlowProblemInfo(ep3)">存在问题</a></td>
+										<td ms-if="ep3.approveStatus == '5'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep3.approveStatus}" ms-click="@toViewProjectFlowCloseInfo(ep3)">完结</a></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+					<ul class="pro-flow-histroy-item pro-flow-histroy-item4 clearfix">
+						<li ms-for="(k4,el4) in @all_project_list_four" ms-attr="{class:'status'+el4.approveStatus}">
+							<div class="item">
+								<span class="txt">{{el4.imageText}}</span>
+							</div>
+							<div class="pro-flow-history-wrap">
+								<table class="tab">
+									<thead>
+									<tr>
+										<th width="112">姓名</th>
+										<th width="100">时间</th>
+										<th width="100">状态</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ms-for="(m4,ep4) in @all_project_list_four[k4].projectDepartmentHistoryList">
+										<td>{{ep4.name}}</td>
+										<td>{{ep4.createDate|date}}</td>
+										<td ms-if="ep4.approveStatus == '1'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep4.approveStatus}">无需办理</a></td>
+										<td ms-if="ep4.approveStatus == '2'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep4.approveStatus}">未开始</a></td>
+										<td ms-if="ep4.approveStatus == '3'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep4.approveStatus}">受理中</a></td>
+										<td ms-if="ep4.approveStatus == '4'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep4.approveStatus}" ms-click="@toViewProjectFlowProblemInfo(ep4)">存在问题</a></td>
+										<td ms-if="ep4.approveStatus == '5'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep4.approveStatus}" ms-click="@toViewProjectFlowCloseInfo(ep4)">完结</a></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+					<ul class="pro-flow-histroy-item pro-flow-histroy-item5 clearfix">
+						<li ms-for="(k5,el5) in @all_project_list_five" ms-attr="{class:'status'+el5.approveStatus}">
+							<div class="item">
+								<span class="txt">{{el5.imageText}}</span>
+							</div>
+							<div class="pro-flow-history-wrap">
+								<table class="tab">
+									<thead>
+									<tr>
+										<th width="112">姓名</th>
+										<th width="100">时间</th>
+										<th width="100">状态</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ms-for="(m5,ep5) in @all_project_list_five[k5].projectDepartmentHistoryList">
+										<td>{{ep5.name}}</td>
+										<td>{{ep5.createDate|date}}</td>
+										<td ms-if="ep5.approveStatus == '1'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep5.approveStatus}">无需办理</a></td>
+										<td ms-if="ep5.approveStatus == '2'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep5.approveStatus}">未开始</a></td>
+										<td ms-if="ep5.approveStatus == '3'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep5.approveStatus}">受理中</a></td>
+										<td ms-if="ep5.approveStatus == '4'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep5.approveStatus}" ms-click="@toViewProjectFlowProblemInfo(ep5)">存在问题</a></td>
+										<td ms-if="ep5.approveStatus == '5'"><a href="javascript:;" ms-attr="{class:'btn btn'+ep5.approveStatus}" ms-click="@toViewProjectFlowCloseInfo(ep5)">完结</a></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+				</form>
+			</div>
+		</section>
+	</div>
+</namespace>
+<script>
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-history').namespace(),
+            model: {
+                vm: avalon.define({
+                    $id: "project_flow_history",
+                    data: {},
+                    all_project_list_one: {},
+                    all_project_list_two: {},
+                    all_project_list_three: {},
+                    all_project_list_four: {},
+                    all_project_list_five: {},
+                    toViewProjectFlowProblemInfo:function (el) {
+                        page.namespace.modal.open(page,{
+                            id:"viewProjectDepartProblemModal",
+                            title:"存在问题",
+                            hidden : function(e,ra){
+                                if(ra && ra.length > 0){
+                                    page.init();
+                                }
+                            }
+                        },'/pages/pds/project/project-flow-view-problem-pop.html',{'id':el.id},'550px;');
+                    },
+                    toViewProjectFlowCloseInfo:function (el) {
+                        page.namespace.modal.open(page, {
+                            id: "viewProjectDepartCloseModal",
+                            title: "完结",
+                            hidden: function (e, ra) {
+                                if (ra && ra.length > 0) {
+                                    page.init();
+                                }
+                            }
+                        }, '/pages/pds/project/project-flow-view-close-pop.html', {'id': el.id}, '550px;');
+                    }
+                })
+            },
+            getId : function() {
+                return page.namespace.getParam('id');
+            },
+            init : function() {
+                page.namespace.getRequest({
+                    endpoint : "/project/getProjectFlowHistoryListById",
+                    data : {'projectId':page.getId()},
+                    success : function(data) {
+                        page.model.vm.data={};
+                        page.model.vm.all_project_list_one={};
+                        page.model.vm.all_project_list_two={};
+                        page.model.vm.all_project_list_three={};
+                        page.model.vm.all_project_list_four={};
+                        page.model.vm.all_project_list_five={};
+
+                        page.model.vm.data=data;
+                        page.model.vm.all_project_list_one=data.projectDepartInfoOneList;
+                        page.model.vm.all_project_list_two=data.projectDepartInfoTwoList;
+                        page.model.vm.all_project_list_three=data.projectDepartInfoThreeList;
+                        page.model.vm.all_project_list_four=data.projectDepartInfoFourList;
+                        page.model.vm.all_project_list_five=data.projectDepartInfoFiveList;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.init();
+    });
+</script>

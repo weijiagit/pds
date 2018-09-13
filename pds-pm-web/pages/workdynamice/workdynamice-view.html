@@ -1,0 +1,75 @@
+<namespace id="workdynamice-view">
+    <div class="pro-add-wrap">
+        <div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">工作动态详情</span>
+        </div>
+        <section class="content" id="viewWorkdynamiceSection" ms-controller="workdynamice_view">
+            <div class="workdynamice-content">
+                <img  ms-attr="{src:@files.uri}" alt="">
+                <p id=value class="con" ms-html="@data.content"></p>
+                <div class="btn-wrap tc">
+                    <button type="submit" id="btnCancel" class="pds-btn-border">返回</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</namespace>
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#workdynamice-view').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "workdynamice_view",
+                    data: {},
+                    files: {},
+                })
+            },
+            doCancel : function() {
+                page.namespace.skiphtml("/pages/workdynamice/workdynamice-list.html");
+            },
+            doBack :function () {
+                page.namespace.skiphtml("/pages/home.html");
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/workdynamice/detailWorkDynamice",
+                    data : {"id":page.namespace.getParam("id")},
+                    success : function(data) {
+                        page.model.vm.data=data;
+                        page.model.vm.files=data.attachmentInfoList[0];
+                        if(data&&data.attachmentInfoList){
+                            for(var i=0;i<data.attachmentInfoList.length;i++){
+                                var ig=data.attachmentInfoList[i];
+                                var name=ig.name;
+                                var suffix=ig.suffix;
+                                var fileName=name + '.' + suffix;
+                                if(suffix =="jpg" || suffix =="png" || suffix =="jpeg"){
+                                    var $img=$('<img style="width:120px;height:120px; margin-right:10px"/>');
+                                    $img.attr('src',ig.uri);
+                                    page.namespace.root.find('[name="attachment"]').prepend($img);
+                                }else{
+                                    var $img=$('<a download>'+fileName+'</a>');
+                                    $img.attr('href',ig.uri);
+                                    page.namespace.root.find('[name="attachment"]').prepend($img);
+                                }
+
+                            }
+                        }
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            }
+        };
+        var  type = page.namespace.getParam("type");
+        if(type != null && type =='workDynamice'){
+            page.namespace.root.find('#btnCancel').on('click', page.doBack);
+        }else {
+            page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+        }
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

@@ -1,0 +1,154 @@
+<namespace id="person-work-list" ms-controller="person-work-list">
+	<div class="pro-add-wrap">
+		<div class="pds-index-title bb1 clearfix mb10">
+            <span class="fl">我的工作-个人办公任务</span>
+        </div>
+		<form class="form-horizontal" id="searchPersonWorkForm" onkeydown="if(event.keyCode==13)return false;">
+			<div class="pds-pro-item clearfix">
+				<label class="filed-label fl">个人任务</label>
+				<div class="filter-item clearfix">
+					<div class="pro-search-wrap">
+						<input type="text" name="taskContent" id="taskContent" placeholder="请输入所需要查询的个人任务" class="ipt-txt"></input>
+					</div>
+				</div>
+			</div>
+
+			<div class="pds-pro-item clearfix">
+				<div class="fr clearfix">
+					<a href="javascript:;" class="pds-btn fl" id="queryBtn">查询</a>
+					<a href="javascript:;" class="pds-btn-border fl ml20" id="reset">重置</a>
+				</div>
+			</div>
+			<div class="pds-pro-item clearfix">
+				<div class="fl clearfix">
+					<a href="javascript:;" class="pds-btn fl pds-add" id="addBtn" func="task-add">新增</a>
+				</div>
+			</div>
+			<div class="pending-work-wrap">
+				<!--<div class="pro-head clearfix">-->
+					<!--<div class="label">个人办公任务</div>-->
+				<!--</div>-->
+				<div class="pro-table">
+					<table id="personWorkListTable" class="table dataTable row-border cell-border pds-index-works-tab" cellspacing="0">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>个人任务</th>
+								<th>任务时间</th>
+								<th>状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</form>
+	</div>
+
+</namespace>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var page = {
+			namespace : $('#person-work-list').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "person-work-list"
+                })
+            },
+            doQuery : function() {
+                page.listTable.ajax.reload();
+            },
+            doReset : function() {
+                $('#searchPersonWorkForm')[0].reset();
+                page.listTable.ajax.reload();
+            },
+            doView : function(id) {
+                page.namespace.skiphtml("/pages/pds/work/personwork-view.html?id=" + id);
+            },
+            doDel : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/personWork/deletePersonWork",
+                    data : {
+                        'ids' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+            doFinish : function(id) {
+                var HtmlMenuOpt = {
+                    endpoint : "/personWork/updateStatusById",
+                    data : {
+                        'id' : id
+                    },
+                    success : function(data) {
+                        page.listTable.ajax.reload();
+                    }
+                };
+
+                page.namespace.postRequest(HtmlMenuOpt);
+            },
+			doAdd : function() {
+                page.namespace.modal.open(page,{
+                    id:"addPersonworkModal",
+                    title:"个人办公任务",
+                    hidden : function(e,ra){
+                        if(ra && ra.length > 0){
+                            page.listTable.ajax.reload();
+                        }
+                    }
+                },'/pages/pds/work/personwork-add-pop.html','','550px;');
+            }
+		};
+
+        page.listTable = $('#personWorkListTable').initDataTable({
+            url : "/personWork/getPersonWorkPage",
+            urlDataFn : function() {
+                return $("#searchPersonWorkForm").serializeJson();
+            },
+            lengthChange : false,
+            checkbox : false,
+            viewFlag : true,
+            delFlag : true,
+            ops : {
+                view : function(id, rowData) {
+                    page.doView(id);
+                },
+                del : function(id, rowData) {
+                    page.doDel(id);
+                },
+				finish :function (id,rowData) {
+					page.doFinish(id);
+                }
+            },
+            columns : [ {
+                "data" : "taskContent",
+                "width" : "33%"
+            },{
+                "data" : "taskDateFormat",
+                "width" : "5%",
+                "class" : "content-center",
+            },{
+                "data" : "state",
+                "width" : "5%",
+                "class" : "content-center",
+                "render" :function (data, type, row) {
+                    var html="";
+                    if(data == '0'){
+                        html ="处理中";
+                    }else{
+                        html ="完成";
+                    }
+                    return html;
+                }
+            }
+            ]
+        });
+        page.namespace.root.find('#queryBtn').on('click', page.doQuery);
+        page.namespace.root.find('#reset').on('click', page.doReset);
+        page.namespace.root.find('#addBtn').on('click', page.doAdd);
+	});
+</script>

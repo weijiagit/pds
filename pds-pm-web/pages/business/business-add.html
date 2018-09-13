@@ -1,0 +1,232 @@
+<namespace id="business-add"  ms-controller="business_add">
+<ol class="breadcrumb">
+    <li><a href="#">数据录入</a></li>
+    <li><a href="#">数据录入</a></li>
+</ol>
+<!-- Main content -->
+<section class="content" id="addBusinessSection">
+    <div class="box box-info">
+	    <form role="form" id="addBusinessForm" class="form-horizontal">
+        <div class="row ">
+            <div class="col-sm-12">
+                <!-- 右对齐的 btn-group -->
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+                    <button type="submit" name="submit" class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 提交
+                    </button>
+                    <button type="submit" name="save"  class="btn btn-sm btn-primary">
+                        <i class="fa fa-floppy-o"></i> 保存
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="box-body">
+
+			</div>
+	</form>
+    </div>
+</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#business-add').namespace(),
+      model:{
+    			vm:avalon.define({
+    		        $id: "business_add",
+    		        data: {},
+                defaults : {}
+    		    })
+    		},
+			doAdd : function(endpoint) {
+
+        var $root=page.namespace.root;
+        var HtmlMenuOpt = {
+          endpoint : endpoint,
+          data : {
+            'modelId' : modelId,
+            'projectId' : projectId,
+            'dataSource' : $root.find('form').serializeJson(),
+          },
+          success : function(data) {
+            alertTool.success("操作成功!");
+						page.doCancel();
+          },
+          failure : function(data) {
+						alertTool.error(data);
+					}
+        };
+
+        page.namespace.postRequest(HtmlMenuOpt);
+
+			},
+			doCancel : function() {
+                page.namespace.skiphtml('/pages/business/business-list.html?modelId='+modelId+"&projectId="+projectId);
+            }
+		};
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+    avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+
+    var modelId=page.namespace.getParam("modelId");
+    var projectId=page.namespace.getParam("projectId");
+
+    page.namespace.getRequest({
+      endpoint : "/formModel/getAllDisplayFormFramework",
+      data : {modelId :modelId}, // 906e9f7d-c70b-49ee-b950-ea126ecbd4ba
+      //data : {modelId :"906e9f7d-c70b-49ee-b950-ea126ecbd4ba"},
+      success : function(data) {
+        console.log(data);
+        var autoFill=new AutoFill();
+        var fillData={
+          data : [],
+          $form : page.namespace.root.find('form'),
+          $root : page.namespace.root.find('.box-body'),
+          submit : function(submitButton,form,event){
+
+            var type=$(submitButton).attr('name');
+            if('submit'==type){
+              console.log('submit------------>');
+              page.doAdd("/business/submitBusiness");
+            }else{
+              console.log('save------------>');
+              page.doAdd("/business/saveBusiness");
+            }
+        }
+
+        };
+
+        //var property,name,type,required,val,length;
+        for(var i=0;i<data.length;i++){
+          var _data=data[i];
+          var meta=new Meta();
+          if('id'==_data.fieldEnName
+            ||'creator_id'==_data.fieldEnName
+            ||'create_date'==_data.fieldEnName
+            ||'modifier_id'==_data.fieldEnName
+            ||'modify_date'==_data.fieldEnName
+            ||'version'==_data.fieldEnName
+            ||'status'==_data.fieldEnName
+            ||'is_available'==_data.fieldEnName ){
+            continue;
+          }
+
+          meta.property=_data.fieldEnName;
+          meta.name=_data.fieldChName;
+          meta.required=false;
+          meta.length=new Number(_data.fieldLen);
+          if('INT'==_data.fieldType){
+            meta.type='int';
+          }
+          if('VARCHAR'==_data.fieldType){
+            meta.type='shorttext';
+          }
+          if('FLOAT'==_data.fieldType){
+            meta.type='number';
+          }
+          if('LONGTEXT'==_data.fieldType){
+            meta.type='longtext';
+          }
+          if('DATETIME'==_data.fieldType){
+            meta.type='date';
+          }
+          fillData.data.push(meta);
+        }
+        autoFill.fill(fillData);
+
+      },
+      failure : function(data) {
+
+      }
+    });
+
+    function Meta(){
+      var property,name,type,required,val,length;
+    }
+
+/*
+    var autoFill=new AutoFill();
+    autoFill.fill({
+      data : [
+        {
+          property : 'name',
+          name : '名称',
+          type : 'shorttext',
+          required : true,
+          val : 'LUS',
+          length : 10
+        },
+        {
+          property : 'age',
+          name : '年龄',
+          type : 'int',
+          required : true,
+          val : '2'
+        },
+        {
+          property : 'height',
+          name : '身高',
+          type : 'number',
+          required : true,
+          val : '1.89'
+        },
+        {
+          property : 'birthday',
+          name : '出生时间',
+          type : 'date',
+          required : true,
+          val : '1999-11-11'
+        },
+        {
+          property : 'desc',
+          name : '备注',
+          type : 'longtext',
+          required : true,
+          val : '来自SHANGHAI',
+          length : 30
+        }
+      ],
+      $form : page.namespace.root.find('form'),
+      $root : page.namespace.root.find('.box-body'),
+      submit : function(){console.log('submit------>');}
+
+    });
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	});
+</script>

@@ -1,0 +1,118 @@
+<namespace id="project-flow-problem-pop">
+    <section class="" id="projectFlowProblemSection" ms-controller="project_flow_problem_pop">
+        <form role="form" id="projectFlowProblemForm"  class="form-horizontal">
+            <div class="form-group">
+                <label for="problemDescribe" class="control-label">
+                    <span class="star">*</span>问题描述：</label>
+                <div class="con">
+                    <textarea name="problemDescribe" id="problemDescribe" class="textarea1" placeholder=""  ></textarea>
+                </div>
+            </div>
+
+            <div class="form-group pds-layer">
+                <label class="control-label">
+                    <span class="star">*</span>处理人：
+                </label>
+                <div class="con">
+                    <select id="leaderId" name="leaderId" class="select1" style="width:418px;">
+                        <option ms-for="el in @userNames"  ms-attr="{value:el.id}">
+                            {{el.name}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-wrap tc">
+                <button type="submit" class="btn btn-save" value="" id="saveBtn">保存</button>
+                <button type="button" class="pds-btn-border btn-cancel" data-dismiss="modal">取消</button>
+            </div>
+        </form>
+    </section>
+</namespace>
+
+<script type="text/javascript">
+    $(function() {
+        var page = {
+            namespace : $('#project-flow-problem-pop').namespace(),
+            model:{
+                vm:avalon.define({
+                    $id: "project_flow_problem_pop",
+                    userNames:{}
+                })
+            },
+            initView:function(){
+                page.namespace.getRequest({
+                    endpoint : "/project/selectUserInfoByDepartId",
+                    data : {deptId:page.getDepartId()},
+                    success : function(data) {
+                        page.model.vm.userNames=data;
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                });
+            },
+            init : function() {
+                $('#projectFlowProblemForm').validate({
+                    rules : {
+                        'problemDescribe' : {
+                            required : true,
+                            maxlength : 1000
+                        }
+                    },messages:{
+                        problemDescribe :{
+                            required :"问题描述不能为空",
+                            maxlength :"最多输入1000个字"
+                        }
+                    }
+                    ,submitHandler : function(form) {
+                        page.doAdd();
+                        $("#saveBtn").prop("disabled",true);
+                    }
+                });
+            },
+            getId : function() {
+                return page.namespace.modal.param(page,"id");
+            },
+            getDepartId : function() {
+                return page.namespace.modal.param(page,"departId");
+            },
+            getProjectId : function() {
+                return page.namespace.modal.param(page,"projectId");
+            },
+            getStatus : function() {
+                return page.namespace.modal.param(page,"approveStatus");
+            },
+            doAdd : function() {
+                var $root=page.namespace.root;
+                var id = page.getId();
+                var status = page.getStatus();
+                var HtmlMenuOpt = {
+                    endpoint : "/project/updateProjectFlowStatusById",
+                    data : {
+                        'problemDescribe' : $root.find('[name="problemDescribe"]').val(),
+                        'approveStatus':status,
+                        'projectDepartId' : id,
+                        'leaderId' : $root.find('[name="leaderId"]').val(),
+                        'projectId' : page.getProjectId()
+                    },
+                    success : function(data) {
+                        alertTool.success("操作成功!");
+                        setTimeout(function () {
+                            page.namespace.modal.close(page,{
+                                returnFn:()=> data
+                            })
+                        },1000);
+                    },
+                    failure : function(data) {
+                        alertTool.error(data);
+                    }
+                };
+                page.namespace.getRequest(HtmlMenuOpt);
+            }
+        };
+        page.init();
+        avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+        page.initView();
+    });
+</script>

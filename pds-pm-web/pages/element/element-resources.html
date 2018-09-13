@@ -1,0 +1,159 @@
+<namespace id="element-resources">
+    <ol class="breadcrumb">
+        <li><a href="#">角色管理</a></li>
+        <li><a href="#">分配资源</a></li>
+    </ol>
+	<section class="content">
+        <div class="box box-info">
+            <div class="row ">
+            <div class="col-sm-12">
+                <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 31px;">
+                    <button id="btnAddRole" type="button" class="btn btn-sm btn-success">
+                        <i class="fa fa-floppy-o"></i> 添加权限
+                    </button>
+                    <button id="btnDelRole" type="button" class="btn btn-sm btn-danger">
+                        <i class="fa fa fa-times"></i> 取消授权
+                    </button>
+                    <a class="btn btn-sm btn-default" id="btnCancel">
+                        <i class="fa fa-align-justify"> 返回</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="box-body">
+     		<div class="form-group">
+     			<div class="col-sm-5">
+     				<table id="element-without-resources-table"
+						class="table dataTable row-border cell-border" cellspacing="0"
+						width="100%">
+						<thead>
+							<tr>
+								<th></th>
+								<th>URL名称</th>
+								<th>URL路径</th>
+								<th>URL描述</th>
+							</tr>
+						</thead>
+					</table>
+     			</div>
+				<div class="col-sm-5">
+     				<table id="element-within-resources-table"
+						class="table dataTable row-border cell-border" cellspacing="0"
+						width="100%">
+						<thead>
+							<tr>
+								<th></th>
+								<th>URL名称</th>
+								<th>URL路径</th>
+								<th>URL描述</th>
+							</tr>
+						</thead>
+					</table>
+     			</div>
+     		</div>
+     	</div>
+	</section>
+</namespace>
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#element-resources').namespace(),
+			init : function() {
+				
+			},
+			reload : function() {
+				page.listTable_1.ajax.reload();
+		  		page.listTable_2.ajax.reload();
+			},
+			getId : function() {
+				return page.namespace.getParam("id");
+			},
+			doCancel : function() {
+				page.namespace.skiphtml('/pages/element/element-list.html');
+			},
+			doDelResources : function() {
+				var selectRows = $('#element-within-resources-table').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请在右侧列表中选择要撤销的记录!");
+					return;
+				}
+				
+				var HtmlMenuOpt = {
+					endpoint : "/element/deleteElementResources",
+				  	data : {"ids" : selectRows.join(",")},
+				  	success : function(data) {
+				  		alertTool.success("操作成功!");
+				  		page.reload();
+				  	}	
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			},
+			doAddResources : function() {
+				var selectRows = $('#element-without-resources-table').getSelectedRow();
+				
+				if(selectRows.length == 0) {
+					alertTool.warning("请在左侧列表中选择要授权的记录!");
+					return;
+				}
+				
+				var HtmlMenuOpt = {
+					endpoint : "/element/addElementResources",
+				  	data : {"elementId" : page.getId(), "resourcesId" : selectRows.join(",")},
+				  	success : function(data) {
+				  		alertTool.success("操作成功!");
+				  		page.reload();
+				  	}	
+				};
+				
+				page.namespace.postRequest(HtmlMenuOpt);
+			}
+		};
+		
+		page.listTable_1 = $('#element-without-resources-table').initDataTable({
+			url : "/element/getSysElementURLResources_not_grant",
+			paging: false,
+			urlDataFn : function() {
+				return {"id": page.getId()};
+			},
+			lengthChange : false,
+			checkbox : true,
+			columns : [{
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "url",
+				"width" : "15%"
+			}, {
+				"data" : "description",
+				"width" : "15%"
+			}]
+		});
+		
+		page.listTable_2 = $('#element-within-resources-table').initDataTable({
+			url : "/element/getSysElementURLResources_granted",
+			paging: false,
+			urlDataFn : function() {
+				return {"id": page.getId()};
+			},
+			lengthChange : false,
+			checkbox : true,
+			columns : [{
+				"data" : "name",
+				"width" : "10%"
+			}, {
+				"data" : "url",
+				"width" : "15%"
+			}, {
+				"data" : "description",
+				"width" : "15%"
+			}]
+		});
+		
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+		page.namespace.root.find('#btnDelRole').on('click', page.doDelResources);
+		page.namespace.root.find('#btnAddRole').on('click', page.doAddResources);
+	});
+</script>

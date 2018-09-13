@@ -1,0 +1,127 @@
+<!-- author : Modified by Zhang Xiang on 2017/5/31 -->
+<meta charset="utf-8">
+<namespace id="sen-edit" ms-controller="sen_edit">
+	<ol class="breadcrumb">
+		<li><a href="#">敏感词管理</a></li>
+		<li><a href="#">修改</a></li>
+	</ol>
+
+	<section class="content" id="editSenSection">
+		<div class="box box-info">
+			<form role="form" id="editSenForm"  class="form-horizontal">
+				<div class="row ">
+	                <div class="col-sm-12">
+	                    <!-- 右对齐的 btn-group -->
+	                    <div class="btn-group pull-left" style="margin-top: 20px;margin-left: 28px;">
+	                        <button type="submit" class="btn btn-sm btn-primary">
+	                            <i class="fa fa-floppy-o"></i> 提交
+	                        </button>
+	                        <a class="btn btn-sm btn-default" id="btnCancel">
+	                            <i class="fa fa-align-justify"> 返回</i>
+	                        </a>
+	                    </div>
+	                </div>
+            	</div>
+
+				<div class="form-group">
+   			 		<label for="name" class="col-sm-1 input-sm control-label requiredMask">敏感词名称&nbsp&nbsp</label>
+   			 		<div class="col-sm-5">
+                        <input name="name" type="text" class="form-control input-sm" ms-attr="{value:@data.name}">
+   			 		</div>
+   			 	</div>
+
+   			 	<div class="form-group">
+   			 		<label for="desc" class="col-sm-1 input-sm control-label requiredMask">敏感词描述&nbsp&nbsp</label>
+   			 		<div class="col-sm-5">
+   			 			<textarea name="desc" rows="3" class="form-control" placeholder="" ms-text="@data.desc"></textarea>
+   			 		</div>
+   			 	</div>
+
+   			 	<div class="form-group">
+   			 		<label for="enable" class="col-sm-1 input-sm control-label requiredMask">是否启用</label>
+					<div class="col-sm-5">
+						<select name="enable" class="form-control input-sm select2" ms-duplex="@data.enable">
+							<option selected="selected" value="-1">请选择</option>
+							<option ms-for="el in @options" ms-attr="{value:el.value}" ms-text="el.name"></option>
+						</select>
+					</div>
+   			 	</div>
+   			 	<input type="hidden" name="id" ms-attr="{value:@data.id}" style="width: 100%" />
+			</form>
+		</div>
+	</section>
+</namespace>
+
+<script type="text/javascript">
+	$(function() {
+		var page = {
+			namespace : $('#sen-edit').namespace(),
+			model:{
+				vm:avalon.define({
+			        $id: "sen_edit",
+			        options: {},
+			        data: {}
+			    })
+			},
+			init : function() {
+				$("#editSenForm").validate({
+					rules : {
+						'name' : {
+							required : true,
+							maxlength : 64
+						},
+						'desc' : {
+							required : false,
+							maxlength : 2000
+						},
+						'enable' : {
+							required : false,
+							valueNotEquals : '-1'
+						}
+					},submitHandler : function(form) {
+						page.doEdit();
+					}
+				});
+			},
+			doCancel : function() {
+				page.namespace.skiphtml("/pages/sensitive/sen-list.html");
+			},
+			initView:function(){
+				page.namespace.getRequest({
+					endpoint : "/sen/getSenById",
+					data : {"id":page.namespace.getParam("id")},
+					success : function(data) {
+						 page.model.vm.data=data;
+					},
+					failure : function(data) {
+						alertTool.error(data);
+					}
+				});
+				page.namespace.getCodes(function(data){
+					page.model.vm.options=data;
+				},"SEN_USEABLE");
+
+			},
+			doEdit : function() {
+				var submitLabelForm = {
+					endpoint : "/sen/updateSen",
+					formObj : $("#editSenForm"),
+					success : function(data) {
+						alertTool.success("操作成功!");
+						page.doCancel();
+					},
+					failure:function(data) {
+						alertTool.error(data);
+					}
+				};
+
+				page.namespace.submitForm(submitLabelForm);
+			}
+		}
+		avalon.scan(page.namespace.root[0], page.model.vm);  // void braces
+		page.initView() ;
+		page.init();
+
+		page.namespace.root.find('#btnCancel').on('click', page.doCancel);
+	});
+</script>
